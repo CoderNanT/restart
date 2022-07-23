@@ -631,5 +631,431 @@
 
 
 
+## computed
+
+- 在前面我们讲解过计算属性computed：当我们的某些属性是依赖其他状态时，我们可以使用计算属性来处理
+
+  - 在前面的Options API中，我们是使用computed选项来完成的
+  - 在Composition API中，我们可以在 setup 函数中使用 computed 方法来编写一个计算属性
+
+- 如何使用computed呢
+
+  - **方式一**：接收一个 **getter 函数**，并为 getter 函数返回的值，返回一个不变的 ref 对象
+  - **方式二**：接收一个具有 **get 和 set 的对象**，返回一个可变的（可读写）ref 对象
+
+  ```vue
+  <template>
+    <h1>{{ fullName }}</h1>
+    <button @click="setFullname">设置fullname</button>
+  </template>
+  
+  <script>
+  import { reactive, computed } from "vue";
+  
+  export default {
+    setup() {
+      const names = reactive({ firstName: "the", lastName: "shy" });
+      
+      // get 写法
+      // const fullName = computed(() => {
+      //   return names.firstName + " " + names.lastName
+      // })
+  
+      // 完整写法
+      const fullName = computed({
+        set(newValue) {
+          const tempNames = newValue.split(" ");
+          names.firstName = tempNames[0];
+          names.lastName = tempNames[1];
+        },
+        get() {
+          return names.firstName + " " + names.lastName;
+        },
+      });
+  
+      console.log(fullName); // ComputedRefImpl { ... }
+  
+      function setFullname() {
+        fullName.value = "我的 shy";
+      }
+  
+      return { names, fullName, setFullname };
+    },
+  };
+  </script>
+  ```
+
+
+
+## setup中使用ref
+
+- 在setup中如何使用ref获取元素或者组件
+
+  - 其实非常简单，我们只需要定义一个ref对象，绑定到元素或者组件的ref属性上即可
+
+  ```vue
+  <!-- App.vue -->
+  <template>
+    <!-- 1.获取元素 -->
+    <h1 ref="titleRef">我是标题</h1>
+    <button ref="btnRef">按钮</button>
+  
+    <!-- 2.获取组件实例 -->
+    <show-info ref="showInfoRef"></show-info>
+  
+    <button @click="getElements">获取元素</button>
+  </template>
+  
+  <script>
+  import { ref } from "vue";
+  import showInfo from "./showInfo.vue";
+  
+  export default {
+    components: { showInfo },
+    setup() {
+      const titleRef = ref();
+      const btnRef = ref();
+      const showInfoRef = ref();
+  
+      function getElements() {
+        console.log(titleRef.value);
+        console.log(btnRef.value);
+        console.log(showInfoRef.value);
+  
+        showInfoRef.value.showInfoFoo();
+      }
+      return { titleRef, btnRef, showInfoRef, getElements };
+    },
+  };
+  </script>
+  
+  <!-- showInfo.vue -->
+  <template>
+    <h2>showInfo</h2>
+  </template>
+  
+  <script>
+  export default {
+    setup() {
+      function showInfoFoo() {
+        console.log("showInfo foo function");
+      }
+      return { showInfoFoo };
+    },
+  };
+  </script>
+  ```
+
+
+
+## 生命周期钩子
+
+- 我们前面说过 setup 可以用来替代 data 、 methods 、 computed 等等这些选项，也可以替代 **生命周期钩子**
+
+- 那么setup中如何使用生命周期函数呢
+
+  - 可以使用直接导入的 onX 函数注册生命周期钩子
+
+- 因为 setup 是围绕 beforeCreate 和 created 生命周期钩子运行的，所以不需要显式地定义它们。换句话说，在这些钩子中编写的任何代码都应该直接在 setup 函数中编写
+
+  ```
+  beforeCreate  -> setup()
+  created       -> setup()
+  beforeMount   -> onBeforeMount
+  mounted       -> onMounted
+  beforeUpdate  -> onBeforeUpdate
+  updated       -> onUpdated
+  beforeDestroy -> onBeforeUnmount
+  destroyed     -> onUnmounted
+  activated     -> onActivated
+  deactivated   -> onDeactivated
+  errorCaptured -> onErrorCaptured
+  ```
+
+
+
+## 侦听数据的变化
+
+- 在前面的Options API中，我们可以通过**watch选项**来侦听**data或者props**的数据变化，当数据变化时执行某一些操作
+- 在Composition API中，我们可以使用**watchEffect和watch**来完成响应式数据的侦听
+  - **watchEffect**：用于自动收集响应式数据的依赖
+  - **watch**：需要手动指定侦听的数据源
+
+
+
+### watch的使用
+
+- watch的API完全等同于组件watch选项的Property
+
+  - watch需要**侦听特定的数据源**，并且执行其回调函数
+  - 默认情况下它是惰性的，只有当被侦听的源发生变化时才会执行回调
+
+  ```vue
+  <template>
+    <h1>当前计数: {{ count }}</h1>
+    <button @click="count++">+1</button>
+    <button @click="count--">-1</button>
+  
+    <hr />
+  
+    <h1>{{ name }}</h1>
+    <h1>{{ age }}</h1>
+    <button @click="name = 'the shy'">修改name</button>
+    <button @click="age = 24">修改age</button>
+  
+    <hr />
+  
+    <h1>{{ info }}</h1>
+    <button @click="info.friend.name = 'i coder'">修改info-friend</button>
+  </template>
+  
+  <script>
+  import { ref, reactive, watch } from "vue";
+  
+  export default {
+    setup() {
+      let count = ref(1);
+      let name = ref("shy");
+      let age = ref(18);
+      let info = reactive({
+        name: "lwh",
+        friend: {
+          name: "coder",
+        },
+      });
+      // 监听单个属性变化
+      watch(count, (newValue, oldValue) => {
+        console.log(newValue, oldValue);
+      });
+      // 监听多个属性变化
+      watch([name, age], (newValue, oldValue) => {
+        // ['the shy', 18]  ['shy', 18]
+        // ['the shy', 24]  ['the shy', 18]
+        console.log(newValue, oldValue);
+      });
+      // 选项配置
+      watch(
+        info,
+        (newValue, oldValue) => {
+          console.log(newValue, oldValue);
+        },
+        { immediate: true, deep: true }
+      );
+  
+      return { count, name, age, info };
+    },
+  };
+  </script>
+  ```
+
+
+
+### watchEffect
+
+- 当侦听到某些响应式数据变化时，我们希望执行某些操作，这个时候可以使用 **watchEffect**
+
+  - 首先，watchEffect传入的函数会被立即执行一次，并且在执行的过程中会收集依赖
+  - 其次，只有收集的依赖发生变化时，watchEffect传入的函数才会再次执行
+
+- 如果在发生某些情况下，我们希望停止侦听，这个时候我们可以获取watchEffect的**返回值函数，调用该函数**即可
+
+  ```vue
+  <template>
+    <h1>当前计数: {{ count }}</h1>
+    <button @click="count++">+1</button>
+    <button @click="count--">-1</button>
+  </template>
+  
+  <script>
+  import { ref, watchEffect } from "vue";
+  
+  export default {
+    setup() {
+      let count = ref(1);
+  
+      let stopWatch = watchEffect(() => {
+        console.log(count.value);
+        if (count.value >= 6) {
+          stopWatch();
+        }
+      });
+  
+      return { count };
+    },
+  };
+  </script>
+  ```
+
+
+
+## script setup语法
+
+- script setup 是在单文件组件 (SFC) 中使用组合式 API 的编译时语法糖，当同时使用 SFC 与组合式 API 时则推荐该语法
+  - 更少的样板内容，更简洁的代码
+  - 能够使用纯 Typescript 声明 prop 和抛出事件
+  - 更好的运行时性能
+  - 更好的 IDE 类型推断性能
+
+- 使用这个语法，需要将 setup attribute 添加到 script 代码块上
+
+  ```vue
+  <script setup></script>
+  ```
+
+- 里面的代码会被编译成组件 setup() 函数的内容
+
+  - 这意味着与普通的 script 只在组件被首次引入的时候执行一次不同
+  - script setup 中的代码会在每次组件实例被创建的时候执行
+
+
+
+### 顶层的绑定会被暴露给模板
+
+- 当使用 script setup 的时候，任何在 script setup 声明的顶层的绑定 (包括变量，函数声明，以及 import 引入的内容) 都能在模板中直接使用
+
+- 响应式数据需要通过ref、reactive来创建
+
+  ```vue
+  <!--- App.vue --->
+  <template>
+    <h1>AppContent: {{ message }}</h1>
+    <button @click="changeMessage">修改message</button>
+    <show-info></show-info>
+  </template>
+  
+  <script setup>
+  import { ref } from "vue";
+  import showInfo from "./showInfo.vue";
+  
+  const message = ref("Hello World");
+  
+  function changeMessage() {
+    message.value = "你好啊, 李银河!";
+  }
+  </script>
+  
+  <!--- showInfo.vue --->
+  <template>
+    <h1>showInfo</h1>
+  </template>
+  
+  <script setup></script>
+  ```
+
+
+
+### defineProps 和 defineEmits
+
+- 为了在声明 props 和 emits 选项时获得完整的类型推断支持，我们可以使用 defineProps 和 defineEmits API，它们将自动地在 script setup 中可用
+
+  ```vue
+  <!--- App.vue --->
+  <template>
+    <h1>AppContent: {{ message }}</h1>
+    <button @click="changeMessage">修改message</button>
+    <show-info name="shy" :age="18" @info-btn-click="infoBtnClick"> </show-info>
+  </template>
+  
+  <script setup>
+  import { ref } from "vue";
+  import showInfo from "./showInfo.vue";
+  
+  const message = ref("Hello World");
+  
+  function changeMessage() {
+    message.value = "你好啊, 李银河!";
+  }
+  
+  function infoBtnClick(payload) {
+    console.log("监听到showInfo内部的点击:", payload);
+  }
+  </script>
+  
+  <!--- showInfo.vue --->
+  <template>
+    <h1>showInfo: {{ name }}-{{ age }}</h1>
+    <button @click="showInfoBtnClick">showInfoButton</button>
+  </template>
+  
+  <script setup>
+  const props = defineProps({
+    name: { type: String, default: "默认值" },
+    age: { type: Number, default: 0 },
+  });
+  
+  const emits = defineEmits(["infoBtnClick"]);
+  function showInfoBtnClick() {
+    emits("infoBtnClick", "showInfo内部发生了点击");
+  }
+  </script>
+  ```
+
+
+
+### defineExpose
+
+- 使用 script setup 的组件是默认关闭的
+
+  - 通过模板 ref 或者 $parent 链获取到的组件的公开实例，不会暴露任何在 script setup 中声明的绑定
+
+- 通过 defineExpose 编译器宏来显式指定在 script setup 组件中要暴露出去的 property
+
+  ```vue
+  <!--- App.vue --->
+  <template>
+    <h1>AppContent: {{ message }}</h1>
+    <button @click="changeMessage">修改message</button>
+    <show-info
+      name="shy"
+      :age="18"
+      ref="showInfoRef"
+      @info-btn-click="infoBtnClick">
+    </show-info>
+  </template>
+  
+  <script setup>
+  import { ref, onMounted } from "vue";
+  import showInfo from "./showInfo.vue";
+  
+  const message = ref("Hello World");
+  
+  function changeMessage() {
+    message.value = "你好啊, 李银河!";
+  }
+  
+  function infoBtnClick(payload) {
+    console.log("监听到showInfo内部的点击:", payload);
+  }
+  
+  const showInfoRef = ref();
+  onMounted(() => {
+    showInfoRef.value.foo();
+  });
+  </script>
+  
+  <!--- showInfo.vue --->
+  <template>
+    <h1>showInfo: {{ name }}-{{ age }}</h1>
+    <button @click="showInfoBtnClick">showInfoButton</button>
+  </template>
+  
+  <script setup>
+  const props = defineProps({
+    name: { type: String, default: "默认值" },
+    age: { type: Number, default: 0 },
+  });
+  
+  const emits = defineEmits(["infoBtnClick"]);
+  function showInfoBtnClick() {
+    emits("infoBtnClick", "showInfo内部发生了点击");
+  }
+  
+  function foo() {
+    console.log("foo function");
+  }
+  defineExpose({ foo });
+  </script>
+  ```
+
 
 
