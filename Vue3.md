@@ -1425,8 +1425,7 @@
 - 对于哪些没有匹配到的路由，我们通常会匹配到固定的某个页面
 
   - 比如NotFound的错误页面中，这个时候我们可编写一个动态路由用于匹配所有的页面
-
-
+  
   ```js
   const router = createRouter({
     routes: [
@@ -1691,3 +1690,797 @@
   10. 调用全局的 `afterEach` 钩子。
   11. 触发 DOM 更新。
   12. 调用 `beforeRouteEnter` 守卫中传给 `next` 的回调函数，创建好的组件实例会作为回调函数的参数传入。
+
+
+
+# Vuex
+
+## 什么是状态管理
+
+- 在开发中，我们会在应用程序中处理各种各样的数据，这些数据需要保存在我们应用程序中的某一个位置，对于这些数据的管理我们就称之为是 **状态管理**
+- 在前面我们是如何管理自己的状态呢
+  - 在Vue开发中，我们使用**组件化的开发方式**
+  - 而在组件中我们**定义data或者在setup中返回使用的数据**，这些数据我们称之为**state**
+  - 在**模板template**中我们可以使用这些数据，模板最终会被渲染成DOM，我们称之为**View**
+  - 在模板中我们会产生一些**行为事件**，处理这些行为事件时，有可能会修改state，这些行为事件我们称之为**actions**
+
+
+
+## Vuex的状态管理
+
+- 管理不断变化的state本身是非常困难的
+  - 状态之间相互会存在依赖，一个状态的变化会引起另一个状态的变化，View页面也有可能会引起状态的变化
+  - 当应用程序复杂时，state在什么时候，因为什么原因而发生了变化，发生了怎么样的变化，会变得非常难以控制和追踪
+- 因此，我们是否可以考虑将组件的内部状态抽离出来，以一个全局单例的方式来管理呢
+  - 在这种模式下，我们的组件树构成了一个**巨大的 "试图View"**
+  - 不管在树的哪个位置，**任何组件都能获取状态或者触发行为**
+  - 通过定义和隔离状态管理中的各个概念，并通过**强制性的规则来维护视图和状态间的独立性**，我们的代码边会变得更加结构化和易于维护、跟踪
+- 这就是Vuex背后的基本思想，它借鉴了Flux、Redux、Elm（纯函数语言，redux有借鉴它的思想）
+
+
+
+## 单一状态树
+
+- Vuex 使用单一状态树
+  - 用**一个对象**就包含了**全部的应用层级的状态**
+  - 采用的是**SSOT，Single Source of Truth**，也可以翻译成单一数据源
+- 这也意味着，每个应用将仅仅包含一个 **store 实例**
+- 单一状态树的优势
+  - 如果你的状态信息是保存到多个Store对象中的，那么之后的管理和维护等等都会变得特别困难
+  - 所以Vuex也使用了单一状态树来管理应用层级的全部状态
+  - 单一状态树能够让我们**最直接的方式找到某个状态的片段**
+  - 而且在之后的维护和调试过程中，也可以非常方便的管理和维护
+
+
+
+## 创建store
+
+- 每一个Vuex应用的核心就是store（仓库）
+
+  - store本质上是一个容器，它包含着你的应用中大部分的状态（state）
+
+- Vuex和单纯的全局对象有什么区别呢
+
+  - 第一：Vuex的状态存储是响应式的
+    - 当Vue组件从store中读取状态的时候，若store中的状态发生变化，那么相应的组件也会被更新
+  - 第二：你不能直接改变store中的状态
+    - 改变store中的状态的唯一途径就是**提交 (commit) mutation**
+    - 这样使得我们可以方便的跟踪每一个状态的变化，从而让我们能够通过一些工具帮助我们更好的管理应用的状态
+
+- 创建Store对象，在app中通过插件安装
+
+  ```js
+  // src/store/index.js
+  import { createStore } from "vuex";
+  
+  const store = createStore({
+    state() {
+      return {
+        counter: 100,
+        name: "shy",
+        age: 24,
+        level: 100,
+      };
+    },
+  });
+  
+  export default store;
+  
+  
+  // main.js
+  import { createApp } from "vue";
+  import App from "./App.vue";
+  import store from "./store/index";
+  
+  const app = createApp(App);
+  
+  app.use(store).mount("#app");
+  ```
+
+  ```vue
+  <template>
+    <div class="app">
+      <h1>App {{ $store.state.counter }}</h1>
+    </div>
+  </template>
+  
+  <script setup></script>
+  ```
+
+
+
+## store的基本使用
+
+- 在模板中使用
+
+- 在 options api 中使用
+
+- 在 setup 中使用
+
+  ```vue
+  <template>
+    <div class="home">
+  		<h1>Home {{ $store.state.counter }}</h1>
+      <h1>Vue2 当前计数: {{ counter }}</h1>
+      <h1>Vue3 当前计数: {{ counter }}</h1>
+    </div>
+  </template>
+  
+  <!-- vue2 -->
+  <script>
+  export default {
+    data() {
+      return {
+        counter: this.$store.state.counter,
+      };
+    },
+  };
+  </script>
+  
+  <!-- vue3 -->
+  <script setup>
+  import { useStore } from "vuex";
+  
+  const store = useStore();
+  
+  const counter = store.state.counter;
+  </script>
+  
+  ```
+
+
+
+## mapState映射
+
+- 如果我们有很多个状态都需要获取的话，可以使用mapState的辅助函数
+
+  - mapState的方式一：对象类型
+  - mapState的方式一：数组类型
+  - 也可以使用**展开运算符和原来有的computed混合在一起**
+
+  ```vue
+  <template>
+  <div class="home">
+    <!-- 1.在模板中直接使用多个状态 -->
+    <h1>在模板中直接使用多个状态</h1>
+    <h1>name: {{ $store.state.name }}</h1>
+    <h1>level: {{ $store.state.level }}</h1>
+  
+    <hr />
+  
+    <!-- 2.计算属性(映射状态: 数组语法) -->
+    <h1>计算属性(映射状态: 数组语法)</h1>
+    <h1>name: {{ name }}</h1>
+    <h1>level: {{ level }}</h1>
+  
+    <hr />
+  
+    <!-- 3.计算属性(映射状态: 对象语法) -->
+    <h1>计算属性(映射状态: 对象语法)</h1>
+    <h1>name: {{ renameName }}</h1>
+    <h1>level: {{ renameLevel }}</h1>
+  
+    <hr />
+  
+    <!-- 4.setup计算属性(映射状态: 对象语法) -->
+    <h1>setup计算属性(映射状态: 对象语法)</h1>
+    <h1>name: {{ computedName }}</h1>
+    <h1>level: {{ computedLevel }}</h1>
+  
+    <hr />
+  
+    <!-- 5.setup计算属性(映射状态: 对象语法) -->
+    <h1>setup计算属性(映射状态: 对象语法)</h1>
+    <h1>name: {{ toRefsName }}</h1>
+    <h1>level: {{ toRefsLevel }}</h1>
+    </div>
+  </template>
+  
+  <script>
+    import { mapState } from "vuex";
+  
+    export default {
+      computed: {
+        ...mapState(["name", "level"]),
+        ...mapState({
+          renameName: (state) => state.name,
+          renameLevel: (state) => state.level,
+        }),
+      },
+    };
+  </script>
+  
+  <script setup>
+    import { computed, toRefs } from "vue";
+    import { mapState, useStore } from "vuex";
+  
+    const store = useStore();
+    // 1.一步步完成
+    const { name: mapName, level: mapLevel } = mapState(["name", "level"]);
+    const computedName = computed(mapName.bind({ $store: store }));
+    const computedLevel = computed(mapLevel.bind({ $store: store }));
+  
+    // 2.直接对store.state进行解构(推荐)
+    const { name: toRefsName, level: toRefsLevel } = toRefs(store.state);
+  </script>
+  ```
+
+
+
+## getters的基本使用
+
+- 某些属性我们可能需要经过变化后来使用，这个时候可以使用getters
+
+  ```js
+  // src/store/index.js
+  import { createStore } from "vuex";
+  
+  const store = createStore({
+    state() {
+      return {
+        counter: 100,
+        name: "shy",
+        age: 24,
+        level: 100,
+      };
+    },
+    getters: {
+      // 1.基本使用
+      doubleCounter(state) {
+        return state.counter * 2;
+      },
+      // 2.在该getters属性中, 获取其他的getters
+      message(state, getters) {
+        return `name:${state.name} level:${state.level} counter:${getters.doubleCounter}`;
+      },
+      // 3.getters是可以返回一个函数的, 调用这个函数可以传入参数
+      printLog() {
+        return function (name, level) {
+          return `name:${name} level:${level}`;
+        };
+      },
+    },
+  });
+  
+  export default store;
+  ```
+
+  ```vue
+  <template>
+    <div class="home">
+      <h1>doubleCounter: {{ $store.getters.doubleCounter }}</h1>
+      <h1>message: {{ $store.getters.message }}</h1>
+  
+      <h1>printLog: {{ $store.getters.printLog("ning", 100) }}</h1>
+      <h1>printLog: {{ $store.getters.printLog("the shy", 100) }}</h1>
+    </div>
+  </template>
+  
+  <script setup></script>
+  ```
+
+
+
+## mapGetters映射
+
+- 如果我们有很多个状态都需要获取的话，可以使用mapGetters的辅助函数
+
+  - mapGetters的方式一：数组类型
+  - mapGetters的方式二：对象类型
+  
+  - 也可以使用**展开运算符和原来有的computed混合在一起**
+  
+  ```vue
+  <template>
+    <div class="home">
+      <h1>doubleCounter: {{ doubleCounter }}</h1>
+      <h1>info: {{ info }}</h1>
+      <h1>printLog: {{ printLog("the shy", 100) }}</h1>
+  
+      <hr />
+  
+      <h1>computedDoubleCounter: {{ computedDoubleCounter }}</h1>
+      <h1>toRefsMessage: {{ toRefsMessage }}</h1>
+      <h1>computedPrintLog: {{ computedPrintLog("the shy", 100) }}</h1>
+    </div>
+  </template>
+  
+  <script>
+  import { mapGetters } from "vuex";
+  
+  export default {
+    computed: {
+      ...mapGetters(["doubleCounter"]),
+      ...mapGetters(["printLog"]),
+      ...mapGetters({
+        info: "message",
+      }),
+    },
+  };
+  </script>
+  
+  <script setup>
+  import { computed, toRefs } from "vue";
+  import { mapGetters, useStore } from "vuex";
+  
+  const store = useStore();
+  
+  // 1.使用mapGetters
+  const { doubleCounter: doubleCounterMap } = mapGetters(["doubleCounter"]);
+  const computedDoubleCounter = computed(doubleCounterMap.bind({ $store: store }));
+  
+  // 2.直接解构, 并且包裹成ref
+  const { message: toRefsMessage } = toRefs(store.getters);
+  
+  // 3.针对某一个getters属性使用computed
+  const computedPrintLog = computed(() => store.getters.printLog);
+  </script>
+  ```
+
+
+
+## mutation的基本使用
+
+- 更改 Vuex 的 store 中的状态的唯一方法是提交 mutation
+
+  ```js
+  import { createStore } from "vuex";
+  
+  const store = createStore({
+    state() {
+      return {
+        counter: 100,
+        name: "shy",
+        age: 24,
+        level: 100,
+      };
+    },
+    mutations: {
+      changeName(state, payload) {
+        state.name = payload;
+      },
+      incrementLevel(state) {
+        state.level++;
+      },
+    },
+  });
+  
+  export default store;
+  ```
+
+  ```vue
+  <template>
+    <div class="home">
+      <button @click="changeName">修改name</button>
+      <button @click="incrementLevel">递增level</button>
+      <h1>Store Name: {{ $store.state.name }}</h1>
+      <h1>Store Level: {{ $store.state.level }}</h1>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    methods: {
+      changeName() {
+        this.$store.commit("changeName", "the shy");
+      },
+    },
+  };
+  </script>
+  
+  <script setup>
+  import { useStore } from "vuex";
+  const store = useStore();
+  
+  function incrementLevel() {
+    store.commit("incrementLevel");
+  }
+  </script>
+  ```
+
+
+
+
+## mapMutations映射
+
+- 我们也可以借助于辅助函数，帮助我们快速映射到对应的方法中
+
+  ```vue
+  <template>
+    <div class="home">
+      <button @click="changeName('the shy')">修改name</button>
+      <button @click="increment">递增level</button>
+      <button @click="incrementLevel">递增level</button>
+      <h1>Store Name: {{ $store.state.name }}</h1>
+      <h1>Store Level: {{ $store.state.level }}</h1>
+    </div>
+  </template>
+  
+  <script>
+  import { mapMutations } from "vuex";
+  export default {
+    methods: {
+      ...mapMutations(["changeName"]),
+      ...mapMutations({
+        increment: "incrementLevel",
+      }),
+    },
+  };
+  </script>
+  
+  <script setup>
+  import { useStore } from "vuex";
+  const store = useStore();
+  
+  const { incrementLevel: incrementLevelMap } = mapMutations(["incrementLevel"]);
+  
+  const incrementLevel = incrementLevelMap.bind({ $store: store });
+  </script>
+  ```
+
+
+
+## mutation重要原则
+
+- 一条重要的原则就是要记住 **mutation 必须是同步函数**
+  - 这是**因为devtool工具会记录mutation的日记**
+  - 每一条mutation被记录，**devtools都需要捕捉到前一状态和后一状态的快照**
+  - 但是**在mutation中执行异步操作，就无法追踪到数据的变化**
+- 所以Vuex的重要原则中要求 mutation必须是同步函数
+  - 但是如果我们希望在Vuex中发送网络请求的话需要如何操作呢
+
+
+
+## actions的基本使用
+
+- action 类似于 mutation，不同在于
+
+  - action提交的是mutation，而不是直接改变状态
+  - action可以包含任意异步操作
+
+- 这里有一个非常重要的参数context
+
+  -  context是一个和store实例均有相同方法和属性的context对象
+  - 所以我们可以从其中获取到commit方法来提交一个mutation，或者通过 context.state 和 context.getters 来获取 state 和 getters
+
+  ```js
+  import { createStore } from "vuex";
+  
+  const store = createStore({
+    state() {
+      return {
+        counter: 100,
+        name: "shy",
+        age: 24,
+        level: 100,
+      };
+    },
+    mutations: {
+      changeName(state, payload) {
+        state.name = payload;
+      },
+    },
+    actions: {
+      changeNameAction(context, payload) {
+        setTimeout(() => {
+          context.commit("changeName", payload);
+        }, 0);
+      },
+    },
+  });
+  
+  export default store;
+  ```
+
+  ```vue
+  <template>
+    <div class="home">
+      <button @click="nameBtnClick1">发起action修改name1</button>
+      <button @click="nameBtnClick2">发起action修改name2</button>
+      <h1>name: {{ $store.state.name }}</h1>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    methods: {
+      nameBtnClick1() {
+        this.$store.dispatch("changeNameAction", "哈哈哈哈");
+      },
+    },
+  };
+  </script>
+  
+  <script setup>
+  import { useStore } from "vuex";
+  const store = useStore();
+  
+  function nameBtnClick2() {
+    store.dispatch("changeNameAction", "呵呵呵呵");
+  }
+  </script>
+  ```
+
+
+
+## mapActions映射
+
+- action也有对应的辅助函数
+
+  - **对象类型**的写法
+  - **数组类型**的写法
+
+  ```vue
+  <template>
+    <div class="home">
+      <button @click="nameBtnClick1('哈哈哈哈')">发起action修改name1</button>
+      <button @click="nameBtnClick2('呵呵呵呵')">发起action修改name2</button>
+      <h1>name: {{ $store.state.name }}</h1>
+    </div>
+  </template>
+  
+  <script>
+  import { mapActions } from "vuex";
+  export default {
+    methods: {
+      ...mapActions({
+        nameBtnClick1: "changeNameAction",
+      }),
+    },
+  };
+  </script>
+  
+  <script setup>
+  import { useStore, mapActions } from "vuex";
+  const store = useStore();
+  
+  const { changeNameAction: changeNameActionMap } = mapActions(["changeNameAction"]);
+  
+  const nameBtnClick2 = changeNameActionMap.bind({ $store: store });
+  </script>
+  ```
+
+
+
+## actions的异步操作
+
+- action 通常是异步的，那么如何知道 action 什么时候结束呢
+
+  - 我们可以通过让 action 返回 Promise，在 Promise 的 then 中来处理完成后的操作
+
+  ```js
+  import { createStore } from "vuex";
+  
+  const store = createStore({
+    state() {
+      return {
+        counter: 100,
+        name: "shy",
+        age: 24,
+        level: 100,
+      };
+    },
+    mutations: {
+      changeName(state, payload) {
+        state.name = payload;
+      },
+    },
+    actions: {
+      changeNameAction(context, payload) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            context.commit("changeName", payload);
+            resolve("异步操作完成");
+          }, 0);
+        });
+      },
+    },
+  });
+  
+  export default store;
+  ```
+
+  ```vue
+  <template>
+    <div class="home">
+      <button @click="nameBtnClick1">发起action修改name1</button>
+      <button @click="nameBtnClick2">发起action修改name2</button>
+      <h1>name: {{ $store.state.name }}</h1>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    methods: {
+      nameBtnClick1() {
+        this.$store.dispatch("changeNameAction", "哈哈哈哈").then((res) => {
+          console.log(res + "1");
+        });
+      },
+    },
+  };
+  </script>
+  
+  <script setup>
+  import { useStore } from "vuex";
+  const store = useStore();
+  
+  function nameBtnClick2() {
+    store.dispatch("changeNameAction", "呵呵呵呵").then((res) => {
+      console.log(res + "2");
+    });
+  }
+  </script>
+  ```
+
+
+
+## module的基本使用
+
+- 什么是Module
+
+  - 由于使用单一状态树，应用的所有状态会集中到一个比较大的对象，当应用变得非常复杂时，store 对象就有可能变得相当臃肿
+  - 为了解决以上问题，Vuex 允许我们将 store 分割成**模块（module）**
+  - 每个模块拥有自己的 state、mutation、action、getter、甚至是嵌套子模块
+
+  ```js
+  // src/store/index.js
+  import { createStore } from "vuex";
+  import home from "./modules/home";
+  
+  const store = createStore({
+    state() {
+      return {
+        counter: 100,
+      };
+    },
+    modules: { home },
+  });
+  
+  export default store;
+  
+  // src/store/modules/home.js
+  const count = {
+    state() {
+      return {
+        count: 99,
+      };
+    },
+    mutations: {
+      incrementCount(state, payload) {
+        state.count++;
+      },
+    },
+    getters: {
+      doubleCount(state, getters, rootState, rootGetters) {
+        console.log(rootState);
+        // Proxy {counter: 100, name: 'shy', age: 24, level: 100, home: {count: 100}}
+        return state.count + rootState.counter;
+      },
+    },
+    actions: {
+      incrementCountAction(context, payload) {
+        console.log(context);
+        /* 
+          commit: ƒ boundCommit(type, payload, options)
+          dispatch: ƒ boundDispatch(type, payload)
+          getters: {}
+          rootGetters: {}
+          rootState: Proxy {counter: 100, name: 'shy', age: 24, level: 100, home: {count: 100}}
+          state: Proxy {count: 100}
+        */
+        context.commit("incrementCount");
+      },
+    },
+  };
+  
+  export default count;
+  ```
+  
+  ```vue
+  <template>
+    <div class="home">
+      <!-- 1.使用 state 时, 是需要 state.moduleName.xxx -->
+      <h1>{{ $store.state.home.count }}</h1>
+      <!-- 2.使用 getters 时, 是直接 getters.xxx -->
+      <h1>{{ $store.getters.doubleCount }}</h1>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    created() {
+      console.log(this.$store.state.home.count);
+    },
+  };
+  </script>
+  
+  <script setup>
+  import { useStore } from "vuex";
+  const store = useStore();
+  
+  console.log(store.state.home.count);
+  </script>
+  ```
+
+
+
+## module的命名空间
+
+- 默认情况下，模块内部的 action 和 mutation 仍然是注册在**全局的命名空间**中的
+  - 这样使得多个模块能够对同一个 action 或 mutation 作出响应
+  - getter 同样也默认注册在全局命名空间
+- 如果我们希望模块具有更高的封装度和复用性，可以添加 namespaced: true 的方式使其成为带命名空间的模块
+  - 当模块被注册后，它的所有 getter、action 及 mutation 都会自动根据模块注册的路径调整命名
+  
+  ```js
+  const count = {
+    namespaced: true,
+    state() {
+      return {
+        count: 99,
+      };
+    },
+    mutations: {
+      incrementCount(state, payload) {
+        state.count++;
+      },
+    },
+    getters: {
+      doubleCount(state, getters, rootState) {
+        return state.count + rootState.counter;
+      },
+    },
+    actions: {
+      incrementCountAction(context, payload) {
+        context.commit("incrementCount");
+      },
+      changeRootName(context, payload) {
+        context.commit("changeName", payload, { root: true });
+      },
+    },
+  };
+  
+  export default count;
+  ```
+  
+  ```vue
+  <template>
+    <div class="home">
+      <h1>{{ $store.state.name }}</h1>
+      <h1>{{ $store.state.home.count }}</h1>
+      <h1>{{ $store.getters["home/doubleCount"] }}</h1>
+      <button @click="increment">count++</button>
+      <button @click="changeRootName">changeRootName</button>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    created() {
+      console.log(this.$store.state.home.count);
+    },
+  };
+  </script>
+  
+  <script setup>
+  import { useStore } from "vuex";
+  const store = useStore();
+  
+  console.log(store.state.home.count);
+  
+  function increment() {
+    store.dispatch("home/incrementCountAction");
+  }
+  function changeRootName() {
+    store.dispatch("home/changeRootName", "the shy");
+  }
+  </script>
+  ```
+
+
+
+
+
+
+
