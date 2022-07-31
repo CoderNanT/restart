@@ -2480,7 +2480,282 @@
 
 
 
+# Pinia
+
+## 什么是Pinia呢
+
+- Pinia（发音为/piːnjʌ/，如英语中的“peenya”）是最接近piña（西班牙语中的菠萝）的词
+  -  Pinia开始于大概2019年，最初是作为一个实验**为Vue重新设计状态管理**，让它用起来像**组合式API（Composition API）**
+  - 从那时到现在，最初的设计原则依然是相同的，并且目前同时兼容Vue2、Vue3，也并不要求你使用Composition API
+  - Pinia本质上依然是一个**状态管理的库**，用于**跨组件、页面进行状态共享**
 
 
 
+## Pinia和Vuex的区别
 
+- 那么我们不是已经有Vuex了吗？为什么还要用Pinia呢？
+  - Pinia 最初是为了**探索 Vuex 的下一次迭代**会是什么样子，结合了 **Vuex 5 核心团队**讨论中的许多想法
+  - 最终，团队意识到**Pinia已经实现了Vuex5中大部分内容**，所以最终**决定用Pinia来替代Vuex**
+  - 与 Vuex 相比，Pinia 提供了一个**更简单的 API，具有更少的仪式**，提供了 **Composition-API 风格的 API**
+  - 最重要的是，在**与 TypeScript 一起使用时具有可靠的类型推断支持**
+
+- 和Vuex相比，Pinia有很多的优势
+  - 比如 mutations 不再存在
+    - 他们经常被认为是 **非常冗长**
+    - 他们最初带来了 devtools 集成，但这不再是问题
+  - 更友好的TypeScript支持，Vuex之前对TS的支持很不友好
+  - 不再有 modules 的嵌套结构
+    - 你可以灵活使用每一个store，它们是通过扁平化的方式来相互使用的
+  - 也不再有命名空间的概念，不需要记住它们的复杂关系
+
+
+
+## 认识Store
+
+- 什么是Store
+  - 一个 Store （如 Pinia）是一个**实体**，它会持有为绑定到你**组件树的状态和业务逻辑**，也就是保存了全局的状态
+  - 它有点像始终存在，并且**每个人都可以读取和写入的组件**
+  - 你可以在你的应用程序中**定义任意数量的 Store 来管理你的状态**
+
+- Store有三个核心概念
+  - **state、getters、actions**
+  - 等同于组件的data、computed、methods
+  -  一旦 store 被实例化，你就可以**直接在 store 上访问 state、getters 和 actions** 中定义的任何属性
+
+
+
+## 定义一个Store
+
+- 我们需要知道 Store 是**使用 defineStore()** 定义的
+
+- 并且它需要一个**唯一名称**，作为第一个参数传递
+
+- 这个 name，也称为 id，是必要的，Pinia 使用它来将 store 连接到 devtools
+
+- 返回的函数统一使用 useX 作为命名方案，这是约定的规范
+
+  ```js
+  // src/stores/index.js
+  import { createPinia } from "pinia";
+  
+  const pinia = createPinia();
+  export default pinia;
+  
+  
+  // src/stores/home.js
+  import { defineStore } from "pinia";
+  
+  const useHome = defineStore("home", {
+    state: () => ({
+      name: "shy",
+      age: 18,
+    }),
+  });
+  export default useHome;
+  
+  
+  // src/main.js
+  import { createApp } from "vue";
+  import App from "./App.vue";
+  import pinia from "./stores";
+  
+  createApp(App).use(pinia).mount("#app");
+  ```
+
+- Store 在它被使用之前是不会创建的，我们可以通过调用**use函数**来使用 Store
+
+  ```vue
+  <template>
+    <div class="home">
+      <h1>name: {{ homeStore.name }}</h1>
+      <h1>age: {{ homeStore.age }}</h1>
+    </div>
+  </template>
+  
+  <script setup>
+  import useHome from "@/stores/home";
+  
+  const homeStore = useHome();
+  </script>
+  ```
+
+- 注意 Store 获取到后不能被解构，那么会失去响应式
+
+  - 为了从 Store 中提取属性同时保持其响应式，您需要使用**storeToRefs()**
+
+  ```vue
+  <template>
+    <div class="home">
+      <h1>name: {{ name }}</h1>
+      <h1>age: {{ age }}</h1>
+      <button @click="incrementAge">incrementAge + 1</button>
+    </div>
+  </template>
+  
+  <script setup>
+  import useHome from "@/stores/home";
+  import { toRefs } from "vue";
+  import { storeToRefs } from "pinia";
+  
+  let homeStore = useHome();
+  // let { name, age } = homeStore;
+  // let { name, age } = toRefs(homeStore);
+  let { name, age } = storeToRefs(homeStore);
+  
+  function incrementAge() {
+    homeStore.age++;
+  }
+  </script>
+  ```
+
+
+
+## 操作State
+
+- 读取和写入 state
+
+  - 默认情况下，您可以通过 store 实例访问状态来直接读取和写入状态
+
+  ```js
+  const homeStore = useHome();
+  
+  homeStore.name = 'the shy'
+  homeStore.age++
+  ```
+
+- 重置 State
+
+  - 可以通过调用 store 上的 $reset() 方法将状态 重置 到其初始值
+
+  ```js
+  const homeStore = useHome();
+  
+  homeStore.$reset();
+  ```
+
+- 改变 State
+
+  - 除了直接用 store.age++ 修改 store，你还可以调用 $patch 方法
+  - 它允许您使用部分 state 对象**同时应用多个更改**
+
+  ```js
+  const homeStore = useHome();
+  
+  homeStore.$patch({ name: "the shy", age: 24 });
+  ```
+
+
+
+## 认识和定义Getters
+
+- Getters相当于Store的计算属性
+
+  - 它们可以用 defineStore() 中的 **getters 属性**定义
+  - getters中可以**定义接受一个state作为参数的函数**
+
+  ```js
+  import { defineStore } from "pinia";
+  
+  const useHome = defineStore("home", {
+    state: () => ({
+      name: "shy",
+      age: 18,
+      count: 10,
+    }),
+    getters: {
+      doubleCount(state) {
+        return state.count * 2;
+      },
+      doubleCountAddOne() {
+        // this是 store 实例
+        return this.doubleCount + 1;
+      },
+      printLog() {
+        return function (name, age) {
+          return `name:${name} age:${age}`;
+        };
+      },
+    },
+  });
+  
+  export default useHome;
+  ```
+
+
+
+## 访问Getters
+
+- 访问当前store的Getters
+
+  ```js
+  import useHome from "@/stores/home";
+  
+  const homeStore = useHome();
+  console.log(homeStore.doubleCount);
+  console.log(homeStore.doubleCountAddOne);
+  ```
+
+- Getters中访问自己的其他Getters
+
+  - 可以通过**this来访问到当前store实例的所有其他属性**
+
+  ```js
+  getters: {
+    doubleCountAddOne() {
+      return this.doubleCount + 1;
+    },
+  },
+  ```
+
+- 访问其他store的Getters
+
+  ```js
+  import useUser from './user'
+  getters: {
+    showMessage(state) {
+      const userStore = useUser()
+      return `name:${userStore.name}-count:${state.count}`
+    },
+  },
+  ```
+
+
+
+## 认识和定义Actions
+
+- Actions 相当于组件中的 methods
+
+  - 可以使用 defineStore() 中的 **actions 属性**定义，并且它们非常适合定义业务逻辑
+
+- 和getters一样，在action中可以通过**this访问整个store实例**的所有操作
+
+  ```js
+  actions: {
+    increment() {
+      this.count++;
+    },
+    incrementNum(num) {
+  		this.count += num;
+    },
+  }
+  ```
+
+  ```vue
+  <template>
+    <div class="home">
+      <h2>count: {{ homeStore.count }}</h2>
+      <button @click="changeState">修改state</button>
+    </div>
+  </template>
+  
+  <script setup>
+  import useHome from "@/stores/home";
+  
+  const homeStore = useHome();
+  
+  function changeState() {
+    // homeStore.increment()
+    homeStore.incrementNum(10);
+  }
+  </script>
+  ```
