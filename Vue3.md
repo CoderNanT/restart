@@ -2759,3 +2759,297 @@
   }
   </script>
   ```
+
+
+
+# 高级特性
+
+## 认识自定义指令
+
+- 在Vue的模板语法中我们学习过各种各样的指令：v-show、v-for、v-model等等，除了使用这些指令之外，**Vue也允许我们来自定义自己的指令**
+  - 注意：在Vue中，**代码的复用和抽取主要还是通过组件**
+  - 通常在某些情况下，你需要对**DOM元素进行底层操作**，这个时候就会用到**自定义指令**
+
+- 自定义指令分为两种：
+
+  - 自定义局部指令：组件中通过 **directives 选项**，只能在当前组件中使用
+  - 自定义全局指令：app的 **directive 方法**，可以在任意组件中被使用
+
+  ```vue
+  <template>
+    <div class="app">
+      <h1 v-addContent1></h1>
+      <h1 v-addContent2></h1>
+      <h1 v-addContent3></h1>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    directives: {
+      addContent1: {
+        mounted(el) {
+          el.textContent = "哈哈哈哈";
+        },
+      },
+    },
+  };
+  </script>
+  
+  <script setup>
+  // v后面一个字母需要大写 (vaddContent2) 会报错
+  const vAddContent2 = {
+    mounted(el) {
+      el.textContent = "呵呵呵呵";
+    },
+  };
+  </script>
+  ```
+
+  ```js
+  import { createApp } from "vue";
+  import App from "./01_自定义指令/App.vue";
+  
+  const app = createApp(App);
+  
+  app.directive("addContent3", {
+    mounted(el) {
+      el.textContent = "嘿嘿嘿嘿";
+    },
+  });
+  app.mount("#app");
+  ```
+
+
+
+## 指令的生命周期
+
+- 一个指令定义的对象，Vue提供了如下的几个钩子函数
+
+  - created：在绑定元素的 attribute 或事件监听器被应用之前调用
+  - beforeMount：当指令第一次绑定到元素并且在挂载父组件之前调用
+  - mounted：在绑定元素的父组件被挂载后调用
+  - beforeUpdate：在更新包含组件的 VNode 之前调用
+  - updated：在包含组件的 VNode **及其子组件的 VNode** 更新后调用
+  - beforeUnmount：在卸载绑定元素的父组件之前调用
+  - unmounted：当指令与元素解除绑定且父组件已卸载时，只调用一次
+
+  ```vue
+  <template>
+    <div class="app">
+      <button @click="counter++">+1</button>
+      <button @click="showTitle = false">hide</button>
+      <h1 v-if="showTitle" class="title" v-count>当前计数: {{ counter }}</h1>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref } from "vue";
+  
+  const counter = ref(0);
+  const showTitle = ref(true);
+  
+  const vCount = {
+    created() {
+      console.log("created");
+    },
+    beforeMount() {
+      console.log("beforeMount");
+    },
+    mounted() {
+      console.log("mounted");
+    },
+    beforeUpdate() {
+      console.log("beforeUpdate");
+    },
+    updated() {
+      console.log("updated");
+    },
+    beforeUnmount() {
+      console.log("beforeUnmount");
+    },
+    unmounted() {
+      console.log("unmounted");
+    },
+  };
+  </script>
+  ```
+
+
+
+## 指令的参数和修饰符
+
+- 如果我们指令需要**接受一些参数或者修饰符**应该如何操作呢
+
+  - argument 是参数的名称
+  - AAA.BBB 是修饰符的名称
+  - message 是传入的具体的值
+
+- 在我们的生命周期中，我们可以**通过 bindings 获取到对应的内容**
+
+  ```vue
+  <template>
+    <div class="app">
+      <button @click="counter++">+1</button>
+  
+      <!-- 1.参数-修饰符-值 -->
+      <h1 v-replace:argument.AAA.BBB="message">哈哈哈哈</h1>
+  
+      <!-- 2.价格拼接单位符号 -->
+      <h1 v-unit>{{ 1000 }}</h1>
+      <h1 v-unit="'$'">{{ 2000 }}</h1>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref } from "vue";
+  
+  const counter = ref(0);
+  
+  const message = "你好啊, 李银河";
+  
+  const vReplace = {
+    mounted(el, bindings) {
+      console.log(bindings);
+      el.textContent = bindings.value;
+    },
+  };
+  
+  const vUnit = {
+    mounted(el, bindings) {
+      const defaultText = el.textContent;
+      let unit = bindings.value;
+      if (!unit) {
+        unit = "¥";
+      }
+      el.textContent = unit + defaultText;
+    },
+  };
+  </script>
+  ```
+
+
+
+## 认识Teleport
+
+- 在组件化开发中，我们**封装一个组件A**，在**另外一个组件B中使用**
+  - 那么**组件A中template的元素**，会**被挂载到组件B中template**的某个位置
+  - 最终我们的应用程序会形成**一颗DOM树结构**
+- 但是某些情况下，我们希望**组件不是挂载在这个组件树上**的，可能是**移动到Vue app之外的其他位置**
+  - 比如**移动到body元素**上，或者我们**有其他的div#app之外的元素**上
+  - 这个时候我们就可以**通过teleport来完成**
+
+- Teleport是什么呢
+
+  - 它是一个**Vue提供的内置组件**，类似于react的Portals
+  - teleport翻译过来是心灵传输、远距离运输的意思
+    - 它有两个属性
+      - to：指定将其中的内容移动到的目标元素，可以使用选择器
+      - disabled：是否禁用 teleport 的功能
+
+  ```vue
+  <template>
+    <div class="app">
+  
+      <div class="content">
+        <teleport to="body">
+          <h1>哈哈哈哈哈</h1>
+        </teleport>
+      </div>
+  
+      <div class="content">
+        <teleport to="#abc">
+          <h1>呵呵呵呵呵</h1>
+        </teleport>
+      </div>
+      
+    </div>
+  </template>
+  
+  <!--index.html-->
+  <body>
+      <div id="app"></div>
+      <div id="abc"></div>
+  </body>
+  ```
+
+
+
+## 异步组件和Suspense
+
+注意：**目前（2021-08-09）Suspense显示的是一个实验性的特性，API随时可能会修改**
+
+- Suspense是一个内置的全局组件，该组件有两个插槽
+
+  - default：如果 default 可以显示，那么显示 default 的内容
+  - fallback：如果 default 无法显示，那么会显示 fallback 插槽的内容
+
+  ```vue
+  <template>
+    <div class="app">
+      <suspense>
+        <template #default>
+          <async-home />
+        </template>
+        <template #fallback>
+          <h1>加载中</h1>
+        </template>
+      </suspense>
+    </div>
+  </template>
+  
+  <script setup>
+  import { defineAsyncComponent } from "vue";
+  
+  let AsyncHome = defineAsyncComponent(() => import("./AsyncHome.vue"));
+  </script>
+  
+  <!-- AsyncHome.vue -->
+  <template>
+    <div class="AsyncHome">
+      <h2>AsyncHome</h2>
+    </div>
+  </template>
+  ```
+
+
+
+## 认识Vue插件
+
+- 通常我们**向Vue全局添加一些功能**时，会采用**插件的模式，它有两种编写方式**
+  - 对象类型：一个对象，但是必须包含一个 **install 的函数**，该**函数会在安装插件时**执行
+  - 函数类型：一个function，这个函数会在**安装插件时自动执行**
+
+- 插件可以**完成的功能没有限制**，比如下面的几种都是可以的
+
+  - **添加全局方法或者 property**，通过把它们添加到 **config.globalProperties** 上实现
+  - **添加全局资源：指令/过滤器/过渡**等
+  - 通过**全局 mixin** 来添加**一些组件选项**
+  - **一个库，提供自己的 API**，同时**提供上面提到的一个或多个功能**
+
+  ```js
+  export default function plugin(app) {
+    // 方式一: 传入对象的情况
+    app.use({
+      install: function (app) {
+        console.log("传入对象的install被执行:", app);
+      },
+    });
+    // 方式二: 传入函数的情况
+    app.use(function (app) {
+      console.log("传入函数被执行:", app);
+    });
+  }
+  
+  // main.js
+  import { createApp } from "vue";
+  import App from "./02_内置组件补充/App.vue";
+  import plugin from "./03_安装插件/plugin";
+  
+  const app = createApp(App);
+  
+  plugin(app);
+  
+  app.mount("#app");
+  ```
+
