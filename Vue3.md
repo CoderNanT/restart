@@ -3053,3 +3053,598 @@
   app.mount("#app");
   ```
 
+
+
+## 认识h函数
+
+- Vue推荐在绝大数情况下**使用模板**来创建你的HTML，然后一些特殊的场景，你真的需要**JavaScript的完全编程的能力**，这个时候你可以使用 **渲染函数** ，它**比模板更接近编译器**
+- 前面我们讲解过**VNode和VDOM**的概念：
+  - Vue在生成真实的DOM之前，会将**我们的节点转换成VNode**，而VNode组合在一起形成**一颗树结构**，就是**虚拟DOM（VDOM）**
+  - 事实上，我们之前编写的 template 中的 HTML 最终也是**使用渲染函数**生成**对应的VNode**
+  - 那么，如果你想充分的利用JavaScript的编程能力，我们可以自己来**编写 createVNode 函数**，生成**对应的VNode**
+
+- 那么我们应该怎么来做呢？**使用 h()函数：**
+  - **h() 函数**是一个用于**创建 vnode 的一个函数**
+  - 其实更准确的命名是 **createVNode() 函数**，但是为了简便在Vue将之**简化为 h() 函数**
+
+
+
+## h()函数 如何使用呢
+
+- h()函数 如何使用呢？它接受三个参数
+  - 参数一
+    - {String | Object | Function} tag
+    - 一个 HTML 标签名、一个组件、一个异步组件   或   一个函数式组件。必需的
+  - 参数二
+    - {Object} props
+    - 与 attribute、prop 和事件相对应的对象。这会在模板中用到。可选的
+  - 参数三
+    - {String | Array | Object} children
+    - 子 VNodes, 使用 h() 构建，或使用字符串获取 "文本 VNode" 或者，有插槽的对象。可选的
+
+- 注意事项
+
+  - 如果没有**props**，那么通常可以**将children作为第二个参数传入**
+  - 如果会产生歧义，可以**将null作为第二个参数传入**，将**children作为第三个参数传入**
+
+  ```vue
+  <!-- vue2 -->
+  <script>
+    import { h } from "vue";
+  
+    export default {
+      render() {
+        return h("div", { className: "app" }, [
+          h("h2", { className: "title" }, "我是标题"),
+          h("p", { className: "content" }, "我是内容, 哈哈哈"),
+        ]);
+      },
+    };
+  </script>
+  
+  <!-- vue3 setup() -->
+  <script>
+    import { h, ref } from "vue";
+    import Home from "./Home.vue";
+  
+    export default {
+      setup() {
+        const counter = ref(0);
+  
+        const increment = () => {
+          counter.value++;
+        };
+        const decrement = () => {
+          counter.value--;
+        };
+  
+        return () =>
+        h("div", { className: "app" }, [
+          h("h2", null, `当前计数: ${counter.value}`),
+          h("button", { onClick: increment }, "+1"),
+          h("button", { onClick: decrement }, "-1"),
+          h(Home),
+        ]);
+      },
+    };
+  </script>
+  
+  <!-- vue3 script setup -->
+  <template>
+  	<render />
+  </template>
+  <script setup>
+    import { ref, h } from "vue";
+    import Home from "./Home.vue";
+  
+    const counter = ref(0);
+  
+    const increment = () => {
+      counter.value++;
+    };
+    const decrement = () => {
+      counter.value--;
+    };
+  
+    const render = () =>
+    h("div", { className: "app" }, [
+      h("h2", null, `当前计数: ${counter.value}`),
+      h("button", { onClick: increment }, "+1"),
+      h("button", { onClick: decrement }, "-1"),
+      h(Home),
+    ]);
+  </script>
+  ```
+
+
+
+## jsx的babel配置
+
+- 如果我们希望**在项目中使用jsx**，那么我们**需要添加对jsx的支持**
+
+  - jsx我们通常会**通过Babel来进行转换**
+  - 对于Vue来说，我们只需要在**Babel中配置对应的插件**即可
+
+- Vue CLI
+
+  - npm install @vue/babel-plugin-jsx -D
+
+  ```js
+  // .babelrc
+  module.exports = {
+    presets: ['@vue/cli-plugin-babel/preset'],
+    plugins:["@vue/babel-preset-jsx"]
+  }
+  ```
+
+- Vite
+
+  - npm install @vitejs/plugin-vue-jsx -D
+
+  ```js
+  // vite.config.js
+  import jsx from "@vitejs/plugin-vue-jsx";
+  export default defineConfig({
+    plugins: [jsx()]
+  });
+  ```
+
+  ```vue
+  <!-- vue2 -->
+  <script lang="jsx">
+  export default {
+    render() {
+      return (
+        <div class="app">
+          <h2>我是标题</h2>
+          <p>我是内容, 哈哈哈</p>
+        </div>
+      );
+    },
+  };
+  </script>
+  
+  <!-- vue3 setup() -->
+  <script lang="jsx">
+    import { ref } from 'vue'
+    import About from './About.vue'
+  
+    export default {
+      setup() {
+        const counter = ref(0)
+  
+        const increment = () => {
+          counter.value++
+        }
+        const decrement = () => {
+          counter.value--
+        }
+  
+  
+        return () => (
+          <div class="app">
+            <h2>当前计数: { counter.value }</h2>
+            <button onClick={ increment }>+1</button>
+            <button onClick={ decrement }>-1</button>
+            <About/>
+          </div>
+        )
+      }
+    }
+  </script>
+  
+  <!-- script setup -->
+  <template>
+    <jsx />
+  </template>
+  <script lang="jsx" setup>
+  import { ref } from "vue";
+  import About from "./About.vue";
+  
+  const counter = ref(0);
+  
+  const increment = () => {
+    counter.value++;
+  };
+  const decrement = () => {
+    counter.value--;
+  };
+  
+  const jsx = () => (
+    <div class="app">
+      <h2>当前计数: {counter.value}</h2>
+      <button onClick={increment}>+1</button>
+      <button onClick={decrement}>-1</button>
+      <About />
+    </div>
+  );
+  </script>
+  ```
+
+
+
+## 认识动画
+
+- 在开发中，我们想要给一个元素或者组件的**显示和消失添加某种过渡动画**，可以很好的**增加用户体验**
+  - React框架本身并**没有提供任何动画相关的API**，所以在React中使用过渡动画我们需要使用一个**第三方库 react-transitiongroup**
+  - Vue中为我们提供**一些内置组件和对应的API**来完成动画，利用它们我们可以**方便的实现过渡动画效果**
+
+
+
+## Vue的transition动画
+
+- Vue **提供了 transition 的封装组件**，在下列情形中，可以给任何元素和组件添加进入/离开过渡
+
+  - 条件渲染 (使用 v-if) 条件展示 (使用 v-show)
+  - 动态组件
+  - 组件根节点
+
+  ```vue
+  <template>
+    <div class="app">
+      <div>
+        <button @click="isShow = !isShow">切换</button>
+      </div>
+  
+      <transition name="shy">
+        <h2 v-show="isShow">哈哈哈哈</h2>
+      </transition>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref } from "vue";
+  
+  const isShow = ref(false);
+  </script>
+  
+  <style scoped>
+  h2 {
+    display: inline-block;
+  }
+  
+  .shy-enter-from,
+  .shy-leave-to {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  
+  .shy-enter-to,
+  .shy-leave-from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .shy-enter-active,
+  .shy-leave-active {
+    transition: all 2s ease;
+  }
+  </style>
+  ```
+
+
+
+## transition组件的原理
+
+- 我们会发现，Vue自动给h2元素添加了动画，这是什么原因呢
+  - 当插入或删除包含在 transition 组件中的元素时，Vue 将会做以下处理
+    - 自动检查**目标元素是否应用了CSS过渡或者动画**，如果有，那么**在恰当的时机添加/删除 CSS类名**
+    - 如果 transition 组件提供了**JavaScript钩子函数**，这些钩子函数将在恰当的时机被调用
+    - 如果**没有找到JavaScript钩子并且也没有检测到CSS过渡/动画，DOM插入、删除操作将会立即执行**
+- 那么都会添加或者删除哪些class呢
+
+
+
+## 过渡动画class
+
+- 我们会发现上面提到了很多个class，事实上Vue就是帮助我们在这些class之间来回切换完成的动画
+  - v-enter-from：定义进入过渡的开始状态
+    - 在元素被插入之前生效，在元素被插入之后的下一帧移除
+  - v-enter-active：定义进入过渡生效时的状态
+    - 在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡/动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数
+  - v-enter-to：定义进入过渡的结束状态
+    - 在元素被插入之后下一帧生效 (与此同时 v-enter-from 被移除)，在过渡/动画完成之后移除
+  - v-leave-from：定义离开过渡的开始状态
+    - 在离开过渡被触发时立刻生效，下一帧被移除
+  - v-leave-active：定义离开过渡生效时的状态
+    - 在整个离开过渡的阶段中应用，在离开过渡被触发时立刻生效，在过渡/动画完成之后移除。这个类可以被用来定义离开过渡的过程时间，延迟和曲线函数
+  - v-leave-to：离开过渡的结束状态
+    - 在离开过渡被触发之后下一帧生效 (与此同时 v-leave-from 被删除)，在过渡/动画完成之后移除
+
+
+
+## class添加的时机和命名规则
+
+![](https://cn.vuejs.org/assets/transition-classes.f0f7b3c9.png)
+
+- class的name命名规则如下
+  - 如果我们使用的是一个没有 name 的 transition，那么所有的 class 是以 v- 作为默认前缀
+  - 如果我们添加了一个 name 属性，比如 transtion name="shy"，那么所有的class会以 shy- 开头
+
+
+
+## 过渡css动画
+
+- 前面我们是**通过transition来实现的动画效果**，另外我们也**可以通过animation来实现**
+
+  ```vue
+  <template>
+    <div class="app">
+      <div>
+        <button @click="isShow = !isShow">切换</button>
+      </div>
+  
+      <transition name="shy">
+        <h2 v-if="isShow">
+          要是有些事我没说，地坛，你别以为是我忘了，我什么也没忘，但是有些事只适合收藏。不能说，也不能想，却又不能忘。它们不能变成语言，它们无法变成语言，一旦变成语言就不再是它们了。它们是一片朦胧的温馨与寂寥，是一片成熟的希望与绝望，它们的领地只有两处：心与坟墓。比如说邮票，有些是用于寄信的，有些仅仅是为了收藏。
+        </h2>
+      </transition>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref } from "vue";
+  
+  const isShow = ref(false);
+  </script>
+  
+  <style scoped>
+  h2 {
+    display: inline-block;
+  }
+  
+  .shy-enter-active {
+    animation: animation 2s ease;
+  }
+  
+  .shy-leave-active {
+    animation: animation 2s ease reverse;
+  }
+  
+  @keyframes animation {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+  
+    50% {
+      transform: scale(1.2);
+      opacity: 0.5;
+    }
+  
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  </style>
+  ```
+
+
+
+## 同时设置过渡和动画（一般不设置）
+
+- Vue为了**知道过渡的完成**，内部是**在监听 transitionend 或 animationend**，到底使用哪一个取决于元素应用的CSS规则
+
+  - 如果我们**只是使用了其中的一个**，那么**Vue能自动识别类型并设置监听**
+
+- 但是如果我们同时使用了过渡和动画呢
+
+  - 并且在这个情况下可能**某一个动画执行结束时**，**另外一个动画还没有结束**
+  - 在这种情况下，我们可以**设置 type 属性为 animation 或者 transition** 来明确的告知Vue监听的类型
+
+  ```vue
+  <transition type="transition">
+  	<h2 v-if="isShow">哈哈哈哈</h2>
+  </transition>
+  ```
+
+
+
+## 显示的指定动画时间
+
+- 我们也可以显示的来**指定过渡的时间**，通过 **duration 属性**
+
+- duration可以设置两种类型的值
+
+  - **number类型**：同时设置进入和离开的过渡时间
+  - **object类型**：分别设置进入和离开的过渡时间
+
+  ```vue
+  <transition :duration="1000">
+  	<h2 v-if="isShow">哈哈哈哈</h2>
+  </transition>
+  
+  <transition :duration="{enter:800, leave:1000}">
+  	<h2 v-if="isShow">哈哈哈哈</h2>
+  </transition>
+  ```
+
+
+
+## 过渡的模式mode
+
+- 我们会发现 Hello World 和 你好啊，李银河是**同时存在**的
+
+  - 这是因为默认情况下**进入和离开动画**是同时发生的
+  - 如果确实我们希望达到这个的效果，那么是没有问题
+
+- 但是如果我们**不希望同时执行进入和离开动画**，那么我们需要设置transition的**过渡模式**
+
+  - in-out: 新元素先进行过渡，完成之后当前元素过渡离开
+  - out-in: 当前元素先进行过渡，完成之后新元素过渡进入
+
+  ```vue
+  <template>
+    <div class="app">
+      <div>
+        <button @click="isShow = !isShow">切换</button>
+      </div>
+  
+      <transition name="shy" mode="out-in">
+        <h2 v-if="isShow">哈哈哈</h2>
+        <h2 v-else>呵呵呵</h2>
+      </transition>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref } from "vue";
+  
+  const isShow = ref(true);
+  </script>
+  
+  <style scoped>
+  h2 {
+    display: inline-block;
+  }
+  
+  /* transition */
+  .shy-enter-from,
+  .shy-leave-to {
+    opacity: 0;
+  }
+  
+  .shy-enter-to,
+  .shy-leave-from {
+    opacity: 1;
+  }
+  
+  .shy-enter-active {
+    animation: shyAnim 2s ease;
+    transition: opacity 2s ease;
+  }
+  
+  .shy-leave-active {
+    animation: shyAnim 2s ease reverse;
+    transition: opacity 2s ease;
+  }
+  
+  @keyframes shyAnim {
+    0% {
+      transform: scale(0);
+    }
+  
+    50% {
+      transform: scale(1.2);
+    }
+  
+    100% {
+      transform: scale(1);
+    }
+  }
+  </style>
+  ```
+
+
+
+## appear初次渲染
+
+- 默认情况下，**首次渲染的时候是没有动画的**，如果我们**希望给他添加上去动画，那么就可以增加另外一个属性appear**
+
+  ```vue
+  <transition appear>
+  	<h2 v-if="isShow">哈哈哈哈</h2>
+  </transition>
+  ```
+
+
+
+## 认识列表的过渡
+
+- 目前为止，过渡动画我们只要是**针对单个元素或者组件**的
+
+  - 要么是**单个节点**
+  - 要么是**同一时间渲染多个节点中的一个**
+
+- 那么如果希望渲染的是**一个列表**，并且**该列表中添加删除数据也希望有动画执行**呢
+
+  - 这个时候我们要**使用 transition-group 组件**来完成
+
+- 使用 transition-group 有如下的特点
+
+  - 默认情况下，它**不会渲染一个元素的包裹器**，但是你可以**指定一个元素并以 tag attribute 进行渲染**
+  - **过渡模式不可用**，因为我们不再相互切换特有的元素
+  - 内部元素总是**需要提供唯一的 key attribute 值**
+  - **CSS 过渡的类将会应用在内部的元素**中，而**不是这个组/容器本身**
+
+  ```vue
+  <template>
+    <div class="app">
+      <button @click="addNumber">添加数字</button>
+      <button @click="removeNumber">删除数字</button>
+      <button @click="shuffleNumber">打乱数字</button>
+  
+      <transition-group tag="div" name="shy">
+        <template v-for="item in nums" :key="item">
+          <span>{{ item }}</span>
+        </template>
+      </transition-group>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref } from "vue";
+  import { shuffle } from "underscore";
+  
+  const nums = ref([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  
+  const addNumber = () => {
+    nums.value.splice(randomIndex(), 0, nums.value.length);
+  };
+  
+  const removeNumber = () => {
+    nums.value.splice(randomIndex(), 1);
+  };
+  
+  const shuffleNumber = () => {
+    nums.value = shuffle(nums.value);
+  };
+  
+  const randomIndex = () => {
+    return Math.floor(Math.random() * nums.value.length);
+  };
+  </script>
+  
+  <style scoped>
+  span {
+    margin-right: 10px;
+    display: inline-block;
+  }
+  
+  .shy-enter-from,
+  .shy-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  
+  .shy-enter-to,
+  .shy-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .shy-enter-active,
+  .shy-leave-active {
+    transition: all 2s ease;
+  }
+  
+  .shy-leave-active {
+    position: absolute;
+  }
+  
+  /* 针对其他移动的阶段需要的动画 */
+  .shy-move {
+    transition: all 2s ease;
+  }
+  </style>
+  ```
+
+- 在上面的案例中**虽然新增的或者删除的节点是有动画**的，但是**对于哪些其他需要移动的节点是没有动画**的
+
+  - 我们可以通过使用一个**新增的 v-move 的class**来完成动画
+  - 它会**在元素改变位置的过程**中应用
+  - 像之前的名字一样，我们可以**通过name来自定义前缀**
+
+
+
