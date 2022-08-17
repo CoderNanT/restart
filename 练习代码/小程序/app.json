@@ -1,5 +1,5 @@
 {
-  "pages": ["pages/index/index", "pages/my/my"],
+  "pages": ["pages/index/index", "pages/my/my", "pages/01_register_page/index"],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ff8189",

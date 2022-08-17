@@ -1,0 +1,15 @@
+<!--pages/01_register_page/index.wxml-->
+<view>
+  <view>当前计数: {{counter}}</view>
+  <button size="mini" type="primary" bindtap="increment">+1</button>
+  <button size="mini" type="primary" bindtap="decrement">-1</button>
+</view>
+
+<view>
+  <text>{{info.name}}</text>
+  <text>{{info.age}}</text>
+</view>
+
+<block wx:for="{{100}}" wx:key="*this">
+  <view>内容{{item}}</view>
+</block>

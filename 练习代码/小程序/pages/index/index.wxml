@@ -1,1 +1,10 @@
 <!--pages/index/index.wxml-->
+<view>{{ token }}</view>
+
+<view class="btn-wrap">
+  <block wx:for="{{ pages }}" wx:key="*this">
+    <button class="btn" size="mini" type="primary" bindtap="onBtnClick" data-item="{{item}}">
+      {{ item.name }}
+    </button>
+  </block>
+</view>
