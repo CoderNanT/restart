@@ -1129,7 +1129,7 @@ console.log(b); // 6
 
 - 显示
 
-![](https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/webkitflow.png)
+![](https://web-dev.imgix.net/image/T4FyVKpzu4WKF1kBNvXepbi08t52/S9TJhnMX1cu1vrYuQRqM.png?auto=format&w=650)
 
 
 
