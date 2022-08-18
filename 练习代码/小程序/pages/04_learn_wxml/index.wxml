@@ -1,0 +1,59 @@
+<!--pages/04_learn_wxml/index.wxml-->
+<!-- 1.Mustache语法 -->
+<view>------------------ Mustache语法 ------------------</view>
+<view>{{ message }}</view>
+<view>{{ firstname + " " + lastname }}</view>
+<view>{{ date }}</view>
+
+<!-- 2.条件判断 -->
+<view>------------------ 条件判断 ------------------</view>
+<view wx:if="{{score > 90}}">优秀</view>
+<view wx:elif="{{score > 80}}">良好</view>
+<view wx:elif="{{score >= 60}}">及格</view>
+<view wx:else>不及格</view>
+
+<!-- 3.hidden属性 -->
+<!-- 基本使用 -->
+<view>------------------ hidden属性 ------------------</view>
+<view hidden>我是hidden的view</view>
+
+<!-- 切换案例 -->
+<view>------------------ 切换案例 ------------------</view>
+<button bindtap="onChangeTap">切换</button>
+<view hidden="{{isHidden}}">哈哈哈哈</view>
+<view wx:if="{{!isHidden}}">呵呵呵呵</view>
+
+<!-- 4.列表展示 -->
+<!-- 4.1.wx:for基本使用 -->
+<view>------------------ wx:for基本使用 ------------------</view>
+<view class="books">
+  <view wx:for="{{books}}" wx:key="id">
+    <!-- item: 每项内容, index: 每项索引 -->
+    {{item.name}}-{{item.price}}
+  </view>
+</view>
+
+<!-- 遍历数字 -->
+<view>------------------ 遍历数字 ------------------</view>
+<view class="number">
+  <view wx:for="{{10}}" wx:key="*this">
+    {{ item }}
+  </view>
+</view>
+
+
+<!-- 遍历字符串 -->
+<view>------------------ 遍历字符串 ------------------</view>
+<view class="str">
+  <view wx:for="coderwhy" wx:key="*this">
+    {{ item }}
+  </view>
+</view>
+
+<!-- 4.2. 细节补充: block-item/index名称-key的使用 -->
+<view>------------------ 自定义item/index名称 ------------------</view>
+<view class="books">
+  <block wx:for="{{books}}" wx:key="id" wx:for-item="book" wx:for-index="i">
+    <view>{{ book.name }}-{{ book.price }}-{{ i }}</view>
+  </block>
+</view>

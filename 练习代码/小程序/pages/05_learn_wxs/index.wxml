@@ -1,0 +1,19 @@
+<!--pages/05_learn_wxs/index.wxml-->
+<!-- 1.方式一: 标签 -->
+<!-- <wxs module="format">
+  function Price(price) {
+    return "¥" + (price + 1)
+  }
+
+  // 必须导出后, 才能被其他地方调用: 必须使用CommonJS导出
+  module.exports = { Price: Price }
+</wxs> -->
+
+<!-- 2.方式二: 独立的文件, 通过src引入 -->
+<wxs module="format" src="/utils/format.wxs"></wxs>
+
+<view>
+  <block wx:for="{{10}}" wx:key="*this">
+    <view>{{format.Price(item)}}</view>
+  </block>
+</view>
