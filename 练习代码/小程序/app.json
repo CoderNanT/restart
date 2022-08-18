@@ -1,5 +1,10 @@
 {
-  "pages": ["pages/index/index", "pages/my/my", "pages/01_register_page/index"],
+  "pages": [
+    "pages/index/index",
+    "pages/my/my",
+    "pages/01_register_page/index",
+    "pages/02_common_component/index"
+  ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ff8189",

@@ -1,0 +1,69 @@
+<!--pages/02_common_component/index.wxml-->
+<view>------------------ input组件 ------------------</view>
+<input type="text" model:value="{{ message }}" />
+
+<view>------------------ scroll-view组件 ------------------</view>
+<!-- 上下滚动(y轴) -->
+<scroll-view class="container scroll-y" scroll-y>
+  <block wx:for="{{viewColors}}" wx:key="*this">
+    <view class="item" style="background: {{item}};">{{item}}</view>
+  </block>
+</scroll-view>
+
+<view>
+  <text decode>&nbsp;</text>
+</view>
+
+<!-- 左右滚动(x轴) -->
+<scroll-view class="container scroll-x" scroll-x enable-flex>
+  <block wx:for="{{viewColors}}" wx:key="*this">
+    <view class="item" style="background: {{item}};">{{item}}</view>
+  </block>
+</scroll-view>
+
+
+<view>------------------ Image组件 ------------------</view>
+<!-- 根目录: /表示根目录 -->
+<!-- 1.图片的基本使用 -->
+<!-- image组件宽度和高度: 320x240 -->
+<image src="/assets/zznh.png" />
+<image src="https://pic3.zhimg.com/v2-9be23000490896a1bfc1df70df50ae32_b.jpg" />
+
+<!-- 2.图片重要的属性: mode -->
+<image src="/assets/zznh.png" mode="aspectFit" />
+<!-- image基本都是设置widthFix -->
+<image src="/assets/zznh.png" mode="widthFix" />
+<image src="/assets/zznh.png" mode="heightFix" />
+
+
+<view>------------------ View组件 ------------------</view>
+<view>哈哈哈</view>
+<view hover-class="active">我是view组件</view>
+
+<view>------------------ button组件 ------------------</view>
+<!-- 1.基本使用 -->
+<button size="mini">size属性</button>
+<button size="mini" type="primary">type属性</button>
+<button size="mini" type="warn">type属性</button>
+<button size="mini" class="btn">自定义属性</button>
+
+<button size="mini" plain>plain属性</button>
+<button size="mini" disabled>disabled属性</button>
+<button size="mini" loading class="btn">loading属性</button>
+<button size="mini" hover-class="active">hover效果</button>
+
+<!-- 2.open-type属性 -->
+<button size="mini" type="primary" open-type="contact">打开会话</button>
+<button size="mini" type="primary" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+  用户信息 - 已废弃
+</button>
+<button size="mini" type="primary" bindtap="getUserInfo">用户信息 - 最新方式</button>
+<button size="mini" type="primary" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">
+  手机号码 - 需要企业认证才行
+</button>
+
+
+<!-- text组件 -->
+<view>------------------ text组件 ------------------</view>
+<text user-select>{{ message }}</text>
+<text decode>&nbsp; &lt; &gt; &amp; &apos; &ensp; &emsp;</text>

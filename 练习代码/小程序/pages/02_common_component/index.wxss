@@ -1,0 +1,20 @@
+/* pages/02_common_component/index.wxss */
+.active {
+  background-color: pink;
+}
+/* scroll-view */
+.container {
+  background-color: orange;
+  height: 150px;
+}
+
+.scroll-x {
+  display: flex;
+}
+
+.item {
+  width: 100px;
+  height: 100px;
+  color: #fff;
+  flex-shrink: 0;
+}
