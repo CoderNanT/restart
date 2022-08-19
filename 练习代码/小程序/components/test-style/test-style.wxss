@@ -1,0 +1,4 @@
+/* components/test-style/test-style.wxss */
+.title {
+  color: pink;
+}
