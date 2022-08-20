@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "my-slot": "/components/slot/slot",
+    "component-behavior": "/components/component-behavior/component-behavior"
+  }
+}

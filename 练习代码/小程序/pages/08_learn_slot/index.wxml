@@ -1,0 +1,21 @@
+<!--pages/08_learn_slot/index.wxml-->
+<!-- 1.单个插槽的使用 -->
+<!-- <my-slot>
+  <text>哈哈哈哈</text>
+</my-slot>
+
+<my-slot>
+  <image src="/assets/zznh.png" mode="widthFix"></image>
+</my-slot>
+
+<my-slot></my-slot> -->
+
+<!-- 2.多个插槽的使用 -->
+<!-- <my-slot>
+  <view slot="left">left</view>
+  <view slot="center">center</view>
+  <view slot="right">right</view>
+</my-slot> -->
+
+<!-- 3.组件的混入、生命周期、页面的生命周期 -->
+<component-behavior />

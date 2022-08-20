@@ -1,0 +1,25 @@
+/* components/slot/slot.wxss */
+.slot-wrap {
+  margin-bottom: 20px;
+}
+
+.default {
+  display: none;
+}
+
+.content:empty + .default {
+  display: block;
+}
+
+.multiple-slot {
+  display: flex;
+  text-align: center;
+}
+
+.left, .right {
+  width: 160rpx;
+}
+
+.center {
+  flex: 1;
+}

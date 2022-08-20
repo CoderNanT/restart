@@ -1,0 +1,23 @@
+<!--components/slot/slot.wxml-->
+
+<!-- 小程序中插槽是不支持默认值的 -->
+<!-- <view class="slot-wrap">
+  <view class="header">Header</view>
+  <view class="content">
+    <slot></slot>
+  </view>
+  <view class="default">默认内容</view>
+  <view class="footer">Footer</view>
+</view> -->
+
+<view class="multiple-slot">
+  <view class="left">
+    <slot name="left"></slot>
+  </view>
+  <view class="center">
+    <slot name="center"></slot>
+  </view>
+  <view class="right">
+    <slot name="right"></slot>
+  </view>
+</view>

@@ -1,9 +1,17 @@
 <!--pages/07_learn_component/index.wxml-->
+
+<!-- 自定义事件 -->
 <section-info title='我与地坛' content='要是有些事我没说，地坛，你别以为是我忘了，我什么也没忘，但是有些事只适合收藏' info='info' bind:titleclick="onSectionTitleClick">
 </section-info>
 
+<!-- 组件的基本使用 -->
 <section-info title='黄金时代' content='在我一生的黄金时代，我有好多奢望。我想爱，想吃，还想在一瞬间变成天上半明半暗的云' info='info'>
 </section-info>
 
+<section-info class="section-info" />
+
+<!-- 测试样式的组件 -->
 <test-style />
 <view class="title">我是 页面 的标题</view>
+
+<button size="mini" type="primary" bindtap="getTheInstance">获取子组件的实例对象</button>
