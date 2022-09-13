@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>05_案例三-计数器实现</title>
+  </head>
+  <script src="../lib/react.js"></script>
+  <script src="../lib/react-dom.js"></script>
+  <script src="../lib/babel.js"></script>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      class App extends React.Component {
+        constructor() {
+          super();
+          this.state = {
+            counter: 0,
+            list: ["星际穿越", "大话西游", "盗梦空间", "少年派"],
+          };
+        }
+
+        increment() {
+          this.setState({ counter: this.state.counter + 1 });
+        }
+
+        decrement() {
+          this.setState({ counter: this.state.counter - 1 });
+        }
+
+        render() {
+          return (
+            <div>
+              <h2>当前计数:{this.state.counter}</h2>
+              <button onClick={this.increment.bind(this)}>+1</button>
+              <button onClick={this.decrement.bind(this)}>-1</button>
+            </div>
+          );
+        }
+      }
+      const root = ReactDOM.createRoot(document.querySelector("#root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>02_JSX转换过程-原生React</title>
+  </head>
+  <script src="../lib/react.js"></script>
+  <script src="../lib/react-dom.js"></script>
+  <body>
+    <div id="root"></div>
+    <script>
+      class App extends React.Component {
+        constructor() {
+          super();
+          this.state = {
+            message: "Hello World",
+          };
+        }
+
+        divClick() {
+          console.log(1);
+        }
+
+        render() {
+          const { message } = this.state;
+
+          const element = React.createElement("div", null,
+            React.createElement("div", {className: "content"},
+              React.createElement("div", {onClick: this.divClick}, message)
+            )
+          );
+
+          console.log(element); // Virtual DOM
+
+          return element;
+        }
+      }
+
+      const root = ReactDOM.createRoot(document.querySelector("#root"));
+      root.render(React.createElement(App, null));
+    </script>
+  </body>
+</html>
