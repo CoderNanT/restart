@@ -1,4 +1,6 @@
-# React的介绍
+# 邂逅React开发
+
+## React的介绍
 
 - React是什么？
   - **React：**用于构建用户界面的 JavaScript 库
@@ -15,7 +17,7 @@
 
 
 
-# React的特点 – 声明式编程
+## React的特点 – 声明式编程
 
 - 声明式编程：
 
@@ -27,7 +29,7 @@
 
 
 
-# React特点 – 组件化开发
+## React特点 – 组件化开发
 
 - 组件化开发：
 
@@ -37,7 +39,7 @@
 
 
 
-# React的特点 – 多平台适配
+## React的特点 – 多平台适配
 
 - 多平台适配：
   - 2013年，React发布之初主要是**开发Web页面**
@@ -46,7 +48,7 @@
 
 
 
-# React的开发依赖
+## React的开发依赖
 
 - 开发React必须依赖三个库：
   - **react：**包含react所必须的核心代码
@@ -64,7 +66,7 @@
 
 
 
-# Babel和React的关系
+## Babel和React的关系
 
 - babel是什么呢？
   - Babel ，又名 Babel.js
@@ -79,7 +81,7 @@
 
 
 
-# React的依赖引入
+## React的依赖引入
 
 - 所以，我们在编写React代码时，这三个依赖都是必不可少的
 
@@ -101,7 +103,7 @@
 
 
 
-# Hello World
+## Hello World
 
 - 第一步：在界面上通过React显示一个Hello World
 
@@ -140,7 +142,7 @@
 
 
 
-# Hello React – 组件化开发
+## Hello React – 组件化开发
 
 - 整个逻辑其实可以看做一个整体，那么我们就可以将其封装成一个组件：
   - 我们说过**root.render 参数**是一个**HTML元素或者一个组件**
@@ -170,7 +172,7 @@
 
 
 
-# 组件化 - 数据依赖
+## 组件化 - 数据依赖
 
 - 组件化问题一：**数据在哪里定义**？
 - 在组件中的数据，我们可以分成两类：
@@ -207,7 +209,7 @@
 
 
 
-# 组件化 – 事件绑定
+## 组件化 – 事件绑定
 
 - 组件化问题二：事件绑定中的this
 
@@ -271,9 +273,9 @@
 
 
 
+# JSX语法
 
-
-# 认识JSX
+## 认识JSX
 
 - 这段element变量的声明右侧赋值的标签语法是什么呢？
 
@@ -298,7 +300,7 @@
 
 
 
-# 为什么React选择了JSX
+## 为什么React选择了JSX
 
 - React认为**渲染逻辑**本质上**与其他UI逻辑**存在内在耦合
   - 比如**UI需要绑定事件**（button、a原生等等）
@@ -314,7 +316,7 @@
 
 
 
-# JSX的使用
+## JSX的使用
 
 -  jsx中的注释
 
@@ -428,7 +430,7 @@
 
 
 
-# JSX的使用 - 绑定属性
+## JSX的使用 - 绑定属性
 
 - jsx绑定属性
 
@@ -488,18 +490,18 @@
 
 
 
-# React事件绑定
+## React事件绑定
 
 - 如果原生DOM添加一个监听事件，我们可以如何操作呢？
-  - 方式一：获取DOM原生，添加监听事件
-  - 方式二：在HTML原生中，直接绑定onclick
+  - 方式一：获取元素DOM，添加监听事件
+  - 方式二：在HTML元素中，直接绑定onclick
 - 在React中是如何操作呢？我们来实现一下React中的事件监听，这里主要有两点不同
   - React 事件的**命名采用小驼峰式（camelCase），而不是纯小写**
   - 我们需要**通过{}传入一个事件处理函数**，这个函数会在事件发生时被执行
 
 
 
-# this的绑定问题
+## this的绑定问题
 
 - 在事件执行后，我们可能需要获取当前类的对象中相关的属性，这个时候需要用到this
 
@@ -590,7 +592,7 @@
 
 
 
-# 事件参数传递
+## 事件参数传递
 
 -  在执行事件函数时，有可能我们需要获取一些参数信息：比如event对象、其他参数
 - 情况一：获取event对象
@@ -643,7 +645,7 @@
 
 
 
-# React条件渲染
+## React条件渲染
 
 * 某些情况下，界面的内容会根据不同的情况显示不同的内容，或者决定是否渲染某部分内容：
   * 在vue中，我们会通过指令来控制：比如v-if、v-show
@@ -708,7 +710,7 @@
 
 
 
-# React列表渲染
+## React列表渲染
 
 - 在React中并没有像Vue模板语法中的v-for指令，而且需要我们通过JavaScript代码的方式组织数据，转成JSX：
 
@@ -765,7 +767,7 @@
 
 
 
-# JSX的本质
+## JSX的本质
 
 - 实际上，jsx 仅仅只是 React.createElement(component, props, ...children) 函数的语法糖
   - 所有的jsx最终都会被转换成**React.createElement的函数**调用
@@ -823,7 +825,7 @@
 
 
 
-# 虚拟DOM的创建过程
+## 虚拟DOM的创建过程
 
 - 我们通过 React.createElement 最终创建出来一个 ReactElement对象
 - 这个ReactElement对象是什么作用呢？React为什么要创建它呢？
@@ -835,7 +837,7 @@
 
 
 
-# 声明式编程
+## 声明式编程
 
 - 虚拟DOM帮助我们从命令式编程转到了声明式编程的模式
 - React官方的说法：Virtual DOM 是一种编程理念
@@ -848,7 +850,9 @@
 
 
 
-# 前端工程的复杂化
+# React脚手架解析
+
+## 前端工程的复杂化
 
 - 如果我们只是开发几个小的demo程序，那么永远不需要考虑一些复杂的问题：
   - 比如目录结构如何组织划分、如何管理文件之间的相互依赖、如何管理第三方模块的依赖、项目发布前如何压缩、打包项目
@@ -863,7 +867,7 @@
 
 
 
-# 脚手架是什么呢
+## 脚手架是什么呢
 
 - 传统的脚手架指的是建筑学的一种结构：在搭建楼房、建筑物时，临时搭建出来的一个框架
 - 编程中提到的脚手架（Scaffold），其实是一种工具，帮我们快速生成项目的工程化结构
@@ -875,7 +879,7 @@
 
 
 
-# 前端脚手架
+## 前端脚手架
 
 - 对于现在比较流行的三大框架都有属于自己的脚手架：
   - Vue的脚手架：**@vue/cli**
@@ -889,7 +893,7 @@
 
 
 
-# 创建React项目
+## 创建React项目
 
 - 创建React项目的命令如下：
   - 注意：项目名称**不能包含大写字母**
@@ -902,7 +906,7 @@
 
  
 
-# 了解PWA
+## 了解PWA
 
 - 整个目录结构都非常好理解，只是有一个PWA相关的概念：
   - PWA全称**Progressive Web App**，即**渐进式WEB应用**
@@ -919,7 +923,7 @@
 
 
 
-# 脚手架中的webpack
+## 脚手架中的webpack
 
 -  React脚手架默认是基于Webpack来开发的
 - 但是，很奇怪：我们并没有在目录结构中看到任何webpack相关的内容？
@@ -928,4 +932,778 @@
   - 我们可以执行一个package.json文件中的一个脚本：**"eject": "react-scripts eject"**
   - 这个操作是不可逆的，所以在执行过程中会给与我们提示
   - **npm run eject**
+
+
+
+# React组件化开发
+
+## 什么是组件化开发呢
+
+- 组件化是一种分而治之的思想：
+  - 如果我们将**一个页面中所有的处理逻辑全部放在一起**，**处理起来就会变得非常复杂**，而且不利于后续的管理以及扩展
+  - 但如果，我们将**一个页面拆分成一个个小的功能块**，每个功能块完成属于自己这部分独立的功能，那么之后整个页面的管理和维护就变得非常容易了
+
+- 我们需要通过组件化的思想来思考整个应用程序：
+  - 我们将一个完整的页面分成很多个组件
+  - 每个组件都用于实现页面的一个功能块
+  - 而每一个组件又可以进行细分
+  - 而组件本身又可以在多个地方进行复用
+
+
+
+## React的组件化
+
+- 组件化提供了一种抽象，让我们可以开发出一个个独立可复用的小组件来构造我们的应用
+
+- 任何的应用都会被抽象成一颗组件树
+
+  <img src="https://s3.bmp.ovh/imgs/2022/09/07/199b272e29928039.jpg" alt="组件化开发" style="zoom: 80%;" />
+
+- 组件化思想的应用：
+
+  - 有了组件化的思想，我们在之后的开发中就要充分的利用它
+  - 尽可能的将页面拆分成一个个小的、可复用的组件
+  - 这样让我们的代码更加方便组织和管理，并且扩展性也更强
+
+- React的组件相对于Vue更加的灵活和多样，按照不同的方式可以分成很多类别的组件：
+
+  - **根据组件的定义方式**，可以分为：**函数组件(Functional Component )**和**类组件(Class Component)**
+
+  - **根据组件内部是否有状态需要维护**，可以分成：**无状态组件(Stateless Component )**和**有状态组件(Stateful Component)**
+  
+  - **根据组件的不同职责**，可以分成：**展示型组件(Presentational Component)**和**容器型组件(Container Component)**
+
+- 这些概念有很多重叠，但是他们最主要是关注数据逻辑和UI展示的分离：
+  - **函数组件、无状态组件、展示型组件**主要关注UI的展示
+  - **类组件、有状态组件、容器型组件**主要关注数据逻辑
+- 当然还有很多组件的其他概念：比如异步组件、高阶组件等
+
+
+
+## 类组件
+
+- 类组件的定义有如下要求：
+  - **组件的名称是大写字符开头**（无论类组件还是函数组件）
+  - 类组件需要**继承自 React.Component**
+  - 类组件必须实现**render函数**
+
+- 使用class定义一个组件：
+  - constructor是可选的，我们通常在constructor中初始化一些数据
+  - this.state中维护的就是我们组件内部的数据
+  - **render()** 函数是 class 组件中**唯一必须实现的方法**
+
+
+
+## render函数的返回值
+
+- 当 render 被调用时，它会检查 this.props 和 this.state 的变化并返回以下类型之一：
+
+  - **React 元素：**
+    - 通常通过 JSX 创建
+    - 例如，`<div />` 会被 React 渲染为 DOM 节点，`<MyComponent />` 会被 React 渲染为自定义组件
+    - 无论是 `<div />` 还是 `<MyComponent />` 均为 React 元素
+
+  - **数组或 fragments：**使得 render 方法可以返回多个元素
+  - **Portals：**可以渲染子节点到不同的 DOM 子树中
+  - **字符串或数值类型：**它们在 DOM 中会被渲染为文本节点
+  - **布尔类型或 null：**什么都不渲染
+
+  ```jsx
+  import React from "react";
+  
+  class App extends React.Component {
+    constructor() {
+      super();
+      this.state = {
+        message: "App Component",
+      };
+    }
+  
+    render() {
+      // const { message } = this.state
+      // 1.react元素: 通过jsx编写的代码就会被编译成React.createElement, 所以返回的就是一个React元素
+      // return <h2>{message}</h2>
+  
+      // 2.组件或者fragments(后续学习)
+      // return ["abc", "cba", "nba"]
+      // return [
+      //   <h1>h1元素</h1>,
+      //   <h2>h2元素</h2>,
+      //   <div>哈哈哈</div>
+      // ]
+  
+      // 3.字符串/数字类型
+      // return "Hello World"
+  
+      return true;
+    }
+  }
+  
+  export default App;
+  ```
+
+
+
+## 函数组件
+
+- 函数组件是**使用function来进行定义的函数**，只是**这个函数会返回和类组件中render函数返回一样的内容**
+
+- 函数组件有自己的特点（当然，配合hooks，就不一样了）：
+
+  - 没有生命周期，也会被更新并挂载，但是没有生命周期函数
+  - this关键字不能指向组件实例（因为没有组件实例）
+  - 没有内部状态（state）
+
+- 我们来定义一个函数组件：
+
+  ```jsx
+  function App(props) {
+    // 返回值: 和类组件中render函数返回的是一致
+    return <h1>App Functional Component</h1>
+  }
+  
+  export default App
+  ```
+
+
+
+## 认识生命周期
+
+- 很多的事物都有从创建到销毁的整个过程，这个过程称之为是**生命周期**
+- React组件也有自己的生命周期，了解组件的生命周期可以让我们**在最合适的地方完成自己想要的功能**
+
+- 生命周期和生命周期函数的关系： 
+  - **生命周期**是一个**抽象的概念**，在生命周期的整个过程，分成了很多个阶段
+    - 比如装载阶段（Mount），组件第一次在DOM树中被渲染的过程
+    - 比如更新过程（Update），组件状态发生变化，重新更新渲染的过程
+    - 比如卸载过程（Unmount），组件从DOM树中被移除的过程
+- React内部为了告诉我们当前处于哪些阶段，会对我们组件内部实现的**某些函数进行回调**，这些函数就是**生命周期函数**：
+  - 比如实现componentDidMount函数：组件已经挂载到DOM上时，就会回调
+  - 比如实现componentDidUpdate函数：组件已经发生了更新时，就会回调
+  - 比如实现componentWillUnmount函数：组件即将被移除时，就会回调
+  - 我们可以在这些回调函数中编写自己的逻辑代码，来完成自己的需求功能
+- 我们谈React生命周期时，主要谈的类的生命周期，因为函数式组件是没有生命周期函数的（后面我们可以通过hooks来模拟一些生命周期的回调）
+
+
+
+## 生命周期解析
+
+- 我们先来学习一下最基础、最常用的生命周期函数：
+
+  <img src="https://s3.bmp.ovh/imgs/2022/09/16/8560fb6c599c8085.png" alt="常用的生命周期" style="zoom:80%;" />
+
+
+
+## 生命周期函数
+
+- constructor
+  - 如果不初始化 state 或不进行方法绑定，则不需要为 React 组件实现构造函数
+  - constructor中通常只做两件事情：
+    - 通过给 this.state 赋值对象来初始化内部的state
+    - 为事件绑定实例（this）
+- componentDidMount
+  - componentDidMount() 会在组件挂载后（插入 DOM 树中）立即调用
+    - 依赖于DOM的操作可以在这里进行
+    - 在此处发送网络请求就最好的地方（官方建议）
+    - 可以在此处添加一些订阅（会在componentWillUnmount取消订阅）
+
+- componentDidUpdate
+  - componentDidUpdate() 会在更新后会被立即调用，首次渲染不会执行此方法
+    - 当组件更新后，可以在此处对 DOM 进行操作
+    - 如果你对更新前后的 props 进行了比较，也可以选择在此处进行网络请求；（例如，当 props 未发生变化时，则不会执行网络请求）
+
+- componentWillUnmount
+  - componentWillUnmount() 会在组件卸载及销毁之前直接调用
+    - 在此方法中执行必要的清理操作
+    - 例如，清除 timer，取消网络请求或清除在 componentDidMount() 中创建的订阅等
+
+
+
+## 不常用生命周期函数
+
+- 除了上面介绍的生命周期函数之外，还有一些不常用的生命周期函数：
+
+  - getDerivedStateFromProps：state 的值在任何时候都依赖于 props时使用；该方法返回一个对象来更新state
+
+  - getSnapshotBeforeUpdate：在React更新DOM之前回调的一个函数，可以获取DOM更新前的一些信息（比如说滚动位置）
+
+  - shouldComponentUpdate：该生命周期函数很常用
+
+    <img src="https://s3.bmp.ovh/imgs/2022/09/16/a8fc58ec84fd5595.png" style="zoom:80%;" />
+
+- 更详细的生命周期相关的内容，可以参考官网：https://zh-hans.reactjs.org/docs/react-component.html
+
+  ```jsx
+  import React from "react"
+  import HelloWorld from "./HelloWorld"
+  
+  class App extends React.Component {
+    constructor() {
+      super()
+  
+      this.state = {
+        isShowHW: true
+      }
+    }
+  
+    switchHWShow() {
+      this.setState({ isShowHW: !this.state.isShowHW })
+    }
+  
+    render() {
+      const { isShowHW } = this.state
+  
+      return (
+        <div>
+          哈哈哈
+          <button onClick={e => this.switchHWShow()}>切换</button>
+          { isShowHW && <HelloWorld/> }
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+  ```jsx
+  import React from "react"
+  
+  class HelloWorld extends React.Component {
+    // 1.构造方法: constructor
+    constructor() {
+      console.log("HelloWorld constructor")
+      super()
+  
+      this.state = {
+        message: "Hello World"
+      }
+    }
+  
+    changeText() {
+      this.setState({ message: "你好啊, 李银河" })
+    }
+  
+    // 2.执行render函数
+    render() {
+      console.log("HelloWorld render")
+      const { message } = this.state
+  
+      return (
+        <div>
+          <h2>{message}</h2>
+          <p>{message}是程序员的第一个代码!</p>
+          <button onClick={e => this.changeText()}>修改文本</button>
+        </div>
+      )
+    }
+  
+    // 3.组件被渲染到DOM: 被挂载到DOM
+    componentDidMount() {
+      console.log("HelloWorld componentDidMount")
+    }
+  
+    // 4.组件的DOM被更新完成： DOM发生更新
+    componentDidUpdate(prevProps, prevState, snapshot) {
+      console.log("HelloWorld componentDidUpdate:", prevProps, prevState, snapshot)
+    }
+  
+    // 5.组件从DOM中卸载掉： 从DOM移除掉
+    componentWillUnmount() {
+      console.log("HelloWorld componentWillUnmount")
+    }
+  
+  
+    // 不常用的生命周期补充
+    shouldComponentUpdate() {
+      return true
+    }
+  
+    getSnapshotBeforeUpdate() {
+      console.log("getSnapshotBeforeUpdate")
+      return {
+        scrollPosition: 1000
+      }
+    }
+  }
+  
+  export default HelloWorld
+  ```
+
+
+
+## 认识组件间的通信
+
+- 父组件在展示子组件，可能会传递一些数据给子组件：
+
+  - 父组件通过 **属性=值** 的形式来传递给子组件数据
+  - 子组件通过 **props** 参数获取父组件传递过来的数据
+
+  ```jsx
+  import React, { Component } from 'react'
+  import MainBanner from './MainBanner'
+  
+  export class Main extends Component {
+    render() {
+      return (
+        <div className='main'>
+          <div>Main</div>
+          <MainBanner title="轮播图"/>
+        </div>
+      )
+    }
+  }
+  
+  export default Main
+  ```
+  
+  ```jsx
+  import React, { Component } from 'react'
+  
+  export class MainBanner extends Component {
+    render() {
+      return (<div className='banner'>{this.props.title}</div>)
+    }
+  }
+  
+  export default MainBanner
+  ```
+
+
+
+## 参数propTypes
+
+- 对于传递给子组件的数据，有时候我们可能希望进行验证，特别是对于大型项目来说：
+
+  - 当然，如果你项目中默认继承了Flow或者TypeScript，那么直接就可以进行类型验证
+  - 但是，即使我们没有使用Flow或者TypeScript，也可以通过 prop-types 库来进行参数验证
+
+- 从 React v15.5 开始，React.PropTypes 已移入另一个包中：prop-types 库
+
+- 更多的验证方式，可以参考官网：https://zh-hans.reactjs.org/docs/typechecking-with-proptypes.html
+
+  - 比如验证数组，并且数组中包含哪些元素
+  - 比如验证对象，并且对象中包含哪些key以及value是什么类型
+  - 比如某个原生是必须的，使用 requiredFunc: PropTypes.func.isRequired
+
+- 如果没有传递，我们希望有默认值呢？
+
+  - 我们使用defaultProps就可以了
+
+  ```jsx
+  import React, { Component } from 'react'
+  import PropTypes from "prop-types"
+  
+  export class MainBanner extends Component {
+    render() {
+      return (<div className='banner'>{this.props.title}</div>)
+    }
+  }
+  
+  // MainBanner传入的props类型进行验证
+  MainBanner.propTypes = {
+    title: PropTypes.string
+  }
+  
+  // MainBanner传入的props的默认值
+  MainBanner.defaultProps = {
+  	title: "默认标题"
+  }
+  
+  export default MainBanner
+  ```
+
+
+
+## 子组件传递父组件
+
+- 某些情况，我们也需要子组件向父组件传递消息：
+
+  - 在React中同样是通过props传递消息，只是让父组件给子组件传递一个回调函数，在子组件中调用这个函数即可
+
+  ```jsx
+  import React, { Component } from 'react'
+  import AddCounter from './AddCounter'
+  import SubCounter from './SubCounter'
+  
+  export class App extends Component {
+    constructor() {
+      super()
+      this.state = {
+        counter: 100
+      }
+    }
+  
+    changeCounter(count) {
+      this.setState({ counter: this.state.counter + count })
+    }
+  
+    render() {
+      const { counter } = this.state
+  
+      return (
+        <div>
+          <h2>当前计数: {counter}</h2>
+          <AddCounter addClick={(count) => this.changeCounter(count)}/>
+          <SubCounter subClick={(count) => this.changeCounter(count)}/>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+  ```jsx
+  import React, { Component } from 'react'
+  
+  export class AddCounter extends Component {
+    render() {
+      return (<button onClick={e => this.props.addClick(1)}>+1</button>)
+    }
+  }
+  
+  export default AddCounter
+  ```
+
+  ```jsx
+  import React, { Component } from 'react'
+  
+  export class SubCounter extends Component {
+    render() {
+      return (<button onClick={e => this.props.subClick(-1)}>-1</button>)
+    }
+  }
+  
+  export default SubCounter
+  ```
+
+
+
+## React中的插槽（slot）
+
+- 在开发中，我们抽取了一个组件，但是为了让这个组件具备更强的通用性，我们不能将组件中的内容限制为固定的div、span等等这些元素
+- 我们应该让使用者可以决定某一块区域到底存放什么内容
+- 这种需求在Vue当中有一个固定的做法是通过slot来完成的，React呢？
+- React对于这种需要插槽的情况非常灵活，有两种方案可以实现：
+  - 组件的**children**子元素
+  - **props**属性传递React元素
+
+
+
+## children实现插槽
+
+- 每个组件都可以获取到 props.children：它包含组件的开始标签和结束标签之间的内容
+
+  ```jsx
+  import React, { Component } from 'react'
+  import NavBar from './nav-bar'
+  
+  export class App extends Component {
+    render() {
+      return (
+        <div>
+          <NavBar>
+            <button>按钮</button>
+            <h2>哈哈哈</h2>
+            <i>斜体文本</i>
+          </NavBar>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+  ```jsx
+  import React, { Component } from 'react'
+  
+  export class NavBar extends Component {
+    render() {
+      const { children } = this.props
+      console.log(children)
+  
+      return (
+        <div className='nav-bar'>
+          <div className="left">{children[0]}</div>
+          <div className="center">{children[1]}</div>
+          <div className="right">{children[2]}</div>
+        </div>
+      )
+    }
+  }
+  
+  export default NavBar
+  ```
+
+
+
+## props实现插槽+作用域插槽
+
+- 通过children实现的方案虽然可行，但是有一个弊端：通过索引值获取传入的元素很容易出错，不能精准的获取传入的原生
+
+- 另外一个种方案就是使用 props 实现：
+
+  - 通过具体的属性名，可以让我们在传入和获取时更加的精准
+
+  ```jsx
+  import React, { Component } from 'react'
+  import NavBarTwo from './nav-bar-two'
+  
+  export class App extends Component {
+    getTabItem(item) {
+      if (item === "span") {
+        return <span>{item}</span>
+      } else if (item === "button") {
+        return <button>{item}</button>
+      } else {
+        return <i>{item}</i>
+      }
+    }
+  
+    render() {
+      const btn = <button>按钮2</button>
+  
+      return (
+        <div>
+          <NavBarTwo 
+            leftSlot={btn}
+            centerSlot={item => this.getTabItem(item)}
+            rightSlot={<i>斜体2</i>}
+          />
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+  
+  ```jsx
+  import React, { Component } from 'react'
+  
+  export class NavBarTwo extends Component {
+    render() {
+      const { leftSlot, centerSlot, rightSlot } = this.props
+  
+      return (
+        <div className='nav-bar'>
+          <div className="left">{leftSlot}</div>
+          <div className="center">{centerSlot('span')}</div>
+          <div className="right">{rightSlot}</div>
+        </div>
+      )
+    }
+  }
+  
+  export default NavBarTwo
+  ```
+
+
+
+## context应用场景
+
+- 非父子组件数据的共享：
+  - 在开发中，比较常见的数据传递方式是通过props属性自上而下（由父到子）进行传递
+  - 但是对于有一些场景：比如一些数据需要在多个组件中进行共享（地区偏好、UI主题、用户登录状态、用户信息等）
+  - 如果我们在顶层的App中定义这些信息，之后一层层传递下去，那么对于一些中间层不需要数据的组件来说，是一种冗余的操作
+- 如果层级更多的话，一层层传递是非常麻烦，并且代码是非常冗余的：
+  - React提供了一个API：**Context**
+  - Context 提供了一种**在组件之间共享此类值的方式**，而**不必显式地通过组件树的逐层传递 props**
+  - Context 设计目的是为了**共享那些对于一个组件树而言是 "全局" 的数据**，例如当前认证的用户、主题或首选语言
+
+
+
+## context相关API
+
+- React.createContext
+  - 创建一个需要共享的Context对象
+  - 如果一个组件订阅了Context，那么这个组件会从离自身最近的那个匹配的 Provider 中读取到当前的context值
+  - defaultValue是组件在顶层查找过程中没有找到对应的Provider，那么就使用默认值
+- Context.Provider
+  - 每个 Context 对象都会返回一个 Provider React 组件，它允许消费组件订阅 context 的变化
+  - Provider 接收一个 value 属性，传递给消费组件
+  - 一个 Provider 可以和多个消费组件有对应关系
+  - 多个 Provider 也可以嵌套使用，里层的会覆盖外层的数据
+  - 当 Provider 的 value 值发生变化时，它内部的所有消费组件都会重新渲染
+
+- Class.contextType
+  - 挂载在 class 上的 contextType 属性会被重新赋值为一个由 React.createContext() 创建的 Context 对象
+  - 这能让你使用 this.context 来消费最近 Context 上的那个值
+  - 你可以在任何生命周期中访问到它，包括 render 函数中
+- Context.Consumer
+  - 这里，React 组件也可以订阅到 context 变更。这能让你在 函数式组件 中完成订阅 context
+  - 这里需要 函数作为子元素（function as child）这种做法
+  - 这个函数接收当前的 context 值，返回一个 React 节点
+
+
+
+## context代码演练
+
+- 什么时候使用Context.Consumer呢？
+
+  - 当使用value的组件是一个**函数式组件**时
+  - 当组件中需要使用**多个Context**时
+
+  ```js
+  // theme-context.js
+  import React from "react"
+  
+  // 1.创建一个Context
+  const ThemeContext = React.createContext({ color: "blue", size: 10 })
+  
+  export default ThemeContext
+  ```
+
+  ```js
+  // user-context.js
+  import React from "react"
+  
+  // 1.创建一个Context
+  const UserContext = React.createContext()
+  
+  export default UserContext
+  ```
+
+  ```jsx
+  // App.jsx
+  import React, { Component } from 'react'
+  
+  import ThemeContext from "./context/theme-context"
+  import UserContext from './context/user-context'
+  
+  import Home from './Home'
+  import Profile from './Profile'
+  
+  export class App extends Component {
+    constructor() {
+      super()
+  
+      this.state = {
+        info: { name: "kobe", age: 30 }
+      }
+    }
+  
+    render() {
+      const { info } = this.state
+  
+      return (
+        <div>
+          <h2>App</h2>
+          {/* 1.给Home传递数据 */}
+          <Home name={info.name} age={info.age}/>
+          <Home {...info}/>
+  
+          {/* 2.普通的Home */}
+          {/* 第二步操作: 通过ThemeContext中Provider中value属性为后代提供数据 */}
+          <UserContext.Provider value={{nickname: "kobe", age: 30}}>
+            <ThemeContext.Provider value={{color: "red", size: "30"}}>
+              <Home {...info}/>
+            </ThemeContext.Provider>
+          </UserContext.Provider>
+          <Profile/>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+  ```jsx
+  // Home.jsx
+  import React, { Component } from 'react'
+  import HomeBanner from './HomeBanner'
+  import HomeInfo from './HomeInfo'
+  
+  export class Home extends Component {
+    render() {
+      const { name, age } = this.props
+  
+      return (
+        <div>
+          <h2>Home: {name}-{age}</h2>
+          <HomeInfo/>
+          <HomeBanner/>
+        </div>
+      )
+    }
+  }
+  
+  export default Home
+  ```
+
+  ```jsx
+  // HomeBanner.jsx
+  import ThemeContext from "./context/theme-context"
+  
+  function HomeBanner() {
+  
+    return <div>
+      {/* 函数式组件中使用Context共享的数据 */}
+      <ThemeContext.Consumer>
+        {
+          value => {
+            return <h2> Banner theme:{value.color}</h2>
+          }
+        }
+      </ThemeContext.Consumer>
+    </div>
+  }
+  
+  export default HomeBanner
+  ```
+
+  ```jsx
+  // HomeInfo.jsx
+  import React, { Component } from 'react'
+  import ThemeContext from './context/theme-context'
+  import UserContext from './context/user-context'
+  
+  export class HomeInfo extends Component {
+    render() {
+      // 4.第四步操作: 获取数据, 并且使用数据
+      console.log(this.context)
+  
+      return (
+        <div>
+          <h2>HomeInfo: {this.context.color}</h2>
+          <UserContext.Consumer>
+            {
+              value => {
+                return <h2>Info User: {value.nickname}</h2>
+              }
+            }
+          </UserContext.Consumer>
+        </div>
+      )
+    }
+  }
+  
+  // 3.第三步操作: 设置组件的contextType为某一个Context
+  HomeInfo.contextType = ThemeContext
+  
+  export default HomeInfo
+  ```
+
+  ```jsx
+  // Profile.jsx
+  import React, { Component } from 'react'
+  import ThemeContext from './context/theme-context'
+  
+  export class Profile extends Component {
+    render() {
+      console.log(this.context)
+  
+      return (<div>Profile</div>)
+    }
+  }
+  
+  Profile.contextType = ThemeContext
+  
+  export default Profile
+  ```
+
+
 
