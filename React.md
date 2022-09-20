@@ -1707,3 +1707,290 @@
 
 
 
+## 为什么使用setState
+
+- 开发中我们并不能直接通过修改state的值来让界面发生更新：
+  - 因为我们修改了state之后，希望React根据最新的State来重新渲染界面，但是这种方式的修改React并不知道数据发生了变化
+  - React并没有实现类似于Vue2中的Object.defineProperty或者Vue3中的Proxy的方式来监听数据的变化
+  - 我们**必须通过setState来告知React数据已经发生了变化**
+
+- 疑惑：在组件中并没有实现setState的方法，为什么可以调用呢？
+  - 原因很简单，**setState**方法是从**Component中继承过来**的
+
+
+
+## setState异步更新
+
+- setState的更新是异步的？
+
+  - 最终打印结果是Hello World
+  - 可见setState是异步的操作，我们并不能在执行完setState之后立马拿到最新的state的结果
+
+  ```jsx
+  import React, { Component } from 'react'
+  
+  class App extends Component {
+    constructor(props) {
+      super(props)
+  
+      this.state = {
+        message: "Hello World",
+      }
+    }
+  
+    changeText() {
+      this.setState({ message: "你好啊, 李银河" })
+      console.log(this.state.message) // Hello World
+    }
+  
+    render() {
+      return (
+        <div>
+          <h2>message: {this.state.message}</h2>
+          <button onClick={e => this.changeText()}>修改文本</button>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+- 为什么setState设计为异步呢？
+
+  - setState设计为异步其实之前在GitHub上也有很多的讨论
+  - React核心成员（Redux的作者）Dan Abramov也有对应的回复
+  - https://github.com/facebook/react/issues/11527#issuecomment-360199710
+
+- 我对其回答做一个简单的总结：
+
+  * setState设计为异步，可以显著的**提升性能**
+  * 如果每次调用 setState 都进行一次更新，那么意味着render函数会被频繁调用，界面重新渲染，这样效率是很低的
+
+  - 最好的办法应该是**获取到多个更新**，之后进行**批量更新**
+
+- **如果同步更新了state，但是还没有执行render函数，那么state和props不能保持同步**
+
+  - state和props不能保持一致性，会在开发中产生很多的问题
+
+  ```jsx
+  import React, { Component } from 'react'
+  
+  function Hello(props) {
+    return <h2>{props.message}</h2>
+  }
+  
+  export class App extends Component {
+    constructor(props) {
+      super(props)
+  
+      this.state = {
+        message: "Hello World",
+        counter: 0
+      }
+    }
+  
+    componentDidMount() {
+      // 1.网络请求一: banners
+  
+      // 2.网络请求二: recommends
+  
+      // 3.网络请求三: productlist
+    }
+  
+    changeText() {
+      this.setState({ message: "你好啊,李银河" })
+      console.log(this.state.message)
+    }
+  
+    increment() {
+      console.log("------")
+      // this.setState({
+      //   counter: this.state.counter + 1
+      // })
+      // this.setState({
+      //   counter: this.state.counter + 1
+      // })
+      // this.setState({
+      //   counter: this.state.counter + 1
+      // })
+  
+      this.setState((state) => {
+        return {
+          counter: state.counter + 1
+        }
+      })
+      this.setState((state) => {
+        return {
+          counter: state.counter + 1
+        }
+      })
+      this.setState((state) => {
+        return {
+          counter: state.counter + 1
+        }
+      })
+    }
+  
+    render() {
+      const { message, counter } = this.state
+      console.log("render被执行")
+  
+      return (
+        <div>
+          <h2>message: {message}</h2>
+          <button onClick={e => this.changeText()}>修改文本</button>
+          <h2>当前计数: {counter}</h2>
+          <button onClick={e => this.increment()}>counter+1</button>
+  
+          <Hello message={message}/>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+
+
+## 如何获取异步的结果
+
+- 那么如何可以获取到更新后的值呢？
+
+  - setState的回调
+    - setState接受两个参数：第二个参数是一个回调函数，这个回调函数会在更新后会执行
+    - 格式如下：setState(partialState, callback)
+
+  ```jsx
+  import React, { Component } from 'react'
+  
+  export class App extends Component {
+    constructor(props) {
+      super(props)
+  
+      this.state = {
+        message: "Hello World"
+      }
+    }
+  
+    changeText() {
+      // 1.setState更多用法
+      // 1.基本使用
+      // this.setState({
+      //   message: "你好啊, 李银河"
+      // })
+  
+      // 2.setState可以传入一个回调函数
+      // 好处一: 可以在回调函数中编写新的state的逻辑
+      // 好处二: 当前的回调函数会将之前的state和props传递进来
+      // this.setState((state, props) => {
+      //   // 1.编写一些对新的state处理逻辑
+      //   // 2.可以获取之前的state和props值
+      //   console.log(this.state.message, this.props)
+  
+      //   return {
+      //     message: "你好啊, 李银河"
+      //   }
+      // })
+  
+      // 3.setState在React的事件处理中是一个异步调用
+      // 如果希望在数据更新之后(数据合并), 获取到对应的结果执行一些逻辑代码
+      // 那么可以在setState中传入第二个参数: callback
+      this.setState({ message: "你好啊, 李银河" }, () => {
+        console.log("++++++:", this.state.message)
+      })
+      console.log("------:", this.state.message)
+    }
+  
+    render() {
+      const { message } = this.state
+  
+      return (
+        <div>
+          <h2>message: {message}</h2>
+          <button onClick={e => this.changeText()}>修改文本</button>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+
+
+## setState一定是异步吗？（React18之前）
+
+- 验证一：在setTimeout中的更新
+- 验证二：原生DOM事件
+- 其实分成两种情况：
+  - 在组件**生命周期或React事件**中，setState是**异步**
+  - 在**setTimeout或者原生dom事件**中，setState是**同步**
+
+
+
+## setState默认是异步的（React18之后）
+
+- 在React18之后，默认所有的操作都被放到了批处理中（异步处理）
+
+  - https://react.docschina.org/blog/2022/03/29/react-v18.html#whats-new-in-react-18
+
+- 如果希望代码可以同步会拿到，则需要执行特殊的flushSync操作
+
+  ```jsx
+  import React, { Component } from 'react'
+  import { flushSync } from 'react-dom'
+  
+  function Hello(props) {
+    return <h2>{props.message}</h2>
+  }
+  
+  export class App extends Component {
+    constructor(props) {
+      super(props)
+  
+      this.state = {
+        message: "Hello World"
+      }
+    }
+  
+    componentDidMount() {
+      // 1.网络请求一: banners
+  
+      // 2.网络请求二: recommends
+  
+      // 3.网络请求三: productlist
+    }
+  
+    changeText() {
+      setTimeout(() => {
+        // 在react18之前, setTimeout中setState操作, 是同步操作
+        // 在react18之后, setTimeout中setState异步操作(批处理)
+        flushSync(() => {
+          this.setState({ message: "你好啊, 李银河" })
+        })
+        console.log(this.state.message)
+      }, 0);
+    }
+  
+    render() {
+      const { message } = this.state
+      console.log("render被执行")
+  
+      return (
+        <div>
+          <h2>message: {message}</h2>
+          <button onClick={e => this.changeText()}>修改文本</button>
+  
+          <Hello message={message}/>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+
+
