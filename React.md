@@ -1926,7 +1926,7 @@
 - 验证二：原生DOM事件
 - 其实分成两种情况：
   - 在组件**生命周期或React事件**中，setState是**异步**
-  - 在**setTimeout或者原生dom事件**中，setState是**同步**
+  - 在**setTimeout**，**Promise.then**，**原生dom事件**中，setState是**同步**
 
 
 
