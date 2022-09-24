@@ -1994,3 +1994,649 @@
 
 
 
+## React更新机制
+
+- React的**渲染流程**
+
+  ![](https://s3.bmp.ovh/imgs/2022/09/21/538c8291721e97ad.png)
+
+- React的**更新流程**
+
+  ![](https://s3.bmp.ovh/imgs/2022/09/21/d083d541662f30a2.png)
+
+
+
+## React的更新流程
+
+- React在props或state发生改变时，会调用React的render方法，会创建一颗不同的树
+
+- React需要基于这两颗不同的树之间的差别来判断如何有效的更新UI：
+
+  - 如果一棵树参考另外一棵树进行完全比较更新，那么即使是最先进的算法，该算法的复杂程度为 O (n²)，其中 n 是树中元素的数量
+
+  - 如果在 React 中使用了该算法，那么展示 1000 个元素所需要执行的计算量将在十亿的量级范围
+  - 这个开销太过昂贵了，React的更新性能会变得非常低效
+  - https://grfia.dlsi.ua.es/ml/algorithms/references/editsurvey_bille.pdf
+
+- 于是，React对这个算法进行了优化，将其优化成了O(n)，如何优化的呢？
+
+  - 同层节点之间相互比较，不会**垮节点比较**
+  - 不同类型的节点，产生不同的树结构（div节点，span节点）
+  - 开发中，可以通过key来指定哪些节点在不同的渲染下保持稳定
+
+
+
+## keys的优化
+
+- 方式一：在最后位置插入数据
+  - 这种情况，有无key意义并不大
+- 方式二：在前面插入数据
+  - 这种做法，在没有key的情况下，所有的li都需要进行修改
+- 当子元素(这里的li)拥有 key 时，React 使用 key 来匹配原有树上的子元素以及最新树上的子元素
+  - 在下面这种场景下，key为111和222的元素仅仅进行位移，不需要进行任何的修改
+  - 将key为333的元素插入到最前面的位置即可
+- key的注意事项
+  - key应该是唯一的
+  - key不要使用随机数（随机数在下一次render时，会重新生成一个数字）
+  - 使用index作为key，对性能是没有优化的
+
+
+
+## render函数被调用
+
+- 我们使用之前的一个嵌套案例
+
+  - 在App中，我们增加了一个计数器的代码
+  - 当点击+1时，会重新调用App的render函数
+  - 而当App的render函数被调用时，所有的子组件的render函数都会被重新调用
+
+  ```
+  				App
+  				 ↓
+  Header、Main、Footer
+  				 ↓
+  Banner、ProductList
+  ```
+
+- 那么，我们可以思考一下，在以后的开发中，我们只要是修改了App中的数据，**所有的组件都需要重新render，进行diff算法，性能必然是很低的**
+  - 事实上，**很多的组件没有必须要重新render**
+  - 子组件调用render应该有一个前提，就是依赖的数据（state、props）发生改变时，再调用自己的render方法
+- 如何来控制render方法是否被调用呢？
+  - 通过**shouldComponentUpdate**方法即可
+
+
+
+## shouldComponentUpdate
+
+- React给我们提供了一个生命周期方法 shouldComponentUpdate（很多时候，我们简称为SCU），这个方法接受参数，并且需要有返回值
+- 该方法有两个参数
+  - 参数一：**newProps** 修改之后，最新的props属性
+  - 参数二：**newState** 修改之后，最新的state属性
+
+- 该方法返回值是一个boolean类型：
+
+  - 返回值为true，那么就需要调用render方法
+  - 返回值为false，那么久不需要调用render方法
+  - 默认返回的是true，也就是只要state发生改变，就会调用render方法
+
+- 比如我们在App中增加一个message属性
+
+  - jsx中并没有依赖这个message，那么它的改变不应该引起重新渲染
+  - 但是因为render监听到state的改变，就会重新render，所以最后render方法还是被重新调用了
+
+  ```jsx
+  import React, { Component } from "react";
+  import Home from "./Home";
+  
+  class App extends Component {
+    constructor() {
+      super();
+  
+      this.state = {
+        message: "Hello World",
+        counter: 0,
+      };
+    }
+  
+    shouldComponentUpdate(newProps, newState) {
+      // App进行性能优化的点
+      if (this.state.message !== newState.message || this.state.counter !== newState.counter) {
+        return true
+      }
+      return false
+    }
+  
+    changeText() {
+      this.setState({ message: "你好啊,李银河!" })
+    }
+  
+    increment() {
+      this.setState({ counter: this.state.counter + 1 });
+    }
+  
+    render() {
+      console.log("App render");
+      const { message, counter } = this.state;
+  
+      return (
+        <div>
+          <h2>
+            App-{message}-{counter}
+          </h2>
+          <button onClick={(e) => this.changeText()}>修改文本</button>
+          <button onClick={(e) => this.increment()}>counter+1</button>
+          <Home message={message} />
+        </div>
+      );
+    }
+  }
+  
+  export default App;
+  ```
+
+  ```jsx
+  import React, { Component } from "react";
+  
+  class Home extends Component {
+    constructor(props) {
+      super(props);
+  
+      this.state = {
+        friends: [],
+      };
+    }
+  
+    shouldComponentUpdate(newProps, newState) {
+      // 自己对比state是否发生改变: this.state和nextState
+      if (this.props.message !== newProps.message) {
+        return true;
+      }
+      return false;
+    }
+  
+    render() {
+      console.log("Home render");
+      return (
+        <div>
+          <h2>Home Page: {this.props.message}</h2>
+        </div>
+      );
+    }
+  }
+  
+  export default Home;
+  ```
+
+
+
+## PureComponent
+
+- 如果所有的类，我们都需要手动来实现 shouldComponentUpdate，那么会给我们开发者增加非常多的工作量
+  - 我们来设想一下shouldComponentUpdate中的各种判断的目的是什么
+  - props或者state中的数据是否发生了改变，来决定shouldComponentUpdate返回true或者false
+
+- 事实上React已经考虑到了这一点，所以React已经默认帮我们实现好了，如何实现呢
+
+  - 将class继承自**PureComponent**
+
+  - 这个方法中，调用 !shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)，这个shallowEqual就是进行浅层比较
+
+  ```jsx
+  class App extends React.PureComponent {
+    constructor() {
+      super();
+      this.state = {
+        list: [1, 2, 3, 4, 5],
+      };
+    }
+  
+    btn1Click() {
+      this.state.list.push(6);
+      this.setState({ list: this.state.list });
+      // this.setState({ test: "test" }); // { test: "test" } 这个对象会和旧的对象进行合并的
+    }
+  
+    render() {
+      return (
+        <div>
+          <button onClick={() => this.btn1Click()}>按钮</button>
+          <h2>{this.state.list}</h2>
+        </div>
+      );
+    }
+  }
+  ```
+
+  ```js
+  function checkShouldComponentUpdate(workInProgress,ctor,oldProps,newProps,oldState,newState,nextContext) {
+    if (ctor.prototype && ctor.prototype.isPureReactComponent) {
+      return (!shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState));
+    }
+    return true;
+  }
+  ```
+
+  ```js
+  function is(x, y) {
+    return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
+  }
+  
+  var objectIs = typeof Object.is === 'function' ? Object.is : is; // 判断你的浏览器支不支持 Object.is 方法
+  // Object.is() 方法判断两个值是否为同一个值
+  // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/is#%E4%BD%BF%E7%94%A8_object.is
+  
+  function shallowEqual(objA, objB) {
+    // objA {list: Array(6)}
+    // objB {list: Array(6)}
+  
+    // 如果是同一个对象就不更新
+    if (objectIs(objA, objB)) {
+      console.log('objectIs');
+      return true;
+    }
+  
+    if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+      console.log('不是引用类型');
+      return false;
+    }
+  
+    var keysA = Object.keys(objA);
+    var keysB = Object.keys(objB);
+    // 旧值 和 新值长度不一样直接更新
+    if (keysA.length !== keysB.length) {
+      console.log('长度不一样');
+      return false;
+    }
+  
+    for (var i = 0; i < keysA.length; i++) {
+      var currentKey = keysA[i];
+      // hasOwnProperty.call(objB, currentKey) 检查 新对象 有没有 旧对象 的属性
+      // objectIs(objA[currentKey], objB[currentKey]) 判断是不是同一个值
+      if (!hasOwnProperty.call(objB, currentKey) || !objectIs(objA[currentKey], objB[currentKey])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  ```
+
+
+
+## 高阶组件memo
+
+- 目前我们是针对类组件可以使用PureComponent，那么函数式组件呢？
+
+  - 事实上函数式组件我们在props没有改变时，也是不希望重新渲染DOM树结构的
+
+- 我们需要使用一个高阶组件memo
+
+  - 我们将函数组件都通过memo函数进行一层包裹
+
+  ```jsx
+  import { memo } from "react"
+  
+  const Profile = memo(function(props) {
+    console.log("profile render")
+    return <h2>Profile: {props.message}</h2>
+  })
+  
+  export default Profile
+  ```
+
+
+
+## 不可变数据的力量
+
+- 如果你的组件有继承自PureComponent，是不允许**直接修改引用类型的state**，再重新设置一遍，这样做不会引起重新渲染
+
+  ```jsx
+  import React, { PureComponent } from 'react'
+  
+  export class App extends PureComponent {
+    constructor() {
+      super()
+  
+      this.state = {
+        books: [
+          { name: "你不知道JS", price: 99, count: 0 },
+          { name: "JS高级程序设计", price: 88, count: 1 },
+          { name: "React高级设计", price: 78, count: 2 },
+          { name: "Vue高级设计", price: 95, count: 3 },
+        ],
+        friend: {
+          name: "kobe"
+        },
+        message: "Hello World"
+      }
+    }
+  
+    // shouldComponentUpdate(nextProps, nextState) {
+    //   shallowEqual(nextProps, this.props)
+    //   shallowEqual(nextState, this.state)
+    // }
+  
+    addNewBook() {
+      const newBook = { name: "Angular高级设计", price: 88, count: 4 }
+  
+      // 1.直接修改原有的state, 重新设置一遍
+      // 在PureComponent是不能引起重新渲染(re-render)
+      // this.state.books.push(newBook)
+      // this.setState({ books: this.state.books })
+  
+      // 2.赋值一份books, 在新的books中修改, 设置新的books
+      const books = [...this.state.books]
+      books.push(newBook)
+  
+      this.setState({ books: books })
+    }
+  
+    addBookCount(index) {
+      // this.state.books[index].count++
+      const books = [...this.state.books]
+      books[index].count++
+      this.setState({ books: books })
+    }
+  
+    render() {
+      const { books } = this.state
+  
+      return (
+        <div>
+          <h2>数据列表</h2>
+          <ul>
+            {
+              books.map((item, index) => {
+                return (
+                  <li key={index}>
+                    <span>name:{item.name}-price:{item.price}-count:{item.count}</span>
+                    <button onClick={e => this.addBookCount(index)}>+1</button>
+                  </li>
+                )
+              })
+            }
+          </ul>
+          <button onClick={e => this.addNewBook()}>添加新书籍</button>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+
+
+## 如何使用ref
+
+- 在React的开发模式中，通常情况下不需要、也不建议直接操作DOM原生，但是某些特殊的情况，确实需要获取到DOM进行某些操作
+  - 管理焦点，文本选择或媒体播放
+  - 触发强制动画
+  - 集成第三方 DOM 库
+  - 我们可以通过refs获取DOM
+- 如何创建refs来获取对应的DOM呢？目前有三种方式
+  - 方式一：传入字符串
+    - 使用时通过 this.refs.传入的字符串格式获取对应的元素
+  - 方式二：传入一个对象
+    - 对象是通过 React.createRef() 方式创建出来的
+    - 使用时获取到创建的对象其中有一个current属性就是对应的元素
+  - 方式三：传入一个函数
+    - 该函数会在DOM被挂载时进行回调，这个**函数会传入一个 元素对象**，我们可以自己保存
+    - 使用时，直接拿到之前保存的元素对象即可
+
+
+
+## ref的类型
+
+- ref 的值根据节点的类型而有所不同
+
+  - 当 ref 属性**用于 HTML 元素**时，构造函数中使用 React.createRef() 创建的 ref 接收**原生 DOM 元素作为其 current 属性**
+
+  - 当 ref 属性**用于自定义 class 组件**时，ref 对象接收**组件的挂载实例作为其 current 属性**
+
+- 函数式组件是没有实例的，所以无法通过ref获取他们的实例
+
+  - 但是某些时候，我们可能想要获取函数式组件中的某个DOM元素
+  - 这个时候我们可以通过 **React.forwardRef** ，后面我们也会学习 hooks 中如何使用ref
+
+  ```jsx
+  import React, { PureComponent, createRef } from 'react'
+  
+  export class App extends PureComponent {
+    constructor() {
+      super()
+  
+      this.titleRef = createRef()
+      this.titleEl = null
+    }
+  
+    getNativeDOM() {
+      // 1.方式一: 在React元素上绑定一个ref字符串
+      // console.log(this.refs.shy)
+  
+      // 2.方式二: 提前创建好ref对象, createRef(), 将创建出来的对象绑定到元素
+      // console.log(this.titleRef.current)
+  
+      // 3.方式三: 传入一个回调函数, 在对应的元素被渲染之后, 回调函数被执行, 并且将元素传入
+      console.log(this.titleEl)
+    }
+  
+    render() {
+      return (
+        <div>
+          <h2 ref="shy">Hello World</h2>
+          <h2 ref={this.titleRef}>你好啊,李银河</h2>
+          <h2 ref={el => this.titleEl = el}>你好啊, 师姐</h2>
+          <button onClick={e => this.getNativeDOM()}>获取DOM</button>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+  ```jsx
+  import React, { PureComponent, createRef } from 'react'
+  
+  class HelloWorld extends PureComponent {
+    test() {
+      console.log("test------")
+    }
+  
+    render() {
+      return <h1>Hello World</h1>
+    }
+  }
+  
+  export class App extends PureComponent {
+    constructor() {
+      super()
+  
+      this.hwRef = createRef()
+    }
+  
+    getComponent() {
+      console.log(this.hwRef.current)
+      this.hwRef.current.test()
+    }
+  
+    render() {
+      return (
+        <div>
+          <HelloWorld ref={this.hwRef}/>
+          <button onClick={e => this.getComponent()}>获取组件实例</button>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+  ```jsx
+  import React, { PureComponent, createRef, forwardRef } from 'react'
+  
+  const HelloWorld = forwardRef(function(props, ref) {
+    return (
+      <div>
+        <h1 ref={ref}>Hello World</h1>
+        <p>哈哈哈</p>
+      </div>
+    )
+  })
+  
+  
+  export class App extends PureComponent {
+    constructor() {
+      super()
+  
+      this.hwRef = createRef()
+    }
+  
+    getComponent() {
+      console.log(this.hwRef.current)
+    }
+  
+    render() {
+      return (
+        <div>
+          <HelloWorld ref={this.hwRef}/>
+          <button onClick={e => this.getComponent()}>获取组件实例</button>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+
+
+## 认识受控组件
+
+- 在 HTML 中，表单元素（如`<input>`、 `<textarea>` 和 `<select>`）之类的表单元素通常自己维护 state，并根据用户输入进行更新
+
+- 而在 React 中，可变状态（mutable state）通常保存在组件的 **state 属性**中，并且**只能通过使用 setState()来更新**
+  - 我们将两者结合起来，使**React的state成为  “唯一数据源”**
+  - 渲染表单的 **React 组件还控制着用户输入过程中表单发生的操作**
+  - **被 React 以这种方式控制取值的表单输入元素**就叫做  **“受控组件”**
+  
+  ```jsx
+  import React, { PureComponent } from 'react'
+  
+  class App extends PureComponent {
+    constructor() {
+      super()
+  
+      this.state = {
+        username: "coderlwh"
+      }
+    }
+  
+    inputChange(event) {
+      console.log("inputChange:", event.target.value)
+      this.setState({ username: event.target.value })
+    }
+  
+    render() {
+      const { username } = this.state
+  
+      return (
+        <div>
+          {/* 受控组件 */}
+          <input value={username} onChange={e => this.inputChange(e)}/>
+  
+          {/* 非受控组件 */}
+          <input type="text" />
+          <h2>username: {username}</h2>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+
+
+## 非受控组件
+
+- React推荐大多数情况下使用 受控组件 来处理表单数据
+  - 一个**受控组件**中，表单数据是**由 React 组件来管理**的
+  - 另一种替代方案是**使用非受控组件**，这时表单数据将**交由 DOM 节点**来处理
+- 如果要使用非受控组件中的数据，那么我们需要使用 ref 来从DOM节点中获取表单数据
+- 在非受控组件中通常使用defaultValue来设置默认值
+- 同样，`<input type="checkbox">` 和 `<input type="radio">` 支持 defaultChecked，`<select>` 和 `<textarea>` 支持 defaultValue
+
+
+
+## 认识高阶组件
+
+- 什么是高阶组件呢？
+  - 高阶组件的英文是 **Higher-Order Components**，简称为 **HOC**
+  - 官方的定义：**高阶组件是参数为组件，返回值为新组件的函数**
+
+- 我们可以进行如下的解析
+  - 首先， **高阶组件 本身不是一个组件，而是一个函数**
+  - 其次，**这个函数的参数是一个组件，返回值也是一个组件**
+- 高阶组件并不是React API的一部分，它是基于React的组合特性而形成的设计模式
+
+- 高阶组件在一些React第三方库中非常常见
+
+  - 比如redux中的**connect**
+  - 比如react-router中的**withRouter**
+
+  ```jsx
+  import React, { PureComponent } from 'react'
+  
+  function hoc(OriginComponent) {
+    // 1.定义类组件
+    class NewComponent extends PureComponent {
+      render() {
+        return <OriginComponent {...this.props} />
+      }
+    }
+    return NewComponent
+  
+    // 定义函数组件
+    // function NewComponent2(props) {
+  
+    // }
+    // return NewComponent2
+  }
+  
+  class HelloWorld extends PureComponent {
+    render() {
+      return <h1>Hello World - {this.props.name}</h1>
+    }
+  }
+  
+  const HelloWorldHOC = hoc(HelloWorld)
+  
+  class App extends PureComponent {
+    render() {
+      return (
+        <div>
+          <HelloWorldHOC name="哈哈哈哈哈哈哈哈哈"/>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
