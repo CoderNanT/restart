@@ -2692,5 +2692,404 @@
 
 
 
+# React中如何编写CSS
+
+## 内联样式
+
+- 内联样式是官方推荐的一种css样式的写法
+
+  - style 接受一个采用小驼峰命名属性的 JavaScript 对象，而不是 CSS 字符串
+  - 并且可以引用state中的状态来设置相关的样式
+
+- 内联样式的**优点**
+
+  - 内联样式，样式之间不会有冲突
+  - 可以动态获取当前state中的状态
+
+- 内联样式的**缺点**
+
+  - 写法上都需要使用驼峰标识
+  - 某些样式没有提示
+  - 大量的样式，代码混乱
+  - 某些样式无法编写（比如伪类/伪元素）
+
+- 所以官方依然是希望内联样式和普通的css来结合编写
+
+  ```jsx
+  import React, { PureComponent } from 'react'
+  
+  class App extends PureComponent {
+    constructor() {
+      super()
+  
+      this.state = {
+        titleSize: 30
+      }
+    }
+  
+    addTitleSize() {
+      this.setState({ titleSize: this.state.titleSize + 2 })
+    }
+  
+    render() {
+      const { titleSize } = this.state
+  
+      return (
+        <div>
+          <button onClick={e => this.addTitleSize()}>增加titleSize</button>
+          <h2 style={{color: "red", fontSize: `${titleSize}px`}}>我是标题</h2>
+          <p style={{color: "blue", fontSize: "20px"}}>我是内容, 哈哈哈</p>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
 
 
+
+## 普通的css
+
+- 普通的css我们通常会编写到一个单独的文件，之后再进行引入
+
+- 这样的编写方式和普通的网页开发中编写方式是一致的
+
+  - 如果我们按照普通的网页标准去编写，那么也不会有太大的问题
+  - 但是组件化开发中我们总是希望组件是一个独立的模块，即便是样式也只是在自己内部生效，不会相互影响
+  - 但是普通的css都属于全局的css，样式之间会相互影响
+
+- 这种编写方式最大的问题是样式之间会相互层叠掉
+
+  ```jsx
+  // .section { border: 1px solid skyblue; }
+  import React, { PureComponent } from 'react'
+  import "./Home.css"
+  
+  class Home extends PureComponent {
+    render() {
+      return (<div className='section'>Home Section</div>)
+    }
+  }
+  
+  export default Home
+  ```
+
+  ```jsx
+  // .section { border: none; }
+  import React, { PureComponent } from 'react'
+  import "./Profle.css"
+  
+  class Profile extends PureComponent {
+    render() {
+      return (<div className='section'>Profile Section</div>
+      )
+    }
+  }
+  
+  export default Profile
+  ```
+
+  ```jsx
+  import React, { PureComponent } from 'react'
+  import Home from './home/Home'
+  import Profile from './profile/Profile'
+  
+  class App extends PureComponent {
+    render() {
+      return (
+        <div>
+          <Home/>
+          <Profile/>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+
+
+## css modules
+
+- css modules并不是React特有的解决方案，而是所有使用了类似于**webpack配置的环境**下都可以使用的
+  - 如果在其他项目中使用它，那么我们需要自己来进行配置，比如**配置webpack.config.js中的modules: true**等
+- React的脚手架已经内置了css modules的配置
+  - **.css/.less/.scss 等样式文件**都需要**修改成 .module.css/.module.less/.module.scss** 等
+  - 之后就可以引用并且进行使用了
+- css modules确实解决了局部作用域的问题，也是很多人喜欢在React中使用的一种方案
+
+- 但是这种方案也有自己的缺陷
+
+  - 引用的类名，**不能使用连接符(.home-title)**，在JavaScript中是不识别的
+  - 所有的**className都必须使用{style.className} 的形式**来编写
+  - 不方便**动态来修改某些样式**，依然**需要使用内联样式的方式**
+
+  ```jsx
+  import React, { PureComponent } from 'react'
+  import homeStyle from "./Home.module.css"
+  
+  class Home extends PureComponent {
+    render() {
+      return (<div className={homeStyle.section}>Home Section</div>)
+    }
+  }
+  
+  export default Home
+  ```
+
+  ```jsx
+  import React, { PureComponent } from 'react'
+  import profileStyle from "./Profle.module.css"
+  
+  class Profile extends PureComponent {
+    render() {
+      return (<div className={profileStyle.section}>Profile Section</div>
+      )
+    }
+  }
+  
+  export default Profile
+  ```
+
+  ```jsx
+  import React, { PureComponent } from 'react'
+  import Home from './home/Home'
+  import Profile from './profile/Profile'
+  
+  class App extends PureComponent {
+    render() {
+      return (
+        <div>
+          <Home/>
+          <Profile/>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+
+
+## 认识CSS in JS
+
+- 官方文档也有提到过CSS in JS这种方案
+  - “CSS-in-JS” 是指一种模式，其中 **CSS 由 JavaScript 生成而不是在外部文件中定义**
+  - 注意此功能并不是 React 的一部分，而是由第三方库提供
+  - React 对样式如何定义并没有明确态度
+- 在传统的前端开发中，我们通常会将结构（HTML）、样式（CSS）、逻辑（JavaScript）进行分离
+  - React的思想中认为**逻辑本身和UI是无法分离**的，所以**才会有了JSX的语法**
+  -  样式呢？**样式也是属于UI的一部分**
+  - 事实上CSS-in-JS的模式就是**一种将样式（CSS）也写入到JavaScript中的方式，并且可以方便的使用JavaScript的状态**
+  - 所以React有被人称之为 **All in JS**
+
+- 当然，这种开发的方式也受到了很多的批评
+  - Stop using CSS in JavaScript for web development
+  - https://hackernoon.com/stop-using-css-in-javascript-for-web-development-fa32fb873dcc
+
+
+
+## 认识styled-components
+
+- 批评声音虽然有，但是在我们看来很多优秀的CSS-in-JS的库依然非常强大、方便
+  - CSS-in-JS通过**JavaScript来为CSS赋予一切能力**，包括**类似于CSS预处理器一样的样式嵌套、函数定义、逻辑复用、动态修改状态**等等
+  - 虽然**CSS预处理器也具备某些能力**，但是**获取动态状态依然是一个不好处理的点**
+  - 所以，目前**可以说CSS-in-JS是React编写CSS最为受欢迎的一种解决方案**
+
+- 目前比较流行的CSS-in-JS的库有哪些呢？
+  - styled-components
+  - emotion
+  - glamorous
+- 目前可以说styled-components依然是社区最流行的CSS-in-JS库
+- 安装styled-components：**npm install styled-components**
+
+
+
+## ES6标签模板字符串
+
+- ES6中增加了模板字符串的语法，这个对于很多人来说都会使用
+
+- 但是模板字符串还有另外一种用法：**标签模板字符串（Tagged Template Literals）**
+
+- 我们一起来看一个普通的JavaScript的函数
+
+  - 正常情况下，我们都是通过 **函数名()** 方式来进行调用的，其实函数还有另外一种调用方式
+
+- 如果我们在调用的时候插入其他的变量
+
+  - 模板字符串被拆分了
+  - 第一个元素是数组，是被模块字符串拆分的字符串组合
+  - 后面的元素是一个个模块字符串传入的内容
+
+- 在styled component中，就是通过这种方式来解析模块字符串，最终生成我们想要的样式的
+
+  ```js
+  // ES6: 标签模板字符串
+  const name = "shy"
+  const age = 18
+  
+  // 1.模板字符串的基本使用
+  const str = `my name is ${name}, age is ${age}`
+  console.log(str) // ['why', 18, 1.88]
+  
+  // 2.标签模板字符串的使用
+  function foo(...args) {
+    console.log(args) // [['my name is ', ', age is ', ''], 'shy', 18]
+  }
+  
+  foo("why", 18, 1.88)
+  foo`my name is ${name}, age is ${age}`
+  ```
+
+
+
+## styled的基本使用
+
+- styled-components的本质是通过函数的调用，最终创建出一个组件/标签
+
+  - 这个组件会被自动添加上一个不重复的class
+  - styled-components会给该class添加相关的样式
+
+- 另外，它支持类似于CSS预处理器一样的样式嵌套
+
+  - 支持**直接子代选择器或后代选择器，并且直接编写样式**
+  - 可以**通过&符号获取当前元素**
+  - 直接**伪类选择器、伪元素**等
+
+  ```jsx
+  import styled from "styled-components"
+  
+  export const AppWrapper = styled.div`
+    .footer {
+      border: 1px solid orange;
+    }
+  `
+  
+  export const SectionWrapper = styled.div.attrs(props => ({tColor: props.color || "blue"}))`
+    border: 1px solid red;
+  
+    .title {
+      font-size: ${props => props.size}px;
+      color: ${props => props.tColor};
+  
+      &:hover {
+        background-color: purple;
+      }
+    }
+  
+    .content {
+      font-size: 18px;
+      color: pink;
+    }
+  `
+  ```
+
+  ```jsx
+  import React, { PureComponent } from 'react'
+  import { AppWrapper, SectionWrapper } from "./style"
+  
+  class App extends PureComponent {
+    constructor() {
+      super()
+  
+      this.state = {
+        size: 30,
+        color: "yellow"
+      }
+    }
+  
+    render() {
+      const { size } = this.state
+  
+      return (
+        <AppWrapper>
+          <SectionWrapper size={size}>
+            <h2 className='title'>我是标题</h2>
+            <p className='content'>我是内容, 哈哈哈</p>
+            <button onClick={e => this.setState({color: "skyblue"})}>修改颜色</button>
+          </SectionWrapper>
+  
+          <div className='footer'>
+            <p>免责声明</p>
+            <p>版权声明</p>
+          </div>
+        </AppWrapper>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+
+
+## props、attrs属性
+
+- props可以被传递给styled组件
+  - 获取props需要通过${}传入一个插值函数，props会作为该函数的参数
+  - 这种方式可以有效的解决动态样式的问题
+
+- attrs给属性添加默认值
+
+  ```jsx
+  <SectionWrapper size='24' color="pink"></SectionWrapper>
+  
+  const SectionWrapper = styled.div.attrs(props => ({tColor: props.color || "blue"}))`
+    .title {
+      font-size: ${props => props.size}px;
+      color: ${props => props.tColor};
+    }
+  `
+  ```
+
+
+
+## react中添加class
+
+- React在JSX给了我们开发者足够多的灵活性，你可以像编写JavaScript代码一样，通过一些逻辑来决定是否添加某些class
+
+- 这个时候我们可以借助于一个第三方的库：classnames
+
+  - 很明显，这是一个用于动态添加classnames的一个库
+
+  ```jsx
+  import React, { PureComponent } from 'react'
+  import classNames from 'classnames'
+  
+  class App extends PureComponent {
+    constructor() {
+      super()
+  
+      this.state = {
+        isbbb: true,
+        isccc: true
+      }
+    }
+  
+    render() {
+      const { isbbb, isccc } = this.state
+  
+      const classList = ["aaa"]
+      if (isbbb) classList.push("bbb")
+      if (isccc) classList.push("ccc")
+      const classname = classList.join(" ")
+  
+      return (
+        <div>
+          <h2 className={`aaa ${isbbb ? 'bbb': ''} ${isccc ? 'ccc': ''}`}>哈哈哈</h2>
+          <h2 className={classname}>呵呵呵</h2>
+  
+          <h2 className={classNames("aaa", { bbb:isbbb, ccc:isccc })}>嘿嘿嘿</h2>
+          <h2 className={classNames(["aaa", { bbb: isbbb, ccc: isccc }])}>嘻嘻嘻</h2>
+        </div>
+      )
+    }
+  }
+  
+  export default App
+  ```
+
+  
