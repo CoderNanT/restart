@@ -3322,7 +3322,6 @@
   store.dispatch({ type: "change_name", name: "the shy" })
   
   
-  
   // 修改counter
   store.dispatch({ type: "add_number", num: 10 })
   store.dispatch({ type: "add_number", num: 20 })
@@ -3351,3 +3350,393 @@
   - node v13.2.0之后，只需要进行如下操作
     - 在package.json中添加属性： "type": "module"
 - 注意：导入文件时，需要跟上.js后缀名
+
+
+
+## redux融入react代码
+
+- 目前redux在react中使用是最多的，所以我们需要将之前编写的redux代码，融入到react当中去
+
+- 这里我创建了两个组件
+
+  - Home组件：其中会展示当前的counter值，并且有一个+1和+5的按钮
+  - Profile组件：其中会展示当前的counter值，并且有一个-1和-5的按钮
+
+- 核心代码主要是两个
+
+  - 在 componentDidMount 中监听数据的变化，当数据发生变化时重新设置 counter
+  - 在发生点击事件时，调用store的dispatch来派发对应的action
+
+  ```js
+  // index.js
+  import { createStore } from "redux";
+  import reducer from "./reducer";
+  
+  const store = createStore(reducer);
+  export default store;
+  
+  // reducer.js
+  const initialState = { counter: 100 };
+  
+  function reducer(state = initialState, action) {
+    switch (action.type) {
+      case "add_number":
+        return { ...state, counter: state.counter + action.num };
+      case "sub_number":
+        return { ...state, counter: state.counter - action.num };
+      default:
+        return state;
+    }
+  }
+  export default reducer;
+  
+  // actionCreators.js
+  export const addNumberAction = (num) => ({ type: 'add_number', num })
+  export const subNumberAction = (num) => ({ type: 'sub_number', num })
+  ```
+
+  ```jsx
+  import React, { PureComponent } from "react";
+  import Home from "./pages/home";
+  import Profile from "./pages/profile";
+  import store from "./store";
+  
+  
+  class App extends PureComponent {
+    constructor() {
+      super();
+  
+      this.state = {
+        counter: store.getState().counter,
+      };
+    }
+  
+    componentDidMount() {
+      store.subscribe(() => {
+        const state = store.getState();
+        this.setState({ counter: state.counter });
+      });
+    }
+  
+    render() {
+      const { counter } = this.state;
+  
+      return (
+        <div>
+          <h2>App Counter: {counter}</h2>
+  
+          <div className="pages">
+            <Home />
+            <Profile />
+          </div>
+        </div>
+      );
+    }
+  }
+  
+  export default App
+  ```
+
+  ```jsx
+  import React, { PureComponent } from "react";
+  import store from "../store";
+  import { addNumberAction } from "../store/actionCreators";
+  
+  class Home extends PureComponent {
+    constructor() {
+      super();
+  
+      this.state = {
+        counter: store.getState().counter,
+      };
+    }
+  
+    componentDidMount() {
+      store.subscribe(() => {
+        const state = store.getState();
+        this.setState({ counter: state.counter });
+      });
+    }
+  
+    addNumber(num) {
+      store.dispatch(addNumberAction(num));
+    }
+  
+    render() {
+      const { counter } = this.state;
+  
+      return (
+        <div>
+          <h2>Home Counter: {counter}</h2>
+          <div>
+            <button onClick={(e) => this.addNumber(1)}>+1</button>
+            <button onClick={(e) => this.addNumber(5)}>+5</button>
+            <button onClick={(e) => this.addNumber(8)}>+8</button>
+          </div>
+        </div>
+      );
+    }
+  }
+  
+  export default Home;
+  ```
+
+  ```jsx
+  import React, { PureComponent } from "react";
+  import store from "../store";
+  import { subNumberAction } from "../store/actionCreators";
+  
+  class Profile extends PureComponent {
+    constructor() {
+      super();
+  
+      this.state = {
+        counter: store.getState().counter,
+      };
+    }
+  
+    componentDidMount() {
+      store.subscribe(() => {
+        const state = store.getState();
+        this.setState({ counter: state.counter });
+      });
+    }
+  
+    subNumber(num) {
+      store.dispatch(subNumberAction(num));
+    }
+  
+    render() {
+      const { counter } = this.state;
+  
+      return (
+        <div>
+          <h2>Profile Counter: {counter}</h2>
+          <div>
+            <button onClick={(e) => this.subNumber(1)}>-1</button>
+            <button onClick={(e) => this.subNumber(5)}>-5</button>
+            <button onClick={(e) => this.subNumber(8)}>-8</button>
+          </div>
+        </div>
+      );
+    }
+  }
+  
+  export default Profile;	
+  ```
+
+
+
+## react-redux使用
+
+- 开始之前需要强调一下，redux和react没有直接的关系，你完全可以在React, Angular, Vue, jQuery, JavaScript中使用Redux
+
+- 尽管这样说，redux依然是和React库结合的更好，因为他们是通过state函数来描述界面的状态，Redux可以改变状态的更新，让它们作出响应
+
+- 安装react-redux
+
+  - npm install react-redux
+
+  ```jsx
+  import { Provider } from "react-redux";
+  import store from "./store";
+  
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(
+    <Provider store={store}>
+      <App />
+    </Provider>
+  );
+  ```
+
+  ```jsx
+  import React, { PureComponent } from "react";
+  import { connect } from "react-redux"
+  import { addNumberAction } from "../store/actionCreators";
+  
+  class Home extends PureComponent {
+    render() {
+      const { counter } = this.props;
+      return (
+        <div>
+          <h2>Home Counter: {counter}</h2>
+          <div>
+            <button onClick={(e) => this.props.addNumber(1)}>+1</button>
+            <button onClick={(e) => this.props.addNumber(5)}>+5</button>
+            <button onClick={(e) => this.props.addNumber(8)}>+8</button>
+          </div>
+        </div>
+      );
+    }
+  }
+  
+  const mapStateToProps = (state) => ({ counter: state.counter });
+  
+  const mapDispatchToProps = (dispatch) => ({
+    addNumber(num) {
+      dispatch(addNumberAction(num));
+    },
+  });
+  
+  export default connect(mapStateToProps, mapDispatchToProps)(Home);
+  ```
+
+
+
+## redux中异步操作
+
+- 但是在redux中如何可以进行异步的操作呢？
+  - 答案就是使用**中间件（Middleware）**
+  - Middleware可以帮助我们**在请求和响应之间嵌入一些操作的代码**，比如cookie解析、日志记录、文件压缩等操作
+
+
+
+## 理解中间件
+
+- redux也引入了中间件（Middleware）的概念
+  - 这个中间件的目的是**在dispatch的action和最终达到的reducer之间，扩展一些自己的代码**
+  - 比如**日志记录、调用异步接口、添加代码调试功能**等等
+- 我们现在要做的事情就是发送异步的网络请求，所以我们可以添加对应的中间件
+  - 这里**官网推荐的、包括演示的网络请求的中间件**是**使用 redux-thunk**
+- redux-thunk是如何做到让我们可以发送异步的请求呢？
+  - 我们知道，**默认情况下的dispatch(action)，action需要是一个JavaScript的对象**
+  - redux-thunk可以让**dispatch(action函数)，action可以是一个函数**
+  - 该函数会被调用，并且会传给**这个函数一个dispatch函数和getState函数**
+    - **dispatch函数**用于我们之后再次派发action
+    - **getState函数**考虑到我们之后的一些操作需要依赖原来的状态，用于让我们可以获取之前的一些状态
+
+
+
+## 使用redux-thunk
+
+- 安装redux-thunk
+
+  - npm install redux-thunk
+
+- 在创建store时传入应用了middleware的enhance函数
+
+  - 通过applyMiddleware来结合多个Middleware, 返回一个enhancer
+  - 将enhancer作为第二个参数传入到createStore中
+
+- 定义返回一个函数的action
+
+  - 注意：这里不是返回一个对象了，而是一个**函数**
+  - **该函数在dispatch之后会被执行**
+
+  ```jsx
+  import { createStore, applyMiddleware } from "redux"
+  import thunk from "redux-thunk"
+  import reducer from "./reducer"
+  
+  const store = createStore(reducer, applyMiddleware(thunk))
+  export default store
+  ```
+
+  ```jsx
+  export const fetchHomeMultidataAction = () => {
+    return function(dispatch, getState) {
+      axios.get("http://123.207.32.32:8000/home/multidata").then(res => {
+        const banners = res.data.data.banner.list
+        const recommends = res.data.data.recommend.list
+  
+        dispatch({ type: 'change_banners', banners })
+        dispatch({ type: 'change_recommends', recommends })
+      })
+    }
+  }
+  ```
+
+
+
+## redux-devtools
+
+- redux可以方便的让我们对状态进行跟踪和调试，那么如何做到呢？
+
+  - redux官网为我们**提供了redux-devtools的工具**
+  - 利用这个工具，我们可以知道**每次状态是如何被修改的，修改前后的状态变化**等等
+
+- 安装该工具需要两步
+
+  - 第一步：在对应的浏览器中安装相关的插件（比如Chrome浏览器扩展商店中搜索Redux DevTools即可）
+  - 第二步：在redux中继承devtools的中间件
+
+  ```jsx
+  import { createStore, applyMiddleware, compose } from "redux"
+  import thunk from "redux-thunk"
+  import reducer from "./reducer"
+  
+  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({trace: true}) || compose;
+  const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
+  export default store;
+  ```
+
+
+
+## combineReducers函数
+
+- redux给我们提供了一个**combineReducers函数**可以方便的让我们对多个reducer进行合并
+
+- 那么combineReducers是如何实现的呢？
+
+  - 事实上，它也是**将我们传入的reducers合并到一个对象**中，最终**返回一个combination的函数**（相当于我们之前的reducer函数了）
+  - 在**执行combination函数的过程**中，它会**通过判断前后返回的数据是否相同来决定返回之前的state还是新的state**
+  - **新的state会触发订阅者发生对应的刷新，而旧的state可以有效的组织订阅者发生刷新**
+
+  ```js
+  // src/store/counter/actionCreators.js
+  import * as actionTypes from "./constants"
+  
+  export const addNumberAction = (num) => ({ type: actionTypes.ADD_NUMBER, num })
+  export const subNumberAction = (num) => ({ type: actionTypes.SUB_NUMBER, num })
+  
+  // src/store/counter/constants.js
+  export const ADD_NUMBER = "add_number"
+  export const SUB_NUMBER = "sub_number"
+  
+  // src/store/counter/index.js
+  import reducer from "./reducer"
+  
+  export default reducer
+  
+  // src/store/counter/reducer.js
+  import * as actionTypes from "./constants"
+  
+  const initialState = { counter: 180 }
+  
+  function reducer(state = initialState, action) {
+    switch (action.type) {
+      case actionTypes.ADD_NUMBER:
+        return { ...state, counter: state.counter + action.num }
+      case actionTypes.SUB_NUMBER:
+        return { ...state, counter: state.counter - action.num }
+      default:
+        return state
+    }
+  }
+  
+  export default reducer
+  
+  // src/store/index.js
+  import { createStore, combineReducers, compose } from "redux"
+  import homeReducer from "./home"
+  
+  // 将两个reducer合并在一起
+  const reducer = combineReducers({
+    counter: counterReducer
+  })
+  
+  // combineReducers实现原理(了解)
+  // function combineReducers(state = {}, action) {
+  //   // 返回一个对象, store的state
+  //   return {
+  //     counter: counterReducer(state.counter, action),
+  //     home: homeReducer(state.home, action),
+  //     user: userReducer(state.user, action)
+  //   }
+  // }
+  
+  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({trace: true}) || compose;
+  const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
+  export default store;
+  ```
+
