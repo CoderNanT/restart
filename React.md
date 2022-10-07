@@ -4041,3 +4041,438 @@
 
 
 
+# React-Router路由
+
+## 认识react-router
+
+- 目前前端流行的三大框架, 都有自己的路由实现
+  - **Angular**的**ngRouter**
+  - **React**的**ReactRouter**
+  - **Vue**的**vue-router**
+- React Router在最近两年版本更新的较快，并且在最新的React Router6.x版本中发生了较大的变化
+  - 目前React Router6.x已经非常稳定，我们可以放心的使用
+- 安装React Router
+  - 安装时，我们选择react-router-dom
+  - react-router会包含一些react-native的内容，web开发并不需要
+  - npm install react-router-dom
+
+
+
+## Router的基本使用
+
+- react-router最主要的API是给我们提供的一些组件
+
+- BrowserRouter或HashRouter
+
+  - Router中包含了对路径改变的监听，并且会将相应的路径传递给子组件
+  - **BrowserRouter**使用history模式
+  - **HashRouter**使用hash模式
+
+  ```jsx
+  import ReactDOM from "react-dom/client";
+  import App from "./App";
+  import { HashRouter } from "react-router-dom";
+  
+  const root = ReactDOM.createRoot(document.querySelector("#root"));
+  root.render(
+    <HashRouter>
+      <App />
+    </HashRouter>
+  );
+  ```
+
+
+
+## 路由映射配置
+
+- Routes：包裹所有的Route，在其中匹配一个路由
+
+  - Router5.x使用的是Switch组件
+
+- Route：Route用于路径的匹配
+
+  - **path属性：**用于设置匹配到的路径
+  - **element属性：**设置匹配到路径后，渲染的组件
+    - Router5.x使用的是component属性
+
+- exact：精准匹配，只有精准匹配到完全一致的路径，才会渲染对应的组件
+
+  - Router6.x默认已开启
+
+  ```jsx
+  // app.jsx
+  <Routes>
+    <Route path="/home"  element={<Home/>}  />
+    <Route path="/about" element={<About/>} />
+  </Routes>
+  ```
+
+
+
+## 路由配置和跳转
+
+- Link和NavLink
+
+  - 通常路径的跳转是使用Link组件，最终会被渲染成a元素
+  - NavLink是在Link基础之上增加了一些样式属性
+  - to属性：Link中最重要的属性，用于设置跳转到的路径
+
+  ```jsx
+  // app.jsx
+  <div className="nav">
+    <Link to="/home">首页</Link>
+    <Link to="/about">关于</Link>
+  </div>
+  ```
+
+
+
+## NavLink的使用
+
+- 需求：路径选中时，对应的a元素变为红色
+
+- 这个时候，我们要使用NavLink组件来替代Link组件
+
+  - **style：**传入函数，函数接受一个对象，包含isActive属性
+  - **className：**传入函数，函数接受一个对象，包含isActive属性
+
+- 默认的activeClassName
+
+  - 事实上在默认匹配成功时，NavLink就会添加上一个动态的active class
+
+- 当然，如果你担心这个class在其他地方被使用了，出现样式的层叠，也可以自定义class
+
+  ```jsx
+  // app.jsx
+  <NavLink
+    to="/home"
+    style={({ isActive }) => ({ color: isActive ? "red" : "" })}
+    >
+    首页
+  </NavLink>
+  <NavLink
+    to="/about"
+    style={({ isActive }) => ({ color: isActive ? "red" : "" })}
+    >
+    关于
+  </NavLink>
+  
+  
+  <NavLink
+    to="/home"
+    className={({ isActive }) => (isActive ? "link-active" : "")}
+    >
+    首页
+  </NavLink>
+  <NavLink
+    to="/about"
+    className={({ isActive }) => (isActive ? "link-active" : "")}
+    >
+    关于
+  </NavLink>
+  ```
+
+
+
+## Navigate导航
+
+- Navigate用于路由的重定向，当这个组件出现时，就会执行跳转到对应的to路径中
+
+- 我们也可以在匹配到/的时候，直接跳转到/home页面
+
+  ```jsx
+  // app.jsx
+  <Routes>
+    <Route path='/' element={<Navigate to="/home"/>} />
+    <Route path="/home"  element={<Home/>}  />
+    <Route path="/about" element={<About/>} />
+  </Routes>
+  ```
+
+
+
+## Not Found页面配置
+
+- 如果用户随意输入一个地址，该地址无法匹配，那么在路由匹配的位置将什么内容都不显示
+
+- 很多时候，我们希望在这种情况下，让用户看到一个Not Found的页面
+
+- 这个过程非常简单
+
+  - 开发一个Not Found页面
+  - 配置对应的Route，并且设置**path为***即可
+
+  ```jsx
+  // app.jsx
+  <Routes>
+    <Route path='/' element={<Navigate to="/home"/>} />
+    <Route path="/home"  element={<Home/>}  />
+    <Route path="/about" element={<About/>} />
+    <Route path='*' element={<NotFound/>}/>
+  </Routes>
+  ```
+
+
+
+## 路由的嵌套
+
+- 在开发中，路由之间是存在嵌套关系的
+
+- 这里我们假设Home页面中有两个页面内容
+
+  - 推荐列表和排行榜列表
+  - 点击不同的链接可以跳转到不同的地方，显示不同的内容
+
+- `<Outlet> `组件用于在父路由元素中作为子路由的占位元素
+
+  ```jsx
+  // app.jsx
+  <Routes>
+    <Route path='/' element={<Navigate to="/home"/>} />
+    <Route path="/home" element={<Home />}>
+      <Route path="/home" element={<Navigate to="/home/recommend" />} />
+      <Route path="/home/recommend" element={<HomeRecommend />} />
+      <Route path="/home/ranking" element={<HomeRanking />} />
+    </Route>
+    <Route path="/about" element={<About/>} />
+    <Route path='*' element={<NotFound/>}/>
+  </Routes>
+  ```
+
+  ```jsx
+  import React, { PureComponent } from "react";
+  import { Link, Outlet } from "react-router-dom";
+  
+  class Home extends PureComponent {
+    render() {
+      return (
+        <div>
+          <h1>Home Page</h1>
+          <div className="home-nav">
+            <Link to="/home/recommend">推荐</Link>
+            <Link to="/home/ranking">排行榜</Link>
+          </div>
+  
+          {/* 占位的组件 */}
+          <Outlet />
+        </div>
+      );
+    }
+  }
+  
+  export default Home;
+  ```
+
+
+
+## 手动路由的跳转
+
+- 目前我们实现的跳转主要是通过Link或者NavLink进行跳转的，实际上我们也可以通过**JavaScript代码**进行跳转
+
+  - 我们知道Navigate组件是可以进行路由的跳转的，但是依然是组件的方式
+  - 如果我们希望通过**JavaScript代码**逻辑进行跳转（比如点击了一个button），那么就**需要获取到navigate对象**
+
+-  在Router6.x版本之后，代码类的API都迁移到了hooks的写法
+
+  - 如果我们希望进行代码跳转，需要通过**useNavigate**的Hook获取到**navigate对象**进行操作
+  - 那么如果是一个**函数式组件**，我们可以直接调用，但是**如果是一个类组件呢？**
+
+  ```js
+  import { useNavigate } from "react-router-dom";
+  
+  // 高阶组件: 函数
+  function withRouter(WrapperComponent) {
+    return function (props) {
+      // 1.导航
+      const navigate = useNavigate();
+  
+      const router = { navigate };
+  
+      return <WrapperComponent {...props} router={router} />;
+    };
+  }
+  
+  export default withRouter;
+  ```
+
+  ```jsx
+  import React, { PureComponent } from "react";
+  import { Link, Outlet } from "react-router-dom";
+  import withRouter from "../hoc/with_router";
+  
+  class Home extends PureComponent {
+    navigateTo(path) {
+      const { navigate } = this.props.router;
+      navigate(path);
+    }
+  
+    render() {
+      return (
+        <div>
+          <h1>Home Page</h1>
+          <div className="home-nav">
+            <Link to="/home/recommend">推荐</Link>
+            <button onClick={(e) => this.navigateTo("/home/ranking")}>
+              排行榜
+            </button>
+          </div>
+  
+          {/* 占位的组件 */}
+          <Outlet />
+        </div>
+      );
+    }
+  }
+  
+  export default withRouter(Home);
+  ```
+
+
+
+## 路由参数传递
+
+- 传递参数有二种方式
+
+  - 动态路由的方式
+  - search传递参数
+
+- 动态路由的概念指的是路由中的路径并不会固定
+
+  - 比如/detail的path对应一个组件Detail
+  - 如果我们将path在Route匹配时写成/detail/:id，那么 /detail/abc、/detail/123都可以匹配到该Route，并且进行显示
+  - 这个匹配规则，我们就称之为**动态路由**
+  - 通常情况下，使用动态路由可以为路由传递参数
+
+  ```jsx
+  <Route path='/detail/:id' element={<Detail/>}/>
+  
+  <Link to="/detail/abc">abc</Link>
+  <Link to="/detail/123">123</Link>
+  ```
+  
+  - search传递参数
+  
+  ```jsx
+  import {
+    useLocation,
+    useNavigate,
+    useParams,
+    useSearchParams,
+  } from "react-router-dom";
+  
+  // 高阶组件: 函数
+  function withRouter(WrapperComponent) {
+    return function (props) {
+      // 1.导航
+      const navigate = useNavigate();
+  
+      // 2.动态路由的参数: /detail/:id
+      const params = useParams();
+  
+      // 3.查询字符串的参数: /user?name=why&age=18
+      const location = useLocation();
+      const [searchParams] = useSearchParams();
+      const query = Object.fromEntries(searchParams);
+  
+      const router = { navigate, params, location, query };
+  
+      return <WrapperComponent {...props} router={router} />;
+    };
+  }
+  
+  export default withRouter;
+  ```
+  
+  ```jsx
+  // app.jsx
+  <Route path='/user' element={<User/>}/>
+  <Link to="/user?name=shy&age=18">用户</Link>
+  
+  // User.jsx
+  import React, { PureComponent } from "react";
+  import withRouter from "../hoc/with_router";
+  
+  class User extends PureComponent {
+    render() {
+      const { router } = this.props;
+      const { query } = router;
+  
+      return (
+        <div>
+          <h1>
+            User: {query.name}-{query.age}
+          </h1>
+        </div>
+      );
+    }
+  }
+  
+  export default withRouter(User);
+  ```
+  
+
+
+
+## 路由的配置文件
+
+- 目前我们所有的路由定义都是直接使用Route组件，并且添加属性来完成的
+
+- 但是这样的方式会让路由变得非常混乱，我们希望将所有的路由配置放到一个地方进行集中管理
+
+  - 在早期的时候，Router并且没有提供相关的API，我们需要借助于react-router-config完成
+  - 在Router6.x中，为我们提供了**useRoutes API**可以完成相关的配置
+
+  ```js
+  // src/router/index.js
+  const routes = [
+    { path: "/", element: <Navigate to="/home" /> },
+    {
+      path: "/home",
+      element: <Home />,
+      children: [
+        { path: "/home", element: <Navigate to="/home/recommend" /> },
+        { path: "/home/recommend", element: <HomeRecommend /> },
+        { path: "/home/ranking", element: <HomeRanking /> },
+      ],
+    },
+    { path: "/about", element: <About /> },
+    { path: "/detail/:id", element: <Detail />  },
+    { path: "/user", element: <User /> },
+    { path: "*", element: <NotFound /> },
+  ];
+  
+  export default routes;
+  ```
+
+  ```jsx
+  // app.jsx
+  import { useRoutes } from 'react-router-dom';
+  import routes from './router';
+  
+  <div className='content'>
+    {useRoutes(routes)}
+  </div>
+  ```
+
+- 如果我们对某些组件进行了异步加载（懒加载），那么需要使用Suspense进行包裹
+
+  ```jsx
+  // src/router/index.js
+  const About = React.lazy(() => import("../pages/About"));
+  
+  // index.js
+  import { Suspense } from "react";
+  import { HashRouter } from "react-router-dom";
+  import ReactDOM from "react-dom/client";
+  import App from "./App";
+  
+  const root = ReactDOM.createRoot(document.querySelector("#root"));
+  root.render(
+    <HashRouter>
+      <Suspense fallback={<h3>Loading...</h3>}>
+        <App />
+      </Suspense>
+    </HashRouter>
+  );
+  ```
+
