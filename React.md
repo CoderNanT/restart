@@ -4424,6 +4424,8 @@
 
   ```js
   // src/router/index.js
+  const About = React.lazy(() => import("../pages/About"));
+  
   const routes = [
     { path: "/", element: <Navigate to="/home" /> },
     {
@@ -4457,9 +4459,6 @@
 - 如果我们对某些组件进行了异步加载（懒加载），那么需要使用Suspense进行包裹
 
   ```jsx
-  // src/router/index.js
-  const About = React.lazy(() => import("../pages/About"));
-  
   // index.js
   import { Suspense } from "react";
   import { HashRouter } from "react-router-dom";
@@ -4475,4 +4474,8 @@
     </HashRouter>
   );
   ```
+
+
+
+# React Hooks
 
