@@ -939,7 +939,9 @@
 
 
 
-##### 结构伪类 - :nth-child
+##### 结构伪类
+
+###### :nth-child
 
 - **:nth-child(1)**
   - 是父元素中的**第1个子元素**
@@ -1002,7 +1004,7 @@
 
 
 
-##### 结构伪类 - :nth-last-child
+###### :nth-last-child
 
 - :nth-last-child()的语法跟:nth-child()类似，不同点是：nth-last-child()从最后一个子元素开始往前计数
 
@@ -1042,7 +1044,7 @@
 
 
 
-##### 结构伪类 - :nth-of-type
+###### :nth-of-type
 
 - :nth-of-type()用法跟:nth-child()类似
   - 不同点是：nth-of-type()计数时只计算**同种类型的元素**
@@ -2290,103 +2292,600 @@ box-sizing用来设置盒子模型中宽高的行为
 
 
 
-## 浮动
+## CSS元素浮动
+
+### 认识浮动
+
+- float 属性可以指定一个元素**沿其容器**的**左侧**或**右侧**放置，允许**文本和内联元素环绕它**
+  - float 属性最初只用于在一段文本内**浮动图像，实现文字环绕的效果（图文环绕）**
+  - 但是早期的CSS标准中并没有提供好的**左右布局方案**，因此在一段时间里面它成为**网页多列布局的最常用方法**
+
+- **绝对定位、浮动**都会让元素**脱离标准流**，以达到灵活布局的效果
+
+- float 的常用取值
+  - none：不浮动，默认值
+  - left：向左浮动
+  - right：向右浮动
+
+
+
+### 浮动规则一、二
+
+- 元素一旦浮动后，脱离标准流
+  - **朝着向左或向右方向移动**，直到**自己的边界紧贴着包含块**（一般是父元素）或者**其他浮动元素的边界**为止
+  - **定位元素会层叠在浮动元素上面**
+  - 定位元素 > 浮动元素 > 非定位元素
+
+- 如果元素是向左浮动，浮动元素的左边界**不能超出包含块的左边界**（向右也是同理）
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <style>
+        .box {
+          width: 200px;
+          height: 200px;
+          background-color: orange;
+          margin: 0 auto;
+        }
+  
+        .item1,
+        .item2 {
+          background-color: #f00;
+        }
+  
+        .item1 {
+          /* 脱离标准流 */
+          float: left;
+          background-color: #0f0;
+        }
+  
+        .item2 {
+          float: right;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="box">
+        <div class="item1">1</div>
+        <div class="item2">2</div>
+      </div>
+    </body>
+  </html>
+  ```
+
+
+
+### 浮动规则三
+
+- 浮动元素之间不能层叠
+
+  - 如果一个元素浮动，另一个浮动元素已经在那个位置了，后浮动的元素将紧贴着前一个浮动元素（左浮找左浮，右浮找右浮）
+  - 如果水平方向剩余的空间不够显示浮动元素，浮动元素将向下移动，直到有充足的空间为止
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <style>
+        .container {
+          width: 500px;
+          height: 500px;
+          background-color: orange;
+        }
+  
+        .item {
+          width: 100px;
+          height: 100px;
+          background-color: #f00;
+          float: left;
+        }
+  
+        .box1 {
+          background-color: #0f0;
+        }
+  
+        .box4 {
+          width: 220px;
+          height: 100px;
+          background-color: purple;
+        }
+      </style>
+    </head>
+    <body>
+      <!-- 浮动元素之间不能层叠 -->
+      <div class="container">
+        <div class="item box1">1</div>
+        <div class="item box2">2</div>
+        <div class="item box3">3</div>
+  
+        <div class="item box4">4</div>
+      </div>
+    </body>
+  </html>
+  ```
+
+
+
+### 浮动规则四
+
+- 浮动元素不能与行内级内容层叠，**行内级内容将会被浮动元素推出**
+
+  - 比如行内级元素、inline-block元素、块级元素的文字内容
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <style>
+        .box {
+          width: 1000px;
+          height: 400px;
+          background-color: orange;
+        }
+  
+        .box span {
+          margin-right: 10px;
+        }
+  
+        .box .No-2 {
+          float: left;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="box">
+        <span>No.1</span>
+        <span class="No-2">No.2</span>
+        <span>No.3</span>
+        <span>No.4</span>
+      </div>
+    </body>
+  </html>
+  ```
+
+
+
+### 浮动规则五
+
+- 行内级元素、inline-block元素浮动后，**其顶部将与所在行的顶部对齐**
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <style>
+        .box {
+          width: 300px;
+          background: orange;
+        }
+  
+        .box span {
+          float: left;
+          background-color: #0f0;
+        }
+  
+        .box img {
+          width: 100px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="box">
+        中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，
+        中国<span>上海市</span>，
+        <img src="https://scpic.chinaz.net/files/pic/pic9/202009/apic27858.jpg" />
+        中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市，中国上海市
+      </div>
+    </body>
+  </html>
+  ```
+
+
+
+### 空隙的解决方案
 
 - 换行符，浏览器给解析成像空格一样的东西了，所以才产生了缝隙
 
-### 高度塌陷
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <style>
+        .box {
+          /* 2. font-size: 0; */
+          /* display: flex; */
+        }
+  
+        span {
+          background-color: orange;
+          /* 2. font-size: 16px; */
+          /* 3. float: left; */
+        }
+      </style>
+    </head>
+    <body>
+      <!-- 
+      将多个行内级元素中间的空格(间隙)去除的方法
+        1. 删除换行符(不推荐)
+        2. 将父级元素的font-size设置为0, 但是需要子元素设置回来
+        3. 通过子元素(span)统一向一个方向浮动即可
+        4. flex布局
+      -->
+      <div class="box">
+        <span>aaa</span>
+        <span>bbb</span>
+        <span>ccc</span>
+      </div>
+    </body>
+  </html>
+  ```
+
+
+
+### 浮动的问题 – 高度塌陷
 
 - 由于浮动元素脱离了文档流，变成了脱标元素，所以**不再向父元素汇报高度**
   - 父元素**计算总高度**时，就**不会计算浮动元素的高度**，导致了**高度坍塌**的问题
-
+- 解决父元素高度坍塌问题的过程，一般叫做**清浮动（清理浮动、清除浮动）**
 - 清浮动的目的是
   - 让**父元素计算高度的时候**，把**浮动元素的高度计算进去**
 
+- 如何清除浮动呢？使用clear属性
 
 
-### clear
 
-- clear 属性可以指定一个元素**是否必须移动**(清除浮动后)**到在它之前的浮动元素**下面; 
+#### clear
 
-- clear的常用取值
+- clear 属性是做什么的呢？
+
+  - clear 属性可以指定一个元素**必须移动到在它之前的浮动元素**下面
+
+- clear 的常用取值
   - left：要求元素的顶部低于之前生成的所有左浮动元素的底部
   - right：要求元素的顶部低于之前生成的所有右浮动元素的底部
   - both：要求元素的顶部低于之前生成的所有浮动元素的底部
+  - none：默认值，无特殊要求
 
-```html
-<!DOCTYPE html>
-<html lang="zh">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <style>
-      .content {
-        width: 1200px;
-        margin: 0 auto;
-        background: #f00;
-      }
-
-      .item {
-        width: 290px;
-        height: 180px;
-        background-color: purple;
-        margin-bottom: 10px;
-        margin-right: 10px;
-
-        float: left;
-      }
-
-      /* 其他的内容 */
-      .other {
-        height: 100px;
-        background: #0f0;
-      }
-
-      /* 解决办法一 */
-      .line {
-        clear: both;
-      }
-
-      /* 最终的解决方案 */
-      .clear_fix::after {
-        content: "";
-        clear: both;
-        display: block;
-
-        /* 浏览器兼容 */
-        visibility: hidden;
-        height: 0;
-      }
-
-      .clear_fix {
-        /* IE6/7 */
-        *zoom: 1;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- 因为所有的后代item元素都是浮动的, 脱离了文档流 -->
-    <!-- 不会向父元素汇报高度, 那么content元素压根就没有高度 -->
-    <div class="content">
-      <div class="wrapper clear_fix">
-        <div class="item left"></div>
-        <div class="item left"></div>
-        <div class="item right"></div>
-        <div class="item right"></div>
-        <div class="item right"></div>
-        <div class="item right"></div>
-
-        <!-- <div class="line"></div> -->
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <style>
+        .content {
+          width: 1200px;
+          margin: 0 auto;
+          background: #f00;
+        }
+  
+        .item {
+          width: 290px;
+          height: 180px;
+          background-color: purple;
+          margin-bottom: 10px;
+          margin-right: 10px;
+  
+          float: left;
+        }
+  
+        /* 其他的内容 */
+        .other {
+          height: 100px;
+          background: #0f0;
+        }
+  
+        /* 解决办法一 */
+        .line {
+          clear: both;
+        }
+  
+        /* 最终的解决方案 */
+        .clear_fix::after {
+          content: "";
+          clear: both;
+          display: block;
+  
+          /* 浏览器兼容 */
+          visibility: hidden;
+          height: 0;
+        }
+  
+        .clear_fix {
+          /* IE6/7 */
+          *zoom: 1;
+        }
+      </style>
+    </head>
+    <body>
+      <!-- 因为所有的后代item元素都是浮动的, 脱离了文档流 -->
+      <!-- 不会向父元素汇报高度, 那么content元素压根就没有高度 -->
+      <div class="content">
+        <div class="wrapper clear_fix">
+          <div class="item left"></div>
+          <div class="item left"></div>
+          <div class="item right"></div>
+          <div class="item right"></div>
+          <div class="item right"></div>
+          <div class="item right"></div>
+  
+          <!-- <div class="line"></div> -->
+        </div>
       </div>
-    </div>
+  
+      <!-- 我认为content没有高度, 那么我就会直接在上面显示 -->
+      <div class="other"></div>
+    </body>
+  </html>
+  ```
 
-    <!-- 我认为content没有高度, 那么我就会直接在上面显示 -->
-    <div class="other"></div>
-  </body>
-</html>
-```
+
+
+### 清除浮动的方法
+
+- 方法一：给父元素设置固定高度
+- 方法二：在父元素最后增加一个空的块级子元素，并且让它设置clear: both
+  - 会**增加很多无意义的空标签**，维护麻烦
+  - 违反了结构与样式分离的原则
+- 方法三：给父元素添加一个伪元素**（推荐）**
+
+
+
+## CSS Flex布局
+
+### 认识flexbox
+
+- Flexbox翻译为弹性盒子
+  - **弹性盒子**是一种用于**按行或按列布局元素**的**一维布局方法**
+  - 元素可以**膨胀以填充额外的空间**，**收缩以适应更小的空间**
+  - 通常我们使用Flexbox来进行布局的方案称之为**flex布局（flex layout）**
+
+- flex布局是目前web开发中使用最多的布局方案
+  - flex 布局（Flexible 布局，弹性布局）
+  - 目前特别在**移动端**可以说已经完全普及
+  - 在**PC端**也几乎已经完全普及和使用，只有**非常少数的网站依然在用浮动来布局**
+
+- 为什么需要flex布局呢？
+  - 长久以来，CSS 布局中唯一可靠且跨浏览器兼容的**布局工具只有 float 和 position**
+  - 但是这两种方法本身**存在很大的局限性**，并且他们用于布局实在是无奈之举
+
+
+
+### 原先的布局存在的痛点
+
+- 原来的布局存在哪些痛点呢？举例说明
+  - 比如在父内容里面**垂直居中一个块内容**
+  - 比如使容器的**所有子项等分可用宽度/高度，而不管有多少宽度/高度可用**
+  - 比如使**多列布局中的所有列采用相同的高度**，即使**它们包含的内容量不同**
+
+
+
+### flex布局的重要概念
+
+- 两个重要的概念
+  - 开启了 flex 布局的元素叫 **flex container**
+  - flex container 里面的直接子元素叫做 **flex item**
+
+- 当 flex container 中的子元素变成了 flex item 时，具备一下特点
+
+  - flex item 的布局将**受 flex container 属性的设置来进行控制和布局**
+  - flex item **不再严格区分块级元素和行内级元素**
+  - flex item **默认情况下是包裹内容的**，**但是可以设置宽度和高度**
+
+- 设置 display 属性为 flex 或者 inline-flex 可以成为 flex container
+
+  - flex：flex container 以 **block-level** 形式存在
+  - inline-flex：flex container 以 **inline-level** 形式存在
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/01-container.svg" style="width:30%;" />
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/02-items.svg" style="width:30%;" />
+
+
+
+### flex布局的模型
+
+- main axis：主轴
+
+- cross axis：交叉轴
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/11/00-basic-terminology.svg" style="width:60%;" />
+
+
+
+### flex相关的属性
+
+- 应用在 **flex container** 上的 CSS 属性
+  - flex-flow
+  - flex-direction
+  - flex-wrap
+  - flex-flow
+  - justify-content
+  - align-items
+  - align-content
+- 应用在 **flex items** 上的 CSS 属性
+  - flex-grow
+  - flex-basis
+  - flex-shrink
+  - order
+  - align-self
+  - flex
+
+
+
+### flex container
+
+#### flex-direction
+
+- flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main end 方向排布
+
+  - flex-direction 决定了 **main axis** 的方向，有 4 个取值
+  - row（默认值）、row-reverse、column、column-reverse
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/flex-direction.svg" style="width:30%;" />
+
+
+
+#### flex-wrap
+
+- flex-wrap 决定了 flex container 是单行还是多行
+
+  - nowrap（默认）：单行
+  - wrap：多行
+  - wrap-reverse：多行（对比 wrap，cross start 与 cross end 相反）
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/flex-wrap.svg" style="width:30%;" />
+
+
+
+#### flex-flow
+
+- flex-flow 属性是 flex-direction 和 flex-wrap 的简写
+  - 顺序任何，并且都可以省略
+
+
+
+#### justify-content
+
+- justify-content 决定了 flex items 在 main axis 上的对齐方式
+
+  - flex-start（默认值）：与 main start 对齐
+  - flex-end：与 main end 对齐
+  - center：居中对齐
+  - space-between
+    - flex items 之间的距离相等
+    - 与 main start、main end两端对齐
+  - space-around
+    - flex items 之间的距离相等
+    - flex items 与 main start、main end 之间的距离是 flex items 之间距离的一半
+  - space-evenly
+    - flex items 之间的距离相等
+    - flex items 与 main start、main end 之间的距离 等于 flex items 之间的距离
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/justify-content.svg" style="width:30%;" />
+
+
+
+#### align-item
+
+- align-items 决定了 flex items 在 cross axis 上的对齐方式
+
+  - normal：在弹性布局中，效果和stretch一样
+  - stretch：当 flex items 在 cross axis 方向的 size 为 auto 时，会自动拉伸至填充 flex container
+  - flex-start：与 cross start 对齐
+  - flex-end：与 cross end 对齐
+  - center：居中对齐
+  - baseline：与基准线对齐
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/align-items.svg" style="width:30%;" />
+
+
+
+#### align-content
+
+- align-content 决定了多行 flex items 在 cross axis 上的对齐方式，用法与 justify-content 类似
+
+  - stretch（默认值）：与 align-items 的 stretch 类似
+  - flex-start：与 cross start 对齐
+  - flex-end：与 cross end 对齐
+  - center：居中对齐
+  - space-between
+    - flex items 之间的距离相等
+    - 与 cross start、cross end两端对齐
+  - space-around
+    - flex items 之间的距离相等
+    - flex items 与 cross start、cross end 之间的距离是 flex items 之间距离的一半
+  - space-evenly
+    - flex items 之间的距离相等
+    - flex items 与 cross start、cross end 之间的距离 等于 flex items 之间的距离
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/align-content.svg" style="width:30%;" />
+
+
+
+### flex item
+
+#### order
+
+- order 决定了 flex items 的排布顺序
+
+  - 可以设置**任意整数**（正整数、负整数、0），**值越小就越排在前面**
+  - 默认值是 0
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/order.svg" style="width:30%;" />
+
+
+
+#### align-self
+
+- flex items 可以通过 align-self 覆盖 flex container 设置的 align-items
+
+  - auto（默认值）：遵从 flex container 的 align-items 设置
+  - stretch、flex-start、flex-end、center、baseline，效果跟 align-items 一致
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/align-self.svg" style="width:30%;" />
+
+
+
+#### flex-grow
+
+- flex-grow 决定了 flex items 如何扩展(拉伸/成长)
+
+  - 可以设置**任意非负数字（正小数、正整数、0），默认值是 0**
+  - 当 flex container 在 main axis 方向上**有剩余 size** 时，**flex-grow 属性才会有效**
+
+- 如果所有 flex items 的 flex-grow **总和超过 1**，每个 flex item 扩展的 size 为
+
+  - flex container 的剩余 size * flex-grow / sum（总和）
+
+- flex items 扩展后的最终 size 不能超过 max-width\max-height
+
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/flex-grow.svg" style="width:30%;" />
+
+
+
+#### flex-shrink
+
+- flex-shrink 决定了 flex items 如何收缩(缩小)
+  - 可以设置**任意非负数字（正小数、正整数、0），默认值是 1**
+  - 当 flex items 在 main axis 方向上**超过了 flex container 的 size，flex-shrink 属性才会有效**
+- 如果所有 flex items 的 flex-shrink 总和超过 1，每个 flex item 收缩的 size为
+  - flex items 超出 flex container 的 size * 收缩比例 / 所有 flex items 的收缩比例之和
+- flex items 收缩后的最终 size 不能小于 min-width\min-height
+
+
+
+#### flex-basis
+
+- flex-basis 用来设置 flex items 在 main axis 方向上的 base size
+  - **auto**（默认值）、**具体的宽度数值**（100px）
+- 决定 flex items 最终 base size 的因素，从优先级高到低
+  - max-width\max-height\min-width\min-height
+  - flex-basis
+  - width\height
+  - 内容本身的 size
+
+
+
+#### flex
+
+- flex 是 flex-grow || flex-shrink || flex-basis 的简写，flex 属性可以指定1个，2个或3个值
+- 单值语法：值必须为以下其中之一
+  - 一个无单位数：它会被当作 flex-grow 的值
+  - 一个有效的宽度值：它会被当作 flex-basis 的值
+  - 关键字 none，auto 或 initial
+    - flex-grow - flex-shrink - flex-basis
+    - none：0 - 0 - auto
+    - auto： 1 - 1 - auto 
+- 双值语法：第一个值必须为一个无单位数，并且它会被当作 flex-grow 的值
+  - 第二个值必须为以下之一
+    - 一个无单位数：它会被当作 flex-shrink 的值
+    - 一个有效的宽度值：它会被当作 flex-basis 的值
+- 三值语法
+  - 第一个值必须为一个无单位数，并且它会被当作 flex-grow 的值
+  - 第二个值必须为一个无单位数，并且它会被当作 flex-shrink 的值
+  - 第三个值必须为一个有效的宽度值， 并且它会被当作 flex-basis 的值
+- 添加元素的个数是**列数减 - 2** 
 
 
 
