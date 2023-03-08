@@ -2677,9 +2677,9 @@ box-sizing用来设置盒子模型中宽高的行为
   - flex：flex container 以 **block-level** 形式存在
   - inline-flex：flex container 以 **inline-level** 形式存在
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/10/01-container.svg" style="width:30%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/01-container.svg" style="width:50%;" />
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/10/02-items.svg" style="width:30%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/02-items.svg" style="width:50%;" />
 
 
 
@@ -2689,7 +2689,7 @@ box-sizing用来设置盒子模型中宽高的行为
 
 - cross axis：交叉轴
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/11/00-basic-terminology.svg" style="width:60%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/11/00-basic-terminology.svg" style="width:50%;" />
 
 
 
@@ -2722,7 +2722,7 @@ box-sizing用来设置盒子模型中宽高的行为
   - flex-direction 决定了 **main axis** 的方向，有 4 个取值
   - row（默认值）、row-reverse、column、column-reverse
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/10/flex-direction.svg" style="width:30%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/flex-direction.svg" style="width:50%;" />
 
 
 
@@ -2734,7 +2734,7 @@ box-sizing用来设置盒子模型中宽高的行为
   - wrap：多行
   - wrap-reverse：多行（对比 wrap，cross start 与 cross end 相反）
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/10/flex-wrap.svg" style="width:30%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/flex-wrap.svg" style="width:50%;" />
 
 
 
@@ -2762,7 +2762,7 @@ box-sizing用来设置盒子模型中宽高的行为
     - flex items 之间的距离相等
     - flex items 与 main start、main end 之间的距离 等于 flex items 之间的距离
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/10/justify-content.svg" style="width:30%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/justify-content.svg" style="width:50%;" />
 
 
 
@@ -2777,7 +2777,7 @@ box-sizing用来设置盒子模型中宽高的行为
   - center：居中对齐
   - baseline：与基准线对齐
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/10/align-items.svg" style="width:30%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/align-items.svg" style="width:50%;" />
 
 
 
@@ -2799,7 +2799,7 @@ box-sizing用来设置盒子模型中宽高的行为
     - flex items 之间的距离相等
     - flex items 与 cross start、cross end 之间的距离 等于 flex items 之间的距离
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/10/align-content.svg" style="width:30%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/align-content.svg" style="width:50%;" />
 
 
 
@@ -2812,7 +2812,7 @@ box-sizing用来设置盒子模型中宽高的行为
   - 可以设置**任意整数**（正整数、负整数、0），**值越小就越排在前面**
   - 默认值是 0
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/10/order.svg" style="width:30%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/order.svg" style="width:50%;" />
 
 
 
@@ -2823,7 +2823,7 @@ box-sizing用来设置盒子模型中宽高的行为
   - auto（默认值）：遵从 flex container 的 align-items 设置
   - stretch、flex-start、flex-end、center、baseline，效果跟 align-items 一致
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/10/align-self.svg" style="width:30%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/align-self.svg" style="width:50%;" />
 
 
 
@@ -2840,7 +2840,7 @@ box-sizing用来设置盒子模型中宽高的行为
 
 - flex items 扩展后的最终 size 不能超过 max-width\max-height
 
-  <img src="https://css-tricks.com/wp-content/uploads/2018/10/flex-grow.svg" style="width:30%;" />
+  <img src="https://css-tricks.com/wp-content/uploads/2018/10/flex-grow.svg" style="width:50%;" />
 
 
 
