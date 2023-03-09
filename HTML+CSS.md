@@ -2166,7 +2166,7 @@ box-sizing用来设置盒子模型中宽高的行为
 ### auto到底是什么?
 
 - 800 = 200 + margin-left（0）+ margin-right（0）+ left（0）+ right（0）
-- auto -> 交给浏览器你来出来
+- auto -> 交给浏览器你来处理
 - width: auto
   - 行内非替换元素 width：包裹内容
   - 块级元素 width：包含块的宽度
