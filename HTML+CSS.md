@@ -199,7 +199,7 @@
 - 我们应该如何告诉浏览器来**显示一张图片**呢？使用**img元素**
 - **img 元素**将**一份图像嵌入文档**
   - img是image单词的缩写，是**图像、图片**的意思
-  - 事实上img是一个**替换元素（ replaced element ）**
+  - 事实上img是一个**行内替换元素（ replaced element ）**
 - **img有两个常见的属性：**
   - src属性：source单词的缩写，表示源
     - 是**必须的**，它包含了你想嵌入的图片的文件路径
@@ -2013,7 +2013,7 @@ box-sizing用来设置盒子模型中宽高的行为
 
 
 
-### absolute/fixed元素的特点(一)
+### absolute/fixed元素的特点（一）
 
 -  可以随意设置宽高
 
@@ -2112,7 +2112,7 @@ box-sizing用来设置盒子模型中宽高的行为
 
 
 
-### absolute/fixed元素的特点(二)
+### absolute/fixed元素的特点（二）
 
 - 绝对定位元素（absolutely positioned element）
   - position值为**absolute**或者**fixed**的元素
@@ -2889,82 +2889,319 @@ box-sizing用来设置盒子模型中宽高的行为
 
 
 
+## transform
+
+- CSS transform属性允许对某一个元素进行某些形变，包括**旋转，缩放，倾斜或平移等**
+
+- 注意事项，并非所有的盒子都可以进行transform的转换（通常**行内级元素**不能进行形变）
+- 所以，transform对于**行内级非替换元素**是无效的
+  - 比如对span、a元素等
+
+
+
+### translate
+
+- 平移：translate(x, y)
+  - 这个CSS 函数用于移动元素在平面上的位置
+  - translate本身可以表示翻译的意思，在物理上也可以表示平移
+- 值个数
+  - 一个值时，设置x轴上的位移
+  - 二个值时，设置x轴和y轴上的位移
+- 值类型
+  - 数字：100px
+  - 百分比：参照元素本身
+
+
+
+### scale
+
+- 缩放：scale(x, y)
+
+  - 这个CSS 函数可改变元素的大小
+
+- 值个数
+
+  - 一个值时，设置x轴上的缩放
+  - 二个值时，设置x轴和y轴上的缩放
+
+- 值类型
+
+  - 数字
+    - 1：保持不变
+    - 2：放大一倍
+    - 0.5：缩小一半
+
+  - 百分比：百分比不常用
+
+
+
+### rotate
+
+- 旋转：rotate(angle)
+- 一个值：表示旋转的角度
+- 值类型
+  - 常用单位deg：旋转的角度（ degrees ）
+  - 正数为顺时针
+  - 负数为逆时针
+
+
+
+### transform-origin
+
+- transform-origin：形变的原点
+  - 比如在进行scale缩放或者rotate旋转时，都会有一个原点
+- 值个数
+  - 一个值，设置x轴的原点
+  - 两个值，设置x轴和y轴的原点
+- 必须是**具体值/百分百**，或 left, center, right, top, bottom关键字中的一个
+  - left, center, right, top, bottom关键字
+  - 具体值：从左上角开始计算
+  - 百分比：参考元素本身大小
+
+- 默认值：50%,50%
+
+
+
+### skew
+
+- 倾斜：skew(x, y)
+  - 函数定义了一个元素在二维平面上的倾斜转换
+- 值个数
+  - 一个值时，表示x轴上的倾斜
+  - 二个值时，表示x轴和y轴上的倾斜
+- 值类型
+  - deg：倾斜的角度
+  - 正数为顺时针
+  - 负数为逆时针
+- 注意：倾斜的原点受transform-origin的影响
+
+
+
+## 认识transition动画
+
+- 什么是transition动画呢？
+  - CSS transitions 提供了一种在更改**CSS属性**时控**制动画速度的方法**
+  - 可以让CSS属性变化成为一个**持续一段时间的过程**，而**不是立即生效**的
+  - 比如将一个元素从**一个位置移动到另外一个位置**，默认在修改完CSS属性后会立即生效
+  - 但是我们可以通过CSS transition，让**这个过程加上一定的动画效果**，包括**一定的曲线速率变化**
+- 通常将两个状态之间的过渡称为隐式过渡（implicit transitions），因为开始与结束之间的状态**由浏览器决定**
+- CSS transitions 可以决定
+  - 哪些属性发生动画效果 (明确地列出这些属性)
+  - 何时开始 (设置 delay）
+  - 持续多久 (设置 duration) 
+  - 如何动画 (定义 timing function，比如匀速地或先快后慢)
+
+
+
+### 哪些CSS属性可以做动画呢？
+
+- 并非所有的CSS属性都可以执行动画的，那么我们如何知道哪些属性支持动画呢？
+- 方法一：在MDN可**执行动画的CSS属性**中查询
+  - https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_animated_properties
+- 方法二：阅读CSS属性的文档说明
+
+
+
+### 过渡动画 - transition
+
+- transition CSS 属性是 transition-property，transition-duration，transition-timing-function 和 transition-delay 的一个简写属性
+- transition-property：指定应用过渡属性的名称
+  - all：所有属性都执行动画
+  - none：所有属性都不执行动画
+  - CSS属性名称：要执行动画的CSS属性名称，比如width、left、transform等
+- transition-duration：指定过渡动画所需的时间
+  - 单位可以是秒（s）或毫秒（ms）
+- transition-timing-function：指定动画的变化曲线
+  - https://developer.mozilla.org/zh-CN/docs/Web/CSS/transition-timing-function
+- transition-delay：指定过渡动画执行之前的等待时间
+
+
+
+## 认识CSS Animation
+
+- 之前我们学习了transition来进行过渡动画，但是过渡动画有如下的缺点
+  - transition**只能定义开始状态和结束状态**，不能定义中间状态，也就是说只有两个状态
+  - transition**不能重复执行**，除非一再触发动画
+  - transition需要在**特定状态下会触发才能执行**，比如某个属性被修改了
+
+- 如果我们希望可以有更多状态的变化，我们可以使用CSS Animation
+- CSS Animation的使用分成两个步骤
+  - 步骤一：使用keyframes定义动画序列（每一帧动画如何执行）
+  - 步骤二：配置动画执行的名称、持续时间、动画曲线、延迟、执行次数、方向等等
+
+
+
+### @keyframes规则
+
+- 可以使用@keyframes来定义多个变化状态，并且使用animation-name来声明匹配
+  - 关键帧使用**percentage**来指定动画发生的时间点
+  - **0%**表示动画的第一时刻，**100%**表示动画的最终时刻
+  - 因为这两个时间点十分重要，所以还有特殊的别名：**from**和**to**
+- 也就是说可以使用from和to关键字
+  - from相当于0%
+  - to相当于100%
+
+
+
+### animation属性
+
+- CSS animation 属性是 animation-name，animation-duration, animation-timing-function，animation-delay，animationiteration-count，animation-direction，animation-fill-mode 和 animation-play-state 属性的一个简写属性形式
+
+  - animation-name：指定执行哪一个关键帧动画
+
+  - animation-duration：指定动画的持续时间
+
+  - animation-timing-function：指定动画的变化曲线
+
+  - animation-delay：指定延迟执行的时间
+
+  - animation-iteration-count：指定动画执行的次数，执行infinite表示无限动画
+
+  - animation-direction：指定方向，常用值normal和reverse
+    - animation-fill-mode：执行动画最后保留哪一个值
+      - none：回到没有执行动画的位置
+      - forwards：动画最后一帧的位置
+      - backwards：动画第一帧的位置
+
+  - animation-play-state：指定动画运行或者暂停（在JavaScript中使用，用于暂停动画）
+
+
+
 ## vertical-align
 
-- vertical-align会影响**行内块级元素** 在一个 **行盒**中垂直方向的位置
+- 官方文档的翻译：vertical-align会影响 **行内块级元素** 在一个 **行盒** 中垂直方向的位置
 
 
 
-### line boxes(行盒)
+### line boxes（行盒）
 
 - 一个div没有设置高度的时候，会不会有高度？
   - 没有内容，没有高度
   - 有内容，内容撑起来高度
 - 但是内容撑起来高度的本质是什么呢？
   - 内容由行高（line-height），撑起来了div的高度
-
 - 行高为什么可以撑起div的高度？
-  - 这是因为**line boxes**的存在，并且line-boxes有一个特性，**包裹每行的(行内/行内块)元素**
+  - 这是因为**line boxes**的存在，并且line-boxes有一个特性，**包裹每行的内容**
   - 而其中的文字是有行高的，必须将整个行高包裹进去
-- **line-boxes**一定会想办法包裹住当前行中**所有的内容**
+
+
+
+### 不同情况分析
+
+- 情况一：只有文字时，line boxes 如何包裹内容？
+
+- 情况二：有图片，文字，line-boxes 如何包裹内容？
+
+- 情况三：有图片，文字，inline-block（比图片要大）如何包裹内容？
+
+- 情况四：有图片，文字，inline-block（比图片要大）而且设置了 margin-bottom 如何包裹内容？
+
+- 情况五：有图片、文字、inline-block（比图片要大）而且设置了 margin-bottom 并且有文字，如何包裹内容？
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <style>
+        body {
+          margin: 0;
+          padding: 0;
+        }
+  
+        .box {
+          background-color: orange;
+          margin-bottom: 20px;
+        }
+  
+        img {
+          width: 100px;
+        }
+  
+        span {
+          display: inline-block;
+          width: 200px;
+          height: 200px;
+          background-color: #f00;
+        }
+  
+        .box4 span {
+          margin-bottom: 20px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="box">div元素中的文本</div>
+  
+      <div class="box">
+        <img src="https://scpic.chinaz.net/files/pic/pic9/202009/apic27858.jpg" />
+        div元素中的文本
+      </div>
+  
+      <div class="box">
+        <img src="https://scpic.chinaz.net/files/pic/pic9/202009/apic27858.jpg" />
+        div元素中的文本
+        <span></span>
+      </div>
+  
+      <div class="box box4">
+        <img src="https://scpic.chinaz.net/files/pic/pic9/202009/apic27858.jpg" />
+        div元素中的文本
+        <span></span>
+      </div>
+  
+      <div class="box box4">
+        <img src="https://scpic.chinaz.net/files/pic/pic9/202009/apic27858.jpg" />
+        div元素中的文本
+        <span>span元素中的文本xxqg</span>
+      </div>
+    </body>
+  </html>
+  ```
 
 
 
 ### baseline
 
-- 文本的baseline是字母x的下方
-- Inline-block默认的baseline是margin-bottom的底部（没有，就是盒子的底部）
-- Inline-block有文本时，baseline是最后一行文本的x的下方
+- 结论：line-boxes 一定会想办法包裹住**当前行中所有的内容**
+- 但是，但是为什么对齐方式千奇百怪呢？
+  - 你认为的千奇百怪，其实有它的内在规律
+  - 答案就是 **baseline** 对齐
+- 我们来看官方 vertical-align 的**默认值**就是**baseline**
+
+- 但是 baseline 都是谁呢？
+
+  - 文本的 baseline 是字母 x 的下方
+  - Inline-block 默认的 baseline 是 margin-bottom 的底部（没有，就是盒子的底部）
+  - Inline-block 有文本时，baseline 是最后一行文本的 x 的下方
 
   ![](https://s3.bmp.ovh/imgs/2023/03/04/b36fcad21938047d.png)
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <style>
-    .box {
-      background-color: orange;
-    }
-
-    .box img {
-      width: 200px;
-    }
-
-    .box .small {
-      display: inline-block;
-      width: 100px;
-      height: 200px;
-      background-color: #f00;
-    }
-  </style>
-
-  <body>
-    <div class="box">
-      我是普通文本,123456abcqgpyxxxdef
-      <img
-        src="https://img0.baidu.com/it/u=2862534777,914942650&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"
-        alt=""
-      />
-      <span class="small">123阿萨德浙西川藏线sdasdasdxc</span>
-    </div>
-  </body>
-</html>
-```
 
 
 
 ### vertical-align的其他值
 
-- baseline(默认值)：基线对齐
-- top：把行内级盒子的顶部跟line boxes顶部对齐
-- middle：行内级盒子的中心点与父盒子基线加上x-高度一半的线对齐
-- bottom：把行内级盒子的底部跟line box底部对齐
+- 现在，对于不同的取值就非常容易理解了
+
+- 基线：**小写字母x最底部对齐的线**
+
+  - baseline（默认值）：基线对齐
+
+  - top：把行内级盒子的顶部跟 line boxes 顶部对齐
+
+  - middle：行内级盒子的中心点与父盒子**基线减去 x 高度一半的线**对齐
+
+  - bottom：把行内级盒子的底部跟 line box 底部对齐
+
+
+- 解决图片下边缘的间隙方法
+  - 原因
+    - 是因为 vertical-align 默认值是 baseline 基线对齐
+    - 而基线是小写字母x最底部的线，有些字母（q，g，p）超出了基线，但是**行盒必须包裹所有的内容**
+    - 所以就往行盒下面多加了一点像素
+
+  - 方法一：vertical-align设置成top/middle/bottom
+  - 方法二：将图片设置为block元素
+
 
 
 
