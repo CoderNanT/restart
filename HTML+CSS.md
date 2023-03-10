@@ -187,6 +187,43 @@
 
 
 
+## meta元素
+
+- meta 元素定义的元数据的类型包括以下几种
+  - 如果设置了 **charset** 属性，meta 元素是一个字符集声明，告诉文档使用哪种字符编码
+  - 如果设置了 **http-equiv** 属性，meta 元素则是编译指令
+  - 如果设置了 **name** 属性，meta 元素提供的是文档级别（document-level）的元数据，应用于整个页面
+
+
+
+### http-equiv
+
+- 我们会发现，默认创建的HTML页面都有这段代码
+
+  ```html
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  ```
+
+- 它的作用到底是什么呢？网上众说纷纭，我们直接看官方文档的解释
+  - 告知IE浏览器去模仿哪一个浏览器的行为
+  - IE=edge，让 IE 以 edge 的模式来解析这个页面
+
+
+
+### name
+
+- name属性的值非常多，具体的内容可以查看文档
+  - https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/meta/name
+- 我们介绍几个常用的
+  - robots：爬虫、协作搜寻器，或者 “机器人”，对此页面的处理行为，或者说，应当遵守的规则
+  - author：文档作者的名字
+  - Copyright：版权声明
+  - description：一段简短而精确的、对页面内容的描述
+    - 一些浏览器，比如 Firefox 和 Opera，将其用作书签的默认描述
+  - keywords：与页面内容相关的关键词，使用逗号分隔。某些搜索引擎会进行收录
+
+
+
 ## body元素
 
 - body元素里面的内容将是你**在浏览器窗口中看到的东西**，也就是**网页的具体内容和结构**
@@ -1839,6 +1876,31 @@ box-sizing用来设置盒子模型中宽高的行为
 
 
 
+## CSS样式的字符编码
+
+- 之前我们有制定过HTML页面的编码，但是并没有制定CSS样式的编码
+
+  - 那么CSS样式的字符编码会按照什么规则来使用呢？
+
+- 在样式表中有多种方法去声明字符编码，浏览器会按照以下顺序尝试下边的方法（一旦找到就停止并得出结果）
+
+  - 文件的开头的 Unicode byte-order（字节顺序标记） 字符值
+    - https://en.wikipedia.org/wiki/Byte_order_mark
+  - 由Content-Type：HTTP header 中的 charset 属性给出的值或用于提供样式表的协议中的等效值
+
+  - CSS @ 规则 @charset
+  - 使用参考文档定义的字符编码： `<link>` 元素的 charset 属性
+    - 该方法在 HTML5 标准中已废除，无法使用
+  - 假设文档是 UTF-8
+
+- 开发中推荐在CSS的开头编写 @charset 指定编码
+
+  ```css
+  @charset "UTF-8"
+  ```
+
+
+
 ## CSS元素定位
 
 ### 标准流（Normal Flow）
@@ -3069,7 +3131,7 @@ box-sizing用来设置盒子模型中宽高的行为
 
 ## vertical-align
 
-- 官方文档的翻译：vertical-align会影响 **行内块级元素** 在一个 **行盒** 中垂直方向的位置
+- 官方文档的翻译：vertical-align会影响 **行内（块）级元素** 在一个 **行盒** 中垂直方向的位置
 
 
 
@@ -3204,128 +3266,318 @@ box-sizing用来设置盒子模型中宽高的行为
 
 
 
+## white-space
 
-## FC
-
-- FC的全称是Formatting Context(格式化上下文)，元素在标准流里面都是属于一个FC的
-
-- 块级元素的布局属于Block Formatting Context（块级格式化上下文）
-- 行内级元素的布局属于Inline Formatting Context（行内格式化上下文） 
-
-
-
-### BFC
-
-- MDN上有整理出在哪些具体的情况下会创建BFC： 
-  - 根元素（html） 
-  - 浮动元素（元素的 float 不是 none）
-  - 绝对定位元素（元素的 position 为 absolute 或 fixed） 
-  - 行内块元素（元素的 display 为 inline-block）
-  - overflow 计算值(Computed)不为 visible 的块元素
-  - 弹性元素（display 为 flex 或 inline-flex 元素的直接子元素）
-  - 网格元素（display 为 grid 或 inline-grid 元素的直接子元素）
-
-- BFC有什么作用呢
-  - 在BFC中，盒子会在**垂直方向上一个挨着一个**的排布
-  - **垂直方向的间距由margin属性**决定
-  - 在同一个BFC中，**相邻的两个盒子之间的margin会折叠**
-  - 在BFC中，每个元素的**左边缘是紧挨着包含块的左边缘**的；
-
-```html
-<!DOCTYPE html>
-<html lang="zh">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BFC-解决折叠</title>
-    <style>
-      .container {
-        overflow: auto;
-      }
-
-      .box1 {
-        width: 400px;
-        height: 100px;
-        background-color: orange;
-
-        margin-bottom: 100px;
-      }
-
-      .box2 {
-        height: 100px;
-        background-color: purple;
-
-        margin-top: 100px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="box1"></div>
-    <div class="box2"></div>
-
-    <div class="container">
-      <div class="box1"></div>
-    </div>
-    <div class="box2"></div>
-  </body>
-</html>
-```
+- white-space用于设置空白处理和换行规则
+  - normal：合并所有连续的空白，**允许**单词超屏时自动换行
+  - nowrap：合并所有连续的空白，**不允许**单词超屏时自动换行
+  - pre：**阻止**合并所有连续的空白，**不允许**单词超屏时自动换行
+  - pre-wrap：**阻止**合并所有连续的空白，**允许**单词超屏时自动换行
+  - pre-line：合并所有连续的空白（但保留换行），**允许**单词超屏时自动换行
 
 
 
-### 解决浮动高度塌陷
+## text-overflow
 
-- BFC解决高度塌陷需要满足两个条件
-  - 浮动元素的父元素触发BFC，形成独立的块级格式化上下文
-  - 浮动元素的父元素的高度是auto的
-- BFC的高度是auto的情况下，是如下方法计算高度的
-  - 如果只有inline-level，是行高的顶部和底部的距离
-  - 如果有block-level，是由最底层盒子的上边缘和下边缘之间的距离
-  - 如果有绝对定位元素，将被忽略
-  - **如果有浮动元素，那么会增加高度以包含这些浮动元素的下边缘**
+- text-overflow通常用来设置文字溢出时的行为
+  - clip：溢出的内容直接裁剪掉（字符可能会显示不完整）
+  - ellipsis：溢出那行的结尾处用省略号表示
+- text-overflow生效的前提是overflow不为visible
 
-```html
-<!DOCTYPE html>
-<html lang="zh">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BFC-解决浮动高度塌陷</title>
-    <style>
-      .container {
-        background-color: orange;
-          
-        overflow: auto;
-      }
-
-      .item {
-        width: 600px;
-        height: 200px;
-    	float: left;
-        border: 1px solid #000;
-        background-color: pink;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="item"></div>
-      <div class="item"></div>
-      <div class="item"></div>
-      <div class="item"></div>
-    </div>
-  </body>
-</html>
-```
+- 常见的是将 white-space、text-overflow、overflow 一起使用
 
 
 
 ## 浏览器前缀
 
-- 为什么需要浏览器前缀了
-  - CSS属性刚开始**并没有成为标准**，浏览器为了**防止后续会修改名字给新的属性添加了浏览器前缀**
+- 有时候可能会看到有些CSS属性名前面带有：**-o-、-xv-、-ms-、mso-、-moz-、-webkit-**
+- 官方文档专业术语叫做：vendor-specific extensions（供应商特定扩展）
+
+- 为什么需要浏览器前缀了？
+  - CSS属性刚开始**并没有成为标准**，浏览器为了**防止后续会修改/删除名字给新的属性添加了浏览器前缀**
+
+- 上述前缀叫做浏览器私有前缀，只有对应的浏览器才能解析使用
+  - -o-、-xv-：Opera等
+  - -ms-、mso-：IE等
+  - -moz-：Firefox等
+  - -webkit-：Safari、Chrome等
+- 注意：不需要手动添加，学习了模块化打包工具会自动添加浏览器前缀
+
+
+
+## FC
+
+- 什么是FC呢？
+  - FC的全称是Formatting Context（格式化上下文），元素在标准流里面都是属于一个FC的
+  - https://www.w3.org/TR/CSS21/visuren.html#normal-flow
+
+- 块级元素的布局属于Block Formatting Context（BFC）
+  - 也就是**block level box**都是在**BFC**中布局的
+
+- 行内级元素的布局属于Inline Formatting Context（IFC） 
+  - 也就是**inline level box**都是在**IFC**中布局的
+
+
+
+
+### BFC
+
+- block level box都是在BFC中布局的，那么这个BFC在哪里呢？
+  - https://www.w3.org/TR/CSS21/visuren.html#block-formatting
+
+- MDN上有整理出在哪些具体的情况下会创建BFC 
+  - 根元素（html） 
+  - 浮动元素（元素的 float 不是 none）
+  - 绝对定位元素（元素的 position 为 absolute 或 fixed） 
+  - 行内块元素（元素的 display 为 inline-block）
+  - 表格单元格（元素的 display 为 table-cell，HTML表格单元格默认为该值），表格标题（元素的 display 为 table-caption，HTML表格标题默认为该值）
+  - 匿名表格单元格元素（元素的 display 为 table、table-row、 table-row-group、table-header-group、table-footer-group（分别是HTML table、row、tbody、thead、tfoot 的默认属性）或 inline-table）
+  - overflow 值不为 visible 的块元素
+  - 弹性元素（display 为 flex 或 inline-flex 元素的直接子元素）
+  - 网格元素（display 为 grid 或 inline-grid 元素的直接子元素）
+  - display 值为 flow-root 的元素
+
+
+
+#### BFC有什么作用呢
+
+- 简单概况如下
+
+  - 在BFC中，盒子会在**垂直方向上一个挨着一个**的排布
+
+  - **垂直方向的间距由margin属性**决定
+
+  - 在同一个BFC中，**相邻的两个盒子之间的margin会折叠**
+
+  - 在BFC中，每个元素的**左边缘是紧挨着包含块的左边缘**的
+
+- 那么这个东西有什么用呢？
+
+  - 解决margin的折叠问题
+  - 解决浮动高度塌陷问题
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <title>BFC-解决折叠</title>
+      <style>
+        .container {
+          overflow: auto;
+        }
+  
+        .box1 {
+          width: 400px;
+          height: 100px;
+          background-color: orange;
+  
+          margin-bottom: 50px;
+        }
+  
+        .box2 {
+          height: 100px;
+          background-color: purple;
+  
+          margin-top: 100px;
+        }
+      </style>
+    </head>
+    <body>
+      <!-- 让 container box 触发BFC -->
+      <div class="container">
+        <div class="box1"></div>
+      </div>
+      <div class="box2"></div>
+    </body>
+  </html>
+  ```
+
+
+
+#### 解决浮动高度塌陷
+
+- 事实上，BFC解决高度塌陷需要满足两个条件
+  - 浮动元素的父元素触发BFC，形成独立的块级格式化上下文（Block Formatting Context）
+  - 浮动元素的父元素的高度是auto的
+- BFC的高度是auto的情况下，是如下方法计算高度的
+  - 如果只有inline-level，是行高的顶部和底部的距离
+  - 如果有block-level，是由最底层的块上边缘和最底层块盒子的下边缘之间的距离
+  - 如果有绝对定位元素，将被忽略
+  - **如果有浮动元素，那么会增加高度以包裹这些浮动元素的下边缘**
+
+  - https://www.w3.org/TR/CSS21/visudet.html#root-height
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <title>BFC-解决浮动高度塌陷</title>
+      <style>
+        .container {
+          background-color: orange;
+          overflow: auto;
+        }
+  
+        .item {
+          width: 600px;
+          height: 200px;
+          float: left;
+          border: 1px solid #000;
+          background-color: pink;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+      </div>
+    </body>
+  </html>
+  ```
+
+
+
+## 媒体查询
+
+- 媒体查询是一种提供给**开发者**针对**不同设备需**求进行**定制化开发**的一个接口
+- 你可以根据**设备的类型**（比如屏幕设备、打印机设备）或者**特定的特性**（比如屏幕的宽度）来修改你的页面
+
+- 媒体查询的使用方式主要有三种
+
+  - 方式一：通过**@media和@import**使用不同的CSS规则（常用）
+
+  ```html
+  <style>
+    @import url(./css/body_bgc.css) (max-width: 800px);
+  </style>
+  ```
+
+  - 方式二：使用media属性为`<style>, <link>, <source>`和其他HTML元素指定特定的媒体类型
+
+  ```html
+  <link rel="stylesheet" media="screen and (max-width: 800px)" href="./css/body_bgc.css">
+  ```
+
+  - 方式三：使用 Window.matchMedia() 和 MediaQueryList.addListener() 方法来测试和监控媒体状态
+
+- 比较常用的是通过@media来使用不同的CSS规则，目前掌握这个即可
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <style>
+        /* 
+        @media (min-width: 320px) and (max-width: 375px) {
+        .box { font-size: 15px; }
+        }
+  
+        @media (min-width: 375px) and (max-width: 414px) {
+          .box { font-size: 18px; }
+        }
+  
+        @media (min-width: 414px) and (max-width: 480px) {
+          .box { font-size: 21px; }
+        }
+  
+        @media (min-width: 480px) {
+          .box { font-size: 24px; }
+        } 
+        */
+  
+        /* CSS层叠性 */
+        @media (min-width: 320px) {
+          .box {
+            font-size: 15px;
+          }
+        }
+        @media (min-width: 375px) {
+          .box {
+            font-size: 18px;
+          }
+        }
+        @media (min-width: 414px) {
+          .box {
+            font-size: 21px;
+          }
+        }
+        @media (min-width: 480px) {
+          .box {
+            font-size: 24px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="box">我是box</div>
+    </body>
+  </html>
+  ```
+
+
+
+### 媒体类型
+
+- 在使用媒体查询时，你必须指定要使用的媒体类型
+  - 媒体类型是可选的，并且会（隐式地）应用 all 类型
+- 常见的媒体类型值如下
+  - all：适用于所有设备
+  - print：适用于在打印预览模式下在屏幕上查看的分页材料和文档
+  - screen（掌握）：主要用于屏幕
+  - speech：主要用于语音合成器
+
+
+
+### 媒体特性
+
+- 媒体特性（Media features）描述了 浏览器、输出设备，或是预览环境的具体特征
+
+  - 通常会将媒体特性描述为一个表达式
+  - 每条媒体特性表达式都必须用括号括起来
+
+  | 特征                        | 价值                        | 最小/最大 | 描述               |
+  | --------------------------- | --------------------------- | --------- | ------------------ |
+  | 宽度width                   | 长度                        | 是的      | 渲染表面的宽度     |
+  | 高度height                  | 长度                        | 是的      | 渲染表面的高度     |
+  | 颜色color                   | 整数                        | 是的      | 每个颜色分量的位数 |
+  | 设备比例device-aspect-ratio | 整数/整数                   | 是的      | 长宽比             |
+  | 设备高度device-width        | 长度                        | 是的      | 输出设备的高度     |
+  | 设备宽度device-height       | 长度                        | 是的      | 输出设备的宽度     |
+  | 方向orientation             | portrait 或 landscape       | 不        | 屏幕方向           |
+  | 分辨率resolution            | 分辨率（dpi，dpcm 或 dppx） | 是的      | 解析度             |
+
+
+
+### 逻辑操作符
+
+- 媒体查询的表达式最终会获得一个Boolean值，也就是真（true）或者假（false）
+  - 如果结果为真（true），那么就会生效
+  - 如果结果为假（false），那么就不会生效
+- 如果有多个条件，我们可以通过逻辑操作符联合复杂的媒体查询
+  - **and：**and 操作符用于将多个媒体查询规则组合成单条媒体查询
+  - not：not运算符用于否定媒体查询，如果不满足这个条件则返回true，否则返回false
+  - only：only运算符仅在整个查询匹配时才用于应用样式
+  - , (逗号)：逗号用于将多个媒体查询合并为一个规则
+
+
+
+### 常见的移动端设备
+
+- 我们以iPhone为例
+
+  | 手机机型          | 屏幕尺寸 | 逻辑分辨率 | 设备分辨率 | 缩放因子 |
+  | ----------------- | -------- | ---------- | ---------- | -------- |
+  | 3G(s)             | 3.5      | 320x480    | 320x480    | @1x      |
+  | 4(s)              | 3.5      | 320x480    | 640x960    | @2x      |
+  | 5(s/se)           | 4        | 320x568    | 640x1136   | @2x      |
+  | 6(s)/7/8          | 4.7      | 375x667    | 750x1334   | @2x      |
+  | X/Xs /11 Pro      | 5.8      | 375x812    | 1125x2436  | @3x      |
+  | 6(s)/7/8 Plus     | 5.5      | 414x736    | 1242x2208  | @3x      |
+  | Xr/11             | 6.1      |            | 828×1792   | @2x      |
+  | Xs Max/11 Pro Max | 6.5      | 414x896    | 1242×2688  | @3x      |
 
 
 
@@ -3483,3 +3735,6 @@ div.box2 {
   </body>
 </html>
 ```
+
+
+
