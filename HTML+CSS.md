@@ -331,7 +331,7 @@
 
 
 
-# 额外知识补充
+# 额外知识补充（一）
 
 ## 字符实体
 
@@ -3581,160 +3581,419 @@ box-sizing用来设置盒子模型中宽高的行为
 
 
 
-# Less
+# 额外知识补充（二）
 
-```less
-// less中的变量
-// @import "" 引入其他样式进来
-@Vsariable: 200px; // 定义 200 数值
-@color: pink; // 定义颜色
-@class: box22; // 定义一个类名
+## CSS中的单位
 
-div.box1 {
-  width: @Vsariable;
-  height: 100px;
-  background-color: deepskyblue;
+- 我们经常会使用px来表示一个长度（大小），比如font-size设置为18px，width设置为100px
+- px是一个长度（length）单位，事实上CSS中还有非常多的长度单位
+- 整体可以分成两类
+  - **绝对长度单位**（Absolute length units）
+  - **相对长度单位**（Relative length units）
 
-  div.box11 {
-    width: 50px;
-    height: 50px;
-    background-color: deeppink;
-    transition: all 0.3s;
 
-    // & 表示外层父元素,也就是 div.box11
-    &:hover {
+
+### CSS中的绝对单位
+
+- 绝对单位
+
+  - 它们**与其他任何东西都没有关系**，通常**被认为总是相同的大小**
+  - 这些值中的大多数在**用于打印时**比用于屏幕输出时更有用，例如，我们通常不会在屏幕上使用cm
+
+  - 唯一一个您经常使用的值，就是**px（像素）**
+
+
+
+### CSS中的相对单位
+
+- 相对单位
+
+  - 相对长度单位**相对于其他一些东西**
+  - 比如**父元素的字体大小**，或者**视图端口的大小**
+  - 使用相对单位的好处是，经过一些**仔细的规划**，您可以**使文本或其他元素的大小与页面上的其他内容**相对应
+
+- em：相对自己的字体大小属性的**计算值**
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="zh">
+    <head>
+      <style>
+        .container {
+          font-size: 15px;
+        }
+  
+        .box {
+          /* 1.em: 相对自己的font-size */
+          /* 2.如果自己没有设置, 那么会继承父元素的font-size */
+          /* 3.如果font-size中有写em单位, 可以理解成相对于父元素
+             	 但是更准确的理解依然是相对于自己的
+          */
+          font-size: 2em; /* 先继承父元素的font-size: 15px * 2em = 30px */
+  
+          width: 10em;
+          height: 5em;
+          background-color: orange;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="box">我是box</div>
+      </div>
+    </body>
+  </html>
+  ```
+
+- rem：相对根元素的字体大小
+
+- vw/vh：视口宽度的1%，视口高度的1%
+
+
+
+## pixel
+
+- 前面我们已经一直在使用px单位了，px是pixel单词的缩写，翻译为像素
+- 那么像素到底是什么呢？
+  - **像素是影响显示的基本单位**。（比如屏幕上看到的画面、一幅图片）
+  - pix是英语单词**picture**的常用简写，加上英语单词  “元素”  **element**，就得到pixel
+  - “像素”  表示  “画像元素”  之意，有时亦被称为**pel（picture element）**
+
+
+
+### 像素的不同分类
+
+- 但是这个100个pixel到底是多少呢？
+
+  - 我们确实可以在屏幕上看到一个大小，但是这个大小代表的真实含义是什么呢？
+  - 我们经常说一个电脑的分辨率、手机的分辨率，这个和CSS当中的像素又是什么关系呢？
+
+  ```css
+  .box {
+    width: 100px;
+    height: 100px;
+  }
+  ```
+
+- 这里我们要深入到不同的像素概念中，来理解CSS中的pixel到底代表什么含义
+
+- 像素单位常见的有三种像素名称
+
+  - **设备像素**（也称之为物理像素）
+  - **设备独立像素**（也称之为逻辑像素）
+  - **CSS像素**
+
+
+
+### 物理像素和逻辑像素
+
+- **设备像素**，也叫**物理像素**
+  - 设备像素指的是**显示器上的真实像素，每个像素的大小是屏幕固有的属性，屏幕出厂以后就不会改变**了
+  - 我们在购买**显示器或者手机的时候**，提到的**设备分辨率就是设备像素的大小**
+  - 比如**iPhone X的分辨率 1125x2436，指的就是设备像素**
+- **设备独立像素**，也叫**逻辑像素**
+  - 如果**面向开发者**我们使用**设备像素显示一个100px的宽度**，那么在**不同屏幕上显示效果会是不同**的
+  - 开发者**针对不同的屏幕**很难进行较好的适配，编写程序必须**了解用户的分辨率**来进行开发
+  - 所以在设备像素之上，**操作系统为开发者进行抽象，提供了逻辑像素的概念**
+  - 比如你购买了一台显示器，在**操作系统上是以1920x1080设置的显示分辨率**，那么无论你购买的是**2k、4k的显示器**，对于开发者来说，都是1920x1080的大小
+- CSS像素
+  - CSS中我们经常**使用的单位也是pixel**，它在**默认情况下等同于设备独立像素**（也就是逻辑像素）
+  - 毕竟逻辑像素才是面向我们开发者的
+- 我们可以通过JavaScript中的**screen.width和screen.height**获取到电脑的逻辑分辨率
+
+
+
+### DPR、PPI
+
+- DPR：device pixel ratio
+  - 2010年，iPhone4问世，不仅仅带来了**移动互联网**，还带来了**Retina屏幕**
+  - Retina屏幕翻译为**视网膜显示屏**，可以为用户带来**更好的显示**
+  - 在Retina屏幕中，**一个逻辑像素在长度**上对应**两个物理像素**，这个比例称之为**设备像素比**（device pixel ratio）
+  - 我们可以通过**window.devicePixelRatio**获取到当前屏幕上的DPR值
+    - DPR计算公式：物理像素 / 操作系统设置的逻辑像素 = DPR
+    - DPR = 3 
+    - 1个逻辑像素 * DPR = 3个物理像素
+
+- PPI：每英寸像素（英语：Pixels Per Inch，缩写：PPI）
+  - 通常用来表示一个打印图像或者显示器上像素的密度
+  - 1英寸=2.54厘米，在工业领域被广泛应用
+
+
+
+## CSS编写的痛点
+
+- CSS作为一种**样式语言**，本身用来**给HTML元素添加样式**是没有问题的
+- 但是目前前端项目已经越来越复杂，不再是简简单单的几行CSS就可以搞定的，我们需要几千行甚至上万行的CSS来完成页面的美化工作
+- 随着代码量的增加，必然会造成很多的编写不便
+  - 比如大量的重复代码，虽然可以用**类来勉强管理和抽取**，但是**使用起来依然不方便**
+  - 比如**无法定义变量（当然目前已经支持）**，如果一个值被修改，那么需要**修改大量代码，可维护性很差** (比如主题颜色)
+  - 比如**没有专门的作用域和嵌套**，需要**定义大量的id/class来保证选择器的准确性**，避免样式混淆
+- 所以有一种对CSS称呼是 **“面向命名编程”**
+
+- 社区为了解决CSS面临的大量问题，出现了一系列的**CSS预处理器**(CSS_preprocessor)
+  - CSS 预处理器是一个能让你通过**预处理器自己独有的语法**来生成CSS的程序
+  - 市面上有很多**CSS预处理器可供选择**，且绝大多数CSS预处理器会**增加一些原生CSS不具备的特性**
+  - 代码最终**会转化为CSS来运行**，因为**对于浏览器来说只识别CSS**
+
+
+
+## 常见的CSS预处理器
+
+- 常见的预处理器有哪些呢？目前使用较多的是三种预处理器
+- Sass/Scss
+  - 2007年诞生，最早也是最成熟的CSS预处理器，拥有ruby社区的支持，是属于Haml（一种模板系统）的一部分
+  - 目前受LESS影响，已经进化到了**全面兼容CSS的SCSS**
+- Less
+  - 2009年出现，受SASS的影响较大，但又**使用CSS的语法**，让大部分**开发者更容易上手**
+  - 比起SASS来，可编程功能不够，不过优点是使用方式简单、便捷，兼容CSS，并且已经足够使用
+  - 另外反过来也影响了SASS演变到了SCSS的时代
+  - 著名的Twitter Bootstrap就是采用LESS做底层语言的，也包括React的UI框架AntDesign
+- Stylus
+  - 2010年产生，来自Node.js社区，主要用来给Node项目进行CSS预处理支持
+  - 语法偏向于Python，使用率相对于Sass/Less少很多
+
+
+
+## Less
+
+- 什么是Less呢？我们来看一下官方的介绍
+  - It's CSS, with just a little more
+- Less （Leaner Style Sheets 的缩写） 是一门CSS 扩展语言，并且兼容CSS
+  - Less增加了很多**相比于CSS更好用的特性**
+  - 比如**定义变量、混入、嵌套、计算**等等
+  - **Less最终需要被编译成CSS运行于浏览器**中（包括部署到服务器中）
+
+
+
+### 变量
+
+- 在一个大型的网页项目中，我们CSS使用到的某几种属性值往往是特定的
+
+  - 比如我们使用到的主题颜色值，那么每次编写类似于 **#f3c258** 格式的语法
+
+  - 一方面是记忆不太方便，需要重新编写或者拷贝样式
+
+  - 另一方面如果有一天主题颜色改变，我们需要修改大量的代码
+
+  - 所以，我们可以将常见的颜色或者字体等定义为变量来使用
+
+- 在Less中使用如下的格式来定义变量
+
+  - **@变量名: 变量值**
+
+  ```less
+  @mainColor: #a40011;
+  @normalFontSize: 14px;
+  
+  .box {
+  	color: @mainColor;
+  	font-size: @normalFontSize;
+  }
+  ```
+
+
+
+### 运算
+
+- 在Less中，算术运算符 +、-、*、/ 可以对任何数字、颜色或变量进行运算
+
+  - 算术运算符在加、减或比较之前会进行单位换算，计算的结果**以最左侧操作数的单位类型**为准
+  - 如果**单位换算无效或失去意义，则忽略单位**
+
+  ```less
+  .box {
+  	color: 100px + 10%;
+  	background-color: #ff0000 + #00ff00;
+  }
+  ```
+
+
+
+### 混入、映射、继承
+
+- 在原来的CSS编写过程中，多个选择器中可能会有大量相同的代码
+
+  - 我们希望可以将这些**代码进行抽取到一个独立的地方，任何选择器都可以进行复用**
+  - 在less中提供了 **混入（Mixins）** 来帮助我们完成这样的操作
+
+- 混合（Mixin）是一种将一组属性从一个规则集（或混入）到另一个规则集的方法
+
+  ```less
+  .nowrap_ellipsis {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  
+  .box {
+    width: 150px;
+    .nowrap_ellipsis();
+  }
+  ```
+
+- 注意：混入在没有参数的情况下，**小括号可以省略，但是不建议这样使用**
+
+- 混入也可以传入变量
+
+  ```less
+  .box_border(@borderWidth: 1px, @borderColor: purple) {
+    border: @borderWidth solid @borderColor;
+  }
+  
+  .box {
+    width: 150px;
+    .box_border(5px, orange);
+  }
+  ```
+
+- 映射（Maps）
+
+  ```less
+  .box_size {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .box {
+    width: .box_size()[width];
+  }
+  ```
+
+- 继承（extend）
+
+  - 和mixins作用类似，用于**复用代码**
+  - 和mixins相比，继承代码最终会转化成**并集选择器**
+
+  ```less
+  .box_size {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .box:extend(.box_border) {
+     background-color: pink;
+  }
+  
+  /*
+    .box_size, .box {
       width: 100px;
       height: 100px;
     }
+  */
+  ```
+
+
+
+### 作用域
+
+- 在查找一个变量时，首先在**本地查找变量和混合（mixins）**
+
+- 如果**找不到，则从  “父”  级作用域继承**
+
+  ```less
+  @mainColor: #f00;
+  .box_mixin {
+    @mainColor: orange;
   }
-}
-
-div.box2 {
-  width: 100px;
-  height: 100px;
-  background-color: @color;
-
-  .@{class} {
-    width: 50px;
-    height: 50px;
-    background-color: gold;
+  
+  .box {
+  	// @mainColor: #0f0;
+    .item {
+  		color: @mainColor;
+  		.box_mixin();
+    	// @mainColor: #00f;
+    }
   }
-}
+  ```
 
-.p1 {
-  width: 240px;
-  height: 240px;
-  background-color: gold;
-  border: red 2px solid;
-  margin-top: 20px;
-}
 
-// .p2:extend(.p1) ---> .p1, .p2
-.p2:extend(.p1) {
-  background-color: rebeccapurple;
-}
 
-// 这个类专门给别人用,也不会被编写到 css 里
-// 如果不加 () 会编写到 css 里
-.content {
-  width: 240 / 5px; // 可以进行加减乘除
-  border: 10px solid rgb(255, 0, 128);
-  margin-top: 20px;
-}
+## 什么是移动端适配？
 
-.p3 {
-  .content;
-}
+- 移动互联网的快速发展，让人们已经越来越习惯于使用手机来完成大部分日常的事务
+  - 前面我们已经学习了大量HTML、CSS的前端开发知识
+  - 这些知识也同样**适用于移动端开发**，但是如果想让一个页面**真正适配于移动端，我们最好多了解一些移动端的知识**
+- 移动端开发目前主要包括三类
+  - **原生App开发**（iOS、Android、RN、uniapp、Flutter等）
+  - **小程序开发**（原生小程序、uniapp、Taro等）
+  - **Web页面**（移动端的Web页面，可以使用浏览器或者webview浏览）
 
-// 在混合函数中可以设置变量,也可以设置默认参数
-.test(@width: 100px, @height: 100px, @bg-color: #bfc) {
-  width: @width;
-  height: @height;
-  background-color: @bg-color;
-}
+-  因为目前移动端设备较多，所以我们需要对其进行一些适配
+- 这里有两个概念
+  - **自适应：**根据不同的设备屏幕大小来**自动调整尺寸、大小**
+  - **响应式：**会**随着屏幕的实时变动而自动调整，是一种自适应**
 
-.mixins {
-  // 按顺序传递参数
-  // .test(200px,200px,#bfc)
-  // 指定参数
-  .test(@bg-color:#000 , @height:500px , @width:500);
-}
-```
 
-```html
-<!DOCTYPE html>
-<html lang="zh">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>less</title>
-    <style>
-      div.box1 {
-        width: 200px;
-        height: 100px;
-        background-color: deepskyblue;
-      }
-      div.box1 div.box11 {
-        width: 50px;
-        height: 50px;
-        background-color: deeppink;
-        transition: all 0.3s;
-      }
-      div.box1 div.box11:hover {
-        width: 100px;
-        height: 100px;
-      }
-      div.box2 {
-        width: 100px;
-        height: 100px;
-        background-color: pink;
-      }
-      div.box2 .box22 {
-        width: 50px;
-        height: 50px;
-        background-color: gold;
-      }
-      .p1,
-      .p2 {
-        width: 240px;
-        height: 240px;
-        background-color: gold;
-        border: red 2px solid;
-        margin-top: 20px;
-      }
-      .p2 {
-        background-color: rebeccapurple;
-      }
-      .content {
-        width: 48px;
-        border: 10px solid #ff0080;
-        margin-top: 20px;
-      }
-      .p3 {
-        width: 48px;
-        border: 10px solid #ff0080;
-        margin-top: 20px;
-      }
-      .mixins {
-        width: 500;
-        height: 500px;
-        background-color: #000;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="box1">
-      <div class="box11"></div>
-    </div>
-    <div class="box2">
-      <div class="box22"></div>
-    </div>
-    <div class="p1"></div>
-    <div class="p2"></div>
-    <div class="p3"></div>
-  </body>
-</html>
-```
+
+## 认识视口viewport
+
+- 在前面我们已经简单了解过视口的概念了
+  - 在一个浏览器中，我们可以**看到的区域就是视口（viewport）**
+  - 我们说过**fixed就是相对于视口来进行定位**的
+  - 在**PC端的页面**中，我们是**不需要对视口进行区分**，因为我们的**布局视口和视觉视口**是同一个
+- 但是在移动端，不太一样，你布局的视口和你可见的视口是不太一样的
+  - 这是因为**移动端的网页窗口往往比较小**，我们可能会**希望一个大的网页在移动端可以完整的显示**
+  - 所以在默认情况下，**移动端**的**布局视口**是**大于视觉视口**的
+- 所以在移动端，我们可以将视口划分为三种情况
+  - **布局视口**（layout viewport）
+  - **视觉视口**（visual layout）
+  - **理想视口**（ideal layout）
+- 这些概念的区分，事实上来自ppk，他也是对前端贡献比较大的一个人（特别是在移动端浏览器）
+  - https://www.quirksmode.org/mobile/viewports2.html
+
+
+
+### 布局视口和视觉视口
+
+- 布局视口（layout viewport）
+
+  - 默认情况下，一个在PC端的网页在移动端会如何显示呢？
+    - 第一，它会**按照宽度为980px来布局一个页面的盒子和内容**
+    - 第二，为了**显示可以完整的显示在页面中，对整个页面进行缩小**
+  - 我们相对于980px布局的这个视口，称之为**布局视口（layout viewport）**
+    - 布局视口的默认宽度是**980px**
+
+  <img src="https://www.quirksmode.org/mobile/pix/viewport/mobile_layoutviewport.jpg" />
+
+- 视觉视口（visual viewport）
+
+  - 如果默认情况下，我们按照980px显示内容，那么**右侧有一部分区域就会无法显示**，所以**手机端浏览器会默认对页面进行缩放以显示到用户的可见区域**中
+  - 那么**显示在可见区域的这个视口**，就是**视觉视口（visual viewport）**
+
+  <img src="https://www.quirksmode.org/mobile/pix/viewport/mobile_visualviewport.jpg" />
+
+- 在Chrome上按shift+鼠标左键可以进行缩放
+
+
+
+### 理想视口
+
+- 如果所有的网页都按照980px在移动端布局，那么最终页面都会被缩放显示
+
+  - 事实上这种方式是**不利于我们进行移动的开发**的，我们希望的是**设置100px，那么显示的就是100px**
+  - 如何做到这一点呢？通过设置**理想视口（ideal viewport）**
+
+- 理想视口（ideal viewport）
+
+  - 默认情况下的**layout viewport并不适合我们进行布局**
+  - 我们可以对**layout viewport进行宽度和缩放的设置**，以满足**正常在一个移动端窗口的布局**
+  - 这个时候可以设置**meta中的viewport**
+
+  ```html
+  <!-- width: 设置布局视口的宽度 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  ```
+
+  | 值            | 可能的附加值                         | **描述**                                                     |
+  | ------------- | ------------------------------------ | ------------------------------------------------------------ |
+  | width         | 一个正整数，或者字符串 device-width  | 定义 viewport 的宽度                                         |
+  | height        | 一个正整数，或者字符串 device-height | 定义 viewport 的高度。未被任何浏览器使用                     |
+  | initial-scale | 一个 0.0 和 10.0 之间的正数          | 定义设备宽度与 viewport 大小之间的缩放比例                   |
+  | maximum-scale | 一个 0.0 和 10.0 之间的正数          | 定义缩放的最大值，必须大于等于 minimum-scale，否则表现将不可预测 |
+  | minimum-scale | 一个 0.0 和 10.0 之间的正数          | 定义缩放的最小值，必须小于等于 maximum-scale，否则表现将不可预测 |
+  | user-scalable | yes 或者 no                          | 默认为 yes，如果设置为 no，将无法缩放当前页面。浏览器可以忽略此规则 |
+
+  <img src="https://www.quirksmode.org/mobile/pix/viewport/mobile_viewportzoomedout.jpg" />
 
 
 
