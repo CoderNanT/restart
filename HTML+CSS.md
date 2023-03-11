@@ -3947,9 +3947,9 @@ box-sizing用来设置盒子模型中宽高的行为
 
 - 布局视口（layout viewport）
 
-  - 默认情况下，一个在PC端的网页在移动端会如何显示呢？
+  - 默认情况下，一个PC端的网页在移动端会如何显示呢？
     - 第一，它会**按照宽度为980px来布局一个页面的盒子和内容**
-    - 第二，为了**显示可以完整的显示在页面中，对整个页面进行缩小**
+    - 第二，为了**可以完整的显示在页面中，对整个页面进行等比例缩小**
   - 我们相对于980px布局的这个视口，称之为**布局视口（layout viewport）**
     - 布局视口的默认宽度是**980px**
 
@@ -3978,12 +3978,13 @@ box-sizing用来设置盒子模型中宽高的行为
   - 默认情况下的**layout viewport并不适合我们进行布局**
   - 我们可以对**layout viewport进行宽度和缩放的设置**，以满足**正常在一个移动端窗口的布局**
   - 这个时候可以设置**meta中的viewport**
-
+  - 把**布局视口**设置成**视觉视口**，那么就称之为是**理想视口**
+  
   ```html
   <!-- width: 设置布局视口的宽度 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   ```
-
+  
   | 值            | 可能的附加值                         | **描述**                                                     |
   | ------------- | ------------------------------------ | ------------------------------------------------------------ |
   | width         | 一个正整数，或者字符串 device-width  | 定义 viewport 的宽度                                         |
@@ -3992,8 +3993,12 @@ box-sizing用来设置盒子模型中宽高的行为
   | maximum-scale | 一个 0.0 和 10.0 之间的正数          | 定义缩放的最大值，必须大于等于 minimum-scale，否则表现将不可预测 |
   | minimum-scale | 一个 0.0 和 10.0 之间的正数          | 定义缩放的最小值，必须小于等于 maximum-scale，否则表现将不可预测 |
   | user-scalable | yes 或者 no                          | 默认为 yes，如果设置为 no，将无法缩放当前页面。浏览器可以忽略此规则 |
-
+  
   <img src="https://www.quirksmode.org/mobile/pix/viewport/mobile_viewportzoomedout.jpg" />
+
+
+
+
 
 
 
