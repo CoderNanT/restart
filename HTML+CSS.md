@@ -3998,7 +3998,208 @@ box-sizing用来设置盒子模型中宽高的行为
 
 
 
+## 移动端适配方案
+
+- 移动端的屏幕尺寸通常是非常繁多的，很多时候我们希望在不同的屏幕尺寸上显示不同的大小
+  - 比如我们设置一个100 x 100的盒子
+    - 在320的屏幕上显示是90+ x 90+
+    - 在375的屏幕上显示是100 x 100
+    - 在414的屏幕上显示是100+ x 100+
+  - 其他尺寸也是类似，比如**padding、margin、border、left，甚至是font-size**等等
+
+- 这个时候，我们可能可以想到一些方案来处理尺寸
+  - **方案一：百分比设置**
+    - 因为不同属性的百分比值，相对的可能是不同参照物，所以百分比往往很难统一
+    - 所以百分比在移动端适配中使用是非常少的
+  - **方案二：rem单位+动态html的font-size**
+  - **方案三：vw单位**
+  - **方案四：flex的弹性布局**
 
 
 
+### 方案二
 
+- rem单位是相对于html元素的font-size来设置的，那么如果我们需要在不同的屏幕下有不同的尺寸，可以动态的修改html的font-size尺寸
+
+- 比如如下案例
+
+  - 设置一个**盒子的宽度是2rem**
+  - 设置**不同的屏幕上html的font-size不同**
+
+  | 屏幕尺寸 | html的font-size | 盒子的设置宽度 | 盒子的最终宽度 |
+  | -------- | --------------- | -------------- | -------------- |
+  | 375px    | 37.5px          | 1rem           | 37.5px         |
+  | 320px    | 32px            | 1rem           | 32px           |
+  | 320px    | 41.4px          | 1rem           | 41.4px         |
+
+- 这样在开发中，我们只需要考虑两个问题
+
+  - 问题一：针对**不同的屏幕，设置html不同的font-size**
+  - 问题二：将**原来要设置的尺寸，转化成rem单位**
+
+
+
+#### rem的font-size尺寸
+
+- 方案一：媒体查询
+
+  - 可以通过**媒体查询来设置不同尺寸范围内的屏幕html的font-size尺寸**
+  -  缺点
+    - 我们需要**针对不同的屏幕编写大量的媒体查询**
+    - 如果**动态改变尺寸，不会实时的进行更新**
+
+  ```css
+  @media screen and (min-width: 320px) {
+    html { font-size: 32px; }
+  }
+  
+  @media screen and (min-width: 375px) {
+    html { font-size: 37.5px; }
+  }
+  
+  @media screen and (min-width: 414px) {
+    html { font-size: 41.1px; }
+  }
+  ```
+
+- 方案二：编写js代码
+
+  - 如果希望**实时改变屏幕尺寸时，font-size也可以实时更改，可以通过js代码**
+  - 方法
+    - 根据html的宽度计算出**font-size的大小**，并且**设置到html**上
+    - 监听**页面的实时改变**，并且**重新设置font-size的大小到html**上
+
+  ```js
+  // 1.获取html的元素
+  const htmlEl = document.documentElement;
+  
+  function setRemUnit() {
+    // 2.获取html的宽度(视口的宽度)
+    const htmlWidth = htmlEl.clientWidth;
+    // 3.根据宽度计算一个html的font-size的大小
+    const htmlFontSize = htmlWidth / 10;
+    // 4.将font-size设置到html上
+    htmlEl.style.fontSize = htmlFontSize + "px";
+  }
+  // 保证第一次进来时, 可以设置一次font-size
+  setRemUnit();
+  
+  // 当屏幕尺寸发生变化时, 实时来修改html的font-size
+  window.addEventListener("resize", setRemUnit);
+  ```
+
+- 方案三：lib-flexible库
+  - 事实上，**lib-flexible库做的事情是相同**的，你也可以直接引入它
+
+
+
+#### rem的单位换算
+
+- 方案一：手动换算
+
+  - 比如有一个在375屏幕上，100px宽度和高度的盒子
+  - 我们需要将100px转成对应的rem值
+  - 100 / 37.5 = 2.6667，其他也是相同的方法计算即可
+
+- 方案二：less/scss函数
+
+  ```less
+  .pxToRem(@px) {
+    result: 1rem * (@px / 37.5);
+  }
+  
+  .box {
+    width: .pxToRem(100) [result];
+    height: .pxToRem(100) [result];
+    background-color: orange;
+  }
+  
+  p {
+    font-size: .pxToRem(14) [result];
+  }
+  ```
+
+- 方案三：postcss-pxtorem
+
+  - 目前在前端的工程化开发中，我们可以借助于webpack的工具来完成自动的转化
+
+- 方案四：VSCode插件
+
+  - px to rem 的插件，在编写时自动转化
+
+
+
+### 方案三
+
+- 在flexible GitHub上已经有写过这样的一句话
+
+  > 由于`viewport`单位得到众多浏览器的兼容，`lib-flexible`这个过渡方案已经可以放弃使用，不管是现在的版本还是以前的版本，都存有一定的问题。建议大家开始使用`viewport`来替代此方
+
+- 所以它更推荐使用viewport的两个单位vw、vh
+
+- vw的兼容性如何呢？
+
+  - https://caniuse.com/?search=vw
+
+
+
+#### vw和rem的对比
+
+- rem事实上是作为一种过渡的方案，它利用的也是vw的思想
+
+  - 前面不管是我们**自己编写的js**，**还是flexible的源码**
+  - 都是将**1rem等同于设计稿的1/10**，在利用**1rem计算相对于整个屏幕的尺寸大小**
+  - 那么我们来思考，**1vw不是刚好等于屏幕的1/100**吗？
+  - 而且**相对于rem还更加有优势**
+
+- vw相比于rem的优势
+
+  - 优势一：不需要去计算html的font-size大小，也不需要给html设置这样一个font-size
+
+  - 优势二：不会因为设置html的font-size大小，而必须给body再设置一个font-size，防止继承
+
+  - 优势三：因为不依赖font-size的尺寸，所以不用担心某些原因html的font-size尺寸被篡改，页面尺寸混乱
+
+  - 优势四：vw相比于rem更加语义化，1vw刚好是1/100的viewport的大小
+
+  - 优势五：可以具备rem之前所有的优点
+
+- vw我们只面临一个问题，将尺寸换算成vw的单位即可
+
+- 所以，目前相比于rem，更加**推荐大家使用vw**（但是理解rem依然很重要）
+
+
+
+#### vw的单位换算
+
+- 方案一：手动换算
+
+  - 比如有一个在375屏幕上，100px宽度和高度的盒子
+  - 我们需要将100px转成对应的vw值
+  - 100 / 3.75 = 26.667，其他也是相同的方法计算即可
+
+- 方案二：less/scss函数
+
+  ```less
+  .pxToVw(@px) {
+    result: 1vw * (@px / 3.75);
+  }
+  
+  .box {
+    width: .pxToVw(100) [result];
+    height: .pxToVw(100) [result];
+    background-color: orange;
+  }
+  
+  p {
+    font-size: .pxToVw(14) [result];
+  }
+  ```
+
+- 方案三：postcss-px-to-viewport-8-plugin
+
+  - 和rem一样，在前端的工程化开发中，我们可以借助于webpack的工具来完成自动的转化
+
+- 方案四：VSCode插件
+
+  - px to rem 的插件，在编写时自动转化
