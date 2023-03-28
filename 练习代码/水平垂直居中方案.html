@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <title>水平垂直居中方案</title>
+  </head>
+  <style>
+    /* 辅助线 */
+    .parent::before {
+      content: "";
+      width: 100%;
+      height: 1px;
+      position: absolute;
+      top: 50%;
+      z-index: 1;
+      background-color: #afbe68;
+    }
+    .parent::after {
+      content: "";
+      width: 1px;
+      height: 100%;
+      position: absolute;
+      left: 50%;
+      z-index: 1;
+      background-color: #afbe68;
+    }
+
+    .parent {
+      position: relative;
+      height: 200px;
+      background-color: #ec1f10;
+    }
+
+    /* 方式一 减去自身的一半 */
+    /* .child {
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -50px;
+      margin-left: -50px;
+      background-color: #0096ff;
+    } */
+
+    /* 方式二 减去自身的一半 */
+    /* .child {
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      top: calc(50% - 50px);
+      left: calc(50% - 50px);
+      background-color: #0096ff;
+    } */
+
+    /* 方式三 上面两种方式必须知道子元素的宽高 */
+    /* transform-origin 默认值是 50%, 50% */
+    /* 从自身中心点偏移 */
+    /* .child {
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      background-color: #0096ff;
+      transform: translate(-50%, -50%);
+    } */
+
+    /* 方式四 */
+    /* 
+       定位 参照对象 的宽度 = left + right + margin-left + margin-right + 绝对定位元素的 实际占用宽度
+       设置 auto 让浏览器分配左右两边的值，占满父元素的宽度，因为 块级元素 有一个特性 独占父元素的一行 
+    */
+    .child {
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      background-color: #0096ff;
+    }
+  </style>
+  <body>
+    <div class="parent">
+      <div class="child"></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>对两个变量的数字进行交换</title>
+  </head>
+  <body>
+    <script>
+      // 方法一:借助第三个变量来实现
+      var num1 = 10;
+      var num2 = 20;
+      var num3 = num1;
+      // console.log("num1:" + num1, "num2:" + num2);
+      // num1 = num2;
+      // num2 = num3;
+      // console.log("num1:" + num1, "num2:" + num2);
+
+      // 方式二: 不借助变量来实现
+      // num1 = num1 + num2; // 10 + 20 = 30
+      // num2 = num1 - num2; // 30 - 20 = 10
+      // num1 = num1 - num2; // 30 - 10 = 20
+      // console.log("num1:" + num1, "num2:" + num2);
+
+      var a = { name: "A" };
+      a.x = a = { name: "B" };
+      console.log(a.x);
+      // .的优先级比较高，所以先执行 a.x = a 在 a 对象中新增一个 x 属性，值为 a 对象
+      // 然后执行右边的赋值语句 a = { name: "B" } ，a 被赋值了新对象
+      /*
+      内存图里的表现
+      a = 0x100 { name: "A" }
+      a.x 0x100 { name: "A" x: name: "A", x: {…} }
+
+      a = 0x200 { name: "B" }
+      console.log(a.x) undefined
+      */
+    </script>
+  </body>
+</html>
