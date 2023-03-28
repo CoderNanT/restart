@@ -170,8 +170,7 @@
 
   - 这个时候对于开发者来说是一场噩耗，因为需要针对不同的浏览器进行不同的适配
 
-- 1996年11月，网景正式向**ECMA（欧洲计算机制造商协会）**提交语言标准
-
+- 1996年11月，网景正式向<b>ECMA（欧洲计算机制造商协会）</b>提交语言标准
   - 1997年6月，ECMA以**JavaScript语言为基础**制定了**ECMAScript标准规范ECMA-262**
 
   - ECMA-262是一份标准，定义了**ECMAScript**
@@ -192,18 +191,18 @@
   - 但是CPU只认识自己的指令集，实际上是机器语言，才能被CPU所执行
   - 所以我们需要**JavaScript引擎**帮助我们将**JavaScript代码翻译成CPU指令**来执行
 - 比较常见的JavaScript引擎有哪些呢？
-  - **SpiderMonkey：**第一款JavaScript引擎，由Brendan Eich开发（也就是JavaScript作者）
-  - **Chakra：**微软开发，用于IT浏览器
-  - **JavaScriptCore：**WebKit中的JavaScript引擎，Apple公司开发
-  - **V8：**Google开发的强大JavaScript引擎，也帮助Chrome从众多浏览器中脱颖而出
+  - <b>SpiderMonkey：</b>第一款JavaScript引擎，由Brendan Eich开发（也就是JavaScript作者）
+  - <b>Chakra：</b>微软开发，用于IT浏览器
+  - <b>JavaScriptCore：</b>WebKit中的JavaScript引擎，Apple公司开发
+  - <b>V8：</b>Google开发的强大JavaScript引擎，也帮助Chrome从众多浏览器中脱颖而出
 
 
 
 ## 浏览器内核和JS引擎的关系
 
 - 这里我们先以WebKit为例，WebKit事实上由两部分组成的
-  - **WebCore：**负责HTML解析、布局、渲染等等相关的工作
-  - **JavaScriptCore：**解析、执行JavaScript代码
+  - <b>WebCore：</b>负责HTML解析、布局、渲染等等相关的工作
+  - <b>JavaScriptCore：</b>解析、执行JavaScript代码
 - 小程序中也是这样的划分
   - 在小程序中编写的JavaScript代码就是被JSCore执行的
 
@@ -247,7 +246,7 @@
   - 例如，字符串或数字
   - 我们可以将**值赋值给一个变量**，那么这个变量就**具备了特定的类型**
   - 一个变量可以在**前一刻是个字符串，下一刻就存储一个数字**
-  - 允许这种操作的编程语言，例如 JavaScript，被称为  **“动态类型”（dynamically typed）**的编程语言
+  - 允许这种操作的编程语言，例如 JavaScript，被称为<b>“动态类型”（dynamically typed）</b>的编程语言
 - 在 JavaScript 中有 8 种基本的数据类型（7 种原始类型和 1 种**复杂或引用**类型）
   - Number
   - String
@@ -643,7 +642,7 @@
 
   - 比如**系统默认给我们提供的Date就是一个构造函数**，也可以**看成是一个类**
 
-  - 在ES5之前，我们都是**通过function来声明一个构造函数（类）**的，**之后通过new关键字来对其进行调用**
+  - 在ES5之前，我们都是<b>通过function来声明一个构造函数（类）</b>的，**之后通过new关键字来对其进行调用**
 
   - 在ES6之后，**JavaScript可以像别的语言一样，通过class来声明一个类**
 
@@ -739,7 +738,7 @@
   console.log(num.toFixed(2));
   ```
 
-- 那么**，**为什么会出现这样奇怪的现象呢？
+- 那么，为什么会出现这样奇怪的现象呢？
 
   - 原始类型是**简单的值**，默认**并不能调用属性和方法**
 
@@ -1339,7 +1338,7 @@
 
 - Date.parse(str) 方法可以**从一个字符串中读取日期**，并且**输出对应的Unix时间戳**
 
-  - 作用**等同于 new Date(dateString).getTime() **操作
+  - 作用<b>等同于 new Date(dateString).getTime()</b>操作
   - **需要符合 RFC2822 或 ISO 8601 日期格式的字符串**
   - 其他格式也许也支持，但**结果不能保证一定正常**
   - 如果输入的格式**不能被解析**，那么会返回**NaN**
@@ -1489,8 +1488,8 @@
 
 - 属性attribute的分类
 
-  - **标准的attribute：**某些attribute属性是标准的，比如id、class、href、type、value等
-  - **非标准的attribute：**某些attribute属性是自定义的，比如abc、age、height等
+  - <b>标准的attribute：</b>某些attribute属性是标准的，比如id、class、href、type、value等
+  - <b>非标准的attribute：</b>某些attribute属性是自定义的，比如abc、age、height等
 
   ```html
   <div id="main" class="box" abc="abc" age="18" height="1.80">我是box</div>
@@ -1507,7 +1506,7 @@
   - **element.getAttribute(name)** — 获取这个特性值
   - **element.setAttribute(name, value)** — 设置这个特性值
   - **element.removeAttribute(name)** — 移除这个特性
-  - **attributes：**attr对象的集合，具有name、value属性
+  - <b>attributes：</b>attr对象的集合，具有name、value属性
 
   ```html
   <!DOCTYPE html>
@@ -3077,7 +3076,7 @@
 
 ### 解析四：布局和绘制
 
-- 第四步是在渲染树（Render Tree）上运行**布局（Layout）**以计算每个节点的尺寸、位置
+- 第四步是在渲染树（Render Tree）上运行<b>布局（Layout）</b>以计算每个节点的尺寸、位置
   - 渲染树会表示显示哪些节点以及其他样式，但是**不会计算每个节点的尺寸、位置**等信息
   - 布局是确定**渲染树中所有节点的宽度、高度和位置信息**
 - 第五步是将每个节点绘制（Paint）到屏幕上
@@ -3387,7 +3386,7 @@
 - 那么现在它要执行谁呢？执行的是**全局的代码块**
   - 全局的代码块为了执行会构建一个 **Global Execution Context（GEC）**
   - GEC会 **被放入到ECS中** 执行
-- GEC被放入到ECS中里面包含两部分内容**（重要）**
+- GEC被放入到ECS中里面包含两部分内容<b>（重要）</b>
   - 第一部分：在代码执行前，会在**parser转成AST的过程**中，会将**全局定义的变量、函数**等加入到**Global Object**中，但是**并不会赋值**
     - 这个过程也称之为**变量的作用域提升（hoisting）**
   - 第二部分：在代码执行中，**对变量赋值，或者执行其他的函数**
@@ -3922,7 +3921,7 @@
 ### 副作用概念的理解
 
 - 那么这里又有一个概念，叫做副作用，什么又是**副作用**呢？
-  - **副作用（side effect）**其实本身是医学的一个概念，比如我们经常说吃什么药本来是为了治病，可能会产生一些其他的副作用
+  - <b>副作用（side effect）</b>其实本身是医学的一个概念，比如我们经常说吃什么药本来是为了治病，可能会产生一些其他的副作用
   - 在计算机科学中，也引用了副作用的概念，表示**在执行一个函数时**，除了**返回函数值**之外，还对**调用函数产生了附加的影响**，比如**修改了全局变量，修改参数或者改变外部的存储**
 
 - 纯函数在执行的过程中就是不能产生这样的副作用
@@ -4909,7 +4908,7 @@
 - 借用继承的做法非常简单：**在子类构造函数的内部调用父类构造函数**
 
   - 因为函数可以在任意的时刻被调用
-  - 因此通过**apply()和call()**方法也可以在新创建的对象上执行构造函数
+  - 因此通过<b>apply()和call()</b>方法也可以在新创建的对象上执行构造函数
 
   ```js
   function Person(name, age) {
@@ -5795,7 +5794,7 @@
 ### 词法环境
 
 - 词法环境是一种规范类型，用于在词法嵌套结构中定义关联的变量、函数等标识符
-  - 一个**词法环境**是由**环境记录（Environment Record）**和一个**外部词法环境（outer Lexical Environment）**组成
+  - 一个**词法环境**是由<b>环境记录（Environment Record）</b>和一个<b>外部词法环境（outer Lexical Environment）</b>组成
   - 一个词法环境经常用于关联一个函数声明、代码块语句、try-catch语句，**当它们的代码被执行时，词法环境被创建出来**
     - https://262.ecma-international.org/6.0/#sec-lexical-environments
 - 也就是在ES5之后，执行一个代码，通常会关联对应的词法环境
@@ -6179,9 +6178,9 @@
 
   - 也就是在ES6中，对象的属性名可以使用**字符串**，也可以使用**Symbol值**
 
-- **Symbol即使多次创建值，它们也是不同的：**Symbol函数执行后每次创建出来的值都是独一无二的
+- <b>Symbol即使多次创建值，它们也是不同的：</b>Symbol函数执行后每次创建出来的值都是独一无二的
 
-- **我们也可以在创建Symbol值的时候传入一个描述description：**这个是ES2019（ES10）新增的特性
+- <b>我们也可以在创建Symbol值的时候传入一个描述description：</b>这个是ES2019（ES10）新增的特性
 
   ```js
   const s1 = Symbol();
@@ -6907,10 +6906,10 @@
   - defineProperty：Object.defineProperty 方法的捕捉器
 
   - ownKeys：Object.getOwnPropertyNames 方法和 Object.getOwnPropertySymbols 方法的捕捉器
-  - **has：**in 操作符的捕捉器
-  - **get：**属性读取操作的捕捉器
-  - **set：**属性设置操作的捕捉器
-  - **deleteProperty：**delete 操作符的捕捉器
+  - <b>has：</b>in 操作符的捕捉器
+  - <b>get：</b>属性读取操作的捕捉器
+  - <b>set：</b>属性设置操作的捕捉器
+  - <b>deleteProperty：</b>delete 操作符的捕捉器
   - apply：函数调用操作的捕捉器
   - construct：new 操作符的捕捉器
 
@@ -7230,8 +7229,8 @@
 
 - then方法接受两个参数
 
-  - **resolve的回调函数：**当状态变成fulfilled时会回调的函数
-  - **reject的回调函数：**当状态变成reject时会回调的函数
+  - <b>resolve的回调函数：</b>当状态变成fulfilled时会回调的函数
+  - <b>reject的回调函数：</b>当状态变成reject时会回调的函数
 
   ```js
   const promise = new Promise((resolve, reject) => {
@@ -8263,8 +8262,8 @@
 
 - 但是事件循环中并非只维护着一个队列，事实上是有两个队列
 
-  - **宏任务队列（macrotask queue）：**ajax、setTimeout、setInterval、DOM监听、UI Rendering 等
-  - **微任务队列（microtask queue）：**Promise的then回调、 Mutation Observer API、queueMicrotask() 等
+  - <b>宏任务队列（macrotask queue）：</b>ajax、setTimeout、setInterval、DOM监听、UI Rendering 等
+  - <b>微任务队列（microtask queue）：</b>Promise的then回调、 Mutation Observer API、queueMicrotask() 等
 
 - 那么事件循环对于两个队列的优先级是怎么样的呢？
 
@@ -8425,8 +8424,8 @@
 
 - throw关键字可以跟上哪些类型呢？
 
-  - **基本数据类型：**number、string、Boolean
-  - **对象类型：**对象类型可以包含更多的信息
+  - <b>基本数据类型：</b>number、string、Boolean
+  - <b>对象类型：</b>对象类型可以包含更多的信息
 
   ```js
   function foo() {
@@ -8480,9 +8479,9 @@
 
 - Error包含三个属性
 
-  - **messsage：**创建Error对象时传入的message
-  - **name：**Error的名称，通常和类的名称一致
-  - **stack：**整个Error的错误信息，包括函数的调用栈，当我们直接打印Error对象时，打印的就是stack
+  - <b>messsage：</b>创建Error对象时传入的message
+  - <b>name：</b>Error的名称，通常和类的名称一致
+  - <b>stack：</b>整个Error的错误信息，包括函数的调用栈，当我们直接打印Error对象时，打印的就是stack
 
 - Error有一些自己的子类
 
@@ -9079,11 +9078,11 @@
 
 - content-type 是这次请求携带的**数据的类型**
 
-  - **application/x-www-form-urlencoded：**表示数据被编码成以 '&' 分隔的键 - 值对，同时以 '=' 分隔键和值
-  - **application/json：**表示是一个json类型
-  - **text/plain：**表示是文本类型
-  - **application/xml：**表示是xml类型
-  - **multipart/form-data：**表示是上传文件
+  - <b>application/x-www-form-urlencoded：</b>表示数据被编码成以 '&' 分隔的键 - 值对，同时以 '=' 分隔键和值
+  - <b>application/json：</b>表示是一个json类型
+  - <b>text/plain：</b>表示是文本类型
+  - <b>application/xml：</b>表示是xml类型
+  - <b>multipart/form-data：</b>表示是上传文件
 
 - content-length：文件的大小长度
 
@@ -9200,13 +9199,13 @@
 #### 其他事件监听
 
 - 除了 onreadystatechange 还有其他的事件可以监听
-  - **loadstart：**请求开始
-  - **progress：**一个响应数据包到达，此时整个 response body 都在 response 中
-  - **abort：**调用 xhr.abort() 取消了请求
-  - **error：**发生连接错误，例如，域错误。不会发生诸如 404 这类的 HTTP 错误
-  - **load：**请求成功完成
-  - **timeout：**由于请求超时而取消了该请求（仅发生在设置了 timeout 的情况下）
-  - **loadend：**在 load，error，timeout 或 abort 之后触发
+  - <b>loadstart：</b>请求开始
+  - <b>progress：</b>一个响应数据包到达，此时整个 response body 都在 response 中
+  - <b>abort：</b>调用 xhr.abort() 取消了请求
+  - <b>error：</b>发生连接错误，例如，域错误。不会发生诸如 404 这类的 HTTP 错误
+  - <b>load：</b>请求成功完成
+  - <b>timeout：</b>由于请求超时而取消了该请求（仅发生在设置了 timeout 的情况下）
+  - <b>loadend：</b>在 load，error，timeout 或 abort 之后触发
 
 
 
