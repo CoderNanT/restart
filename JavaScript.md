@@ -3008,7 +3008,7 @@
   5. 绘制
   6. 显示
 
-  ![](https://web-dev.imgix.net/image/T4FyVKpzu4WKF1kBNvXepbi08t52/S9TJhnMX1cu1vrYuQRqM.png?auto=format&w=650)
+  ![渲染页面的详细流程图](https://s3.bmp.ovh/imgs/2023/04/03/1a4b6cad26abd5b7.webp)
 
 - https://www.html5rocks.com/en/tutorials/internals/howbrowserswork
 
@@ -5190,7 +5190,7 @@
   console.log(Function.__proto__ === Function.prototype);
   ```
 
-  ![原型继承关系图](http://www.mollypages.org/tutorials/jsobj.jpg)
+  ![原型继承关系图-详细](https://s3.bmp.ovh/imgs/2023/04/03/8d44515f82067989.jpg)
 
   
   
@@ -8998,13 +8998,13 @@
 
 ### 服务器端渲染
 
-![服务器端渲染](https://raw.githubusercontent.com/yacan8/blog/master/images/服务端渲染原理/image-20200731115513579.png)
+![服务器端渲染](https://s3.bmp.ovh/imgs/2023/04/03/cfc470b4fdb763e0.png)
 
 
 
 ### 前后端分离
 
-![前后端分离](https://raw.githubusercontent.com/yacan8/blog/master/images/服务端渲染原理/image-20200731142605631.png)
+![前后端分离](https://s3.bmp.ovh/imgs/2023/04/03/033ea614298d7d21.png)
 
 
 

@@ -515,7 +515,7 @@
 
 ### 常见的开源协议
 
-![](https://img-blog.csdnimg.cn/7301d7eaef75410980d35f9fc551ac90.png)
+![常见的开源协议](https://s3.bmp.ovh/imgs/2023/04/03/31481fb3c3cceec1.png)
 
 
 
@@ -830,7 +830,7 @@
 
 ## 常见命令速查表
 
-![](https://img-blog.csdnimg.cn/img_convert/42cbb7377b237c3c572d8f0f2ea7b10b.png)
+![常见命令速查表](https://s3.bmp.ovh/imgs/2023/04/03/586cbb7eeaf12f5c.png)
 
 
 

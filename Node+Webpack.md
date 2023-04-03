@@ -662,21 +662,21 @@
 
 - ES Module是如何被浏览器解析并且让模块之间可以相互引用的呢？
 
-  - https://hacks.mozilla.org/2018/03/es-modules-a-cartoon-deep-dive/
+  - https://hacks.mozilla.org/2018/03/es-modules-a-cartoon-deep-dive
 
 - ES Module的解析过程可以划分为三个阶段
 
   - 阶段一：构建（Construction），根据地址查找js文件，并且下载，将其解析成模块记录（Module Record）
 
-    ![](https://2r4s9p1yi1fa2jd7j43zph8r-wpengine.netdna-ssl.com/files/2018/03/10_construction.png)
+    <img src="https://hacks.mozilla.org/files/2018/03/10_construction.png" style="width:50%;" />
 
-    ![](https://2r4s9p1yi1fa2jd7j43zph8r-wpengine.netdna-ssl.com/files/2018/03/25_module_map.png)
+    <img src="https://hacks.mozilla.org/files/2018/03/25_module_map.png" style="width:50%;" />
 
   - 阶段二：实例化（Instantiation），对模块记录进行实例化，并且分配内存空间，解析模块的导入和导出语句，把模块指向对应的内存地址
 
   - 阶段三：运行（Evaluation），运行代码，计算值，并且将值填充到内存地址中
 
-    ![](https://2r4s9p1yi1fa2jd7j43zph8r-wpengine.netdna-ssl.com/files/2018/03/30_live_bindings_04.png)
+    <img src="https://hacks.mozilla.org/files/2018/03/30_live_bindings_04.png" style="width:50%;" />
 
 
 
@@ -709,7 +709,7 @@
 
 - 如何下载和安装npm工具呢？
   - npm属于node的一个管理工具，所以我们需要先安装Node
-  - node管理工具：https://nodejs.org/en，安装Node的过程会自动安装npm工具
+  - node管理工具：https://nodejs.org/en 安装Node的过程会自动安装npm工具
 - npm管理的包可以在哪里查看、搜索呢？
   - https://www.npmjs.org
   - 这是我们安装相关的**npm包的官网**
@@ -916,7 +916,7 @@
 
 ### cnpm
 
-- 由于一些特殊的原因，某些情况下我们没办法很好的从 https://registry.npmjs.org下载下来一些需要的包
+- 由于一些特殊的原因，某些情况下我们没办法很好的从 https://registry.npmjs.org 下载下来一些需要的包
 
 - 查看npm镜像
 
@@ -1346,7 +1346,7 @@
   - 从入口开始，会生成一个 **依赖关系图**，这个**依赖关系图**会包含应用程序中所需的所有模块（比如.js文件、css文件、图片、字体等）
   - 然后遍历图结构，打包一个个模块（根据文件的不同使用不同的loader来解析）
   
-  ![](https://1.file.leanote.top/5a57ff56ab64413c13000524/1515569092953_14.png?e=1680406131&token=ym9ZIrtxjozPN4G9he3-FHPOPxAe-OQmxzol5EOk:3L6945qQI3ULWH5OvwvFP49KMI0=)
+  ![webpack的依赖图](https://s3.bmp.ovh/imgs/2023/04/03/9197f1b5917be222.png)
 
 
 
