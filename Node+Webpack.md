@@ -668,15 +668,15 @@
 
   - 阶段一：构建（Construction），根据地址查找js文件，并且下载，将其解析成模块记录（Module Record）
 
-    <img src="https://hacks.mozilla.org/files/2018/03/10_construction.png" style="width:50%;" />
+    <img src="https://hacks.mozilla.org/files/2018/03/10_construction.png" style="width:80%;" />
 
-    <img src="https://hacks.mozilla.org/files/2018/03/25_module_map.png" style="width:50%;" />
+    <img src="https://hacks.mozilla.org/files/2018/03/25_module_map.png" style="width:80%;" />
 
   - 阶段二：实例化（Instantiation），对模块记录进行实例化，并且分配内存空间，解析模块的导入和导出语句，把模块指向对应的内存地址
 
   - 阶段三：运行（Evaluation），运行代码，计算值，并且将值填充到内存地址中
 
-    <img src="https://hacks.mozilla.org/files/2018/03/30_live_bindings_04.png" style="width:50%;" />
+    <img src="https://hacks.mozilla.org/files/2018/03/30_live_bindings_04.png" style="width:80%;" />
 
 
 
@@ -834,7 +834,7 @@
 
 - 从npm5开始，**npm支持缓存策略（来自yarn的压力）**，**缓存有什么作用**呢？
 
-  ![](https://s1.ax1x.com/2022/07/04/jJA19H.png)
+  ![npm install 原理](https://s3.bmp.ovh/imgs/2023/04/03/842862d99ce2161a.png)
 
 -  npm install 会检测是有 package-lock.json 文件
   - 没有lock文件
@@ -1027,15 +1027,15 @@
 
 - <b>文件的拷贝：</b>copy foo.js foo_copy.js
 
-  ![](https://s1.ax1x.com/2022/07/05/jNTlCT.png)
+  ![文件的拷贝](https://s3.bmp.ovh/imgs/2023/04/03/f495225697fbc939.png)
 
 - <b>文件的硬链接：</b>mklink /H foo_hard.js foo.js
 
-  ![](https://s1.ax1x.com/2022/07/05/jNTM5V.png)
+  ![硬链接](https://s3.bmp.ovh/imgs/2023/04/03/98d9b2637b8470c7.png)
 
 - <b>文件的软连接：</b> mklink foo_soft.js foo.js
 
-  ![](https://s1.ax1x.com/2022/07/05/jNTKU0.png)
+  ![软连接](https://s3.bmp.ovh/imgs/2023/04/03/eec21c9b31c999dd.png)
 
 
 
