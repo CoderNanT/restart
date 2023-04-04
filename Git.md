@@ -155,7 +155,7 @@
 - 方式二：从Git远程仓库
 
   ```bash
-  git clone https://github.com/vuejs/vue.git
+  git clone https://github.com/CoderNanT/github_demo.git
   ```
 
 
@@ -387,7 +387,7 @@
 - 添加远程地址：我们也可以继续添加远程服务器（让本地的仓库和远程服务器仓库建立连接）
   ```bash
   # git remote add <shortname> <url>
-  git remote add origin xxxx.git
+  git remote add origin https://github.com/CoderNanT/github_demo.git
   ```
 - 重命名远程地址
 
@@ -474,7 +474,7 @@
 - 从远程仓库clone代码：将存储库克隆到新创建的目录中
   
   ```bash
-  git clone https://github.com/vuejs/vue.git
+  git clone https://github.com/CoderNanT/github_demo.git
   ```
 -  将代码push到远程仓库：将本地仓库的代码推送到远程仓库中
   - 默认情况下是将当前分支（比如master）push到origin远程仓库的
@@ -484,11 +484,12 @@
   git push # 在 Git2.0 时 push 默认配置改成了simple
   # git push origin HEAD:main 方式一
   # git push origin HEAD			方式二 会在远程仓库中创建一个 master 分支
+  # git checkout -b main			方式三 创建一个 main 分支和远程分支对应，这样就不用修改配置了
   
   # matching - This used to be the default, but not since Git 2.0 (simple is the new default)
   # simple - pushes the current branch with the same name on the remote (推送远程仓库上 同名的 当前分支)
   
-  git config push.default upstream # 方式三
+  git config push.default upstream # 方式四
   git push
   ```
 - 从远程仓库fetch代码：从远程仓库获取最新的代码
@@ -607,10 +608,6 @@
 
   ```bash
   git checkout testing
-  # 检查服务器是否有 origin/testing 这个分支
-  # 创建一个本地的 testing 分支
-  # 让本地的 testing 分支自动跟踪 origin/testing
-  # 切换到 testing 分支
   ```
 
   <img src="https://git-scm.com/book/en/v2/images/head-to-testing.png" style="width:50%;" />
@@ -740,13 +737,18 @@
 
 - 操作二：跟踪远程分支
 
-  - 当克隆一个仓库时，它通常会自动地创建一个跟踪 origin/master 的 master 分支
+  - 当克隆一个仓库时，它通常会自动地创建一个跟踪 origin/main 的 main 分支
   - 如果你愿意的话可以设置其他的跟踪分支，可以通过运行 `git checkout --track <remote>/<branch>`
-  - 如果你尝试检出的分支 (a) 不存在且 (b) 刚好只有一个名字与之匹配的远程分支，那么 Git 就会为你创建一个跟踪分支
+  - 如果你检出的分支不存在，并且**远程仓库**刚好有一个名字与之匹配的分支，那么 Git 就会为你创建一个跟踪分支
 
   ```bash
   git checkout --track <remote>/<branch>
   git checkout <branch>
+  # git checkout develop
+  # 检查服务器是否有 origin/develop 这个分支
+  # 创建一个本地的 develop 分支
+  # 让本地的 develop 分支自动跟踪 origin/develop
+  # 切换到 develop 分支
   ```
 
 - 操作三：删除远程分支
