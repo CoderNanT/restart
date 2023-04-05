@@ -1,5 +1,7 @@
 # 邂逅JavaScript
 
+
+
 ## 计算机语言
 
 - 前面我们已经学习了HTML和CSS很多相关的知识
@@ -209,6 +211,8 @@
 
 
 # JavaScript基础
+
+
 
 ## noscript元素
 
@@ -2652,6 +2656,8 @@
 
 
 # JavaScript高级
+
+
 
 ## this
 
