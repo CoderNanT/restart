@@ -2369,6 +2369,42 @@
 
 
 
+### InstanceType
+
+- 用于构造一个由所有Type的构造函数的实例类型组成的类型
+
+  ```tsx
+  class Person {}
+  class Animal {}
+  
+  type constructorType = new (...args: any[]) => any;
+  
+  type MyInstanceType<T extends constructorType> = T extends new (...args: any[]) => infer R ? R : never;
+  
+  // Person: 值
+  // typeof Person: 类型
+  type specificType = typeof Person;
+  const p1: specificType = Person;
+  // const p2: specificType = new Person();
+  // 类型 "Person" 中缺少属性 "prototype"，但类型 "typeof Person" 中需要该属性
+  
+  // InstanceType: 构造函数创建出来的实例对象的类型
+  type Person1 = InstanceType<typeof Person>;
+  type MyPerson1 = MyInstanceType<typeof Person>;
+  const p3: Person1 = new Person();
+  const p4: MyPerson1 = new Person();
+  
+  // 通过的创建实例的工具函数时会用到这个 InstanceType
+  function factory<T extends constructorType>(ctor: T): MyInstanceType<T> {
+    return new ctor();
+  }
+  
+  const p5 = factory(Person);
+  const A1 = factory(Animal);
+  ```
+
+
+
 ## TS知识扩展
 
 ### 模块化
