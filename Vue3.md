@@ -1178,15 +1178,15 @@
   
   <!-- 
   const vnode = {
-  	type: "div",
-  	props: {
-  		class: "title",
-  		style: {
-  			"font-size": "30px",
-  			color: "red",
-  		},
-  	},
-  	chidren: "哈哈哈",
+    type: "div",
+    props: {
+      class: "title",
+      style: {
+        "font-size": "30px",
+        color: "red",
+      },
+    },
+    chidren: "哈哈哈",
   };
   
   template -> VNode -> 真实DOM
@@ -3211,7 +3211,7 @@
   ```js
   // import函数可以让 webpack 对导入文件进行分包处理
   import("./utils/math").then(res => {
-  	res.sum(20, 30)
+    res.sum(20, 30)
   })
   ```
 
@@ -4752,9 +4752,9 @@
   ```js
   {
     path: "/about",
-  	name: "about-name",
-  	meta: { name: "strive", age: 20, game: "lol" },
-  	component: () => import("../Views/About.vue"),
+    name: "about-name",
+    meta: { name: "strive", age: 20, game: "lol" },
+    component: () => import("../Views/About.vue"),
   }
   ```
 
@@ -4870,13 +4870,13 @@
 
   ```js
   {
-  	path: "/home",
-  	component: () => import("../Views/Home.vue"),
-  	children: [
-  		{ path: "/home", redirect: "/home/product" },
-  		{ path: "product", component: () => import("../Views/Product.vue") },
+    path: "/home",
+    component: () => import("../Views/Home.vue"),
+    children: [
+      { path: "/home", redirect: "/home/product" },
+      { path: "product", component: () => import("../Views/Product.vue") },
       { path: "message", component: () => import("../Views/Message.vue") },
-  	],
+    ],
   },
   ```
   
@@ -4904,10 +4904,10 @@
   
   function ProductClick() {
     // router.back()
-  	// router.forward()
+    // router.forward()
   
-  	// router.go(1) -> forward()
-  	// router.go(-1) -> back()
+    // router.go(1) -> forward()
+    // router.go(-1) -> back()
     router.push("/home/product");
   }
   
@@ -4981,7 +4981,7 @@
 
   ```js
   router.addRoute({
-  	path: "/about",
+    path: "/about",
     name: "about"
     component: () => import("../Views/About.vue"),
   });
@@ -4993,7 +4993,7 @@
 
   ```js
   let removeRoute = router.addRoute({
-  	path: "/about",
+    path: "/about",
     name: "about"
     component: () => import("../Views/About.vue"),
   });
@@ -6104,7 +6104,7 @@
   ```js
   getters: {
     doubleCounterAddOne() {
-    	return this.doubleCounter + 1;
+      return this.doubleCounter + 1;
     },
   },
   ```
@@ -6975,7 +6975,7 @@
 
   ```vue
   <transition appear>
-  	<h2 v-if="isShow">哈哈哈哈</h2>
+    <h2 v-if="isShow">哈哈哈哈</h2>
   </transition>
   ```
 

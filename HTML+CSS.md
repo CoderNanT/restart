@@ -178,7 +178,7 @@
   <!DOCTYPE html>
   <html lang="en">
     <head>
-    	<meta charset="UTF-8" />
+      <meta charset="UTF-8" />
       <title>网页标题</title>
     </head>
     <body></body>
@@ -357,23 +357,23 @@
 - **常见的字符实体**
 
   ```
-  		描述 实体名称 实体编号
-  		空格 &nbsp; &#160;
-  < 	小于号 &lt; &#60;
-  > 	大于号 &gt; &#62;
-  & 	和号 &amp; &#38;
-  " 	双引号 &quot; &#34;
-  ' 	单引号 &apos; &#39;
+      描述 实体名称 实体编号
+      空格 &nbsp; &#160;
+  <   小于号 &lt; &#60;
+  >   大于号 &gt; &#62;
+  &   和号 &amp; &#38;
+  "   双引号 &quot; &#34;
+  '   单引号 &apos; &#39;
   ￠  分(cent) &cent; &#162;
-  £ 	镑(pound) &pound; &#163;
-  ¥ 	元(yen) &yen; &#165;
-  € 	欧元(euro) &euro; &#8364;
-  § 	小节 &sect; &#167;
-  © 	版权(copyright) &copy; &#169;
-  ® 	注册商标 &reg; &#174;
-  ™ 	商标 &trade; &#8482;
-  × 	乘号 &times; &#215;
-  ÷ 	除号 &divide; &#247;
+  £   镑(pound) &pound; &#163;
+  ¥   元(yen) &yen; &#165;
+  €   欧元(euro) &euro; &#8364;
+  §   小节 &sect; &#167;
+  ©   版权(copyright) &copy; &#169;
+  ®   注册商标 &reg; &#174;
+  ™   商标 &trade; &#8482;
+  ×   乘号 &times; &#215;
+  ÷   除号 &divide; &#247;
   ```
 
 
@@ -3631,7 +3631,7 @@ box-sizing用来设置盒子模型中宽高的行为
           /* 1.em: 相对自己的font-size */
           /* 2.如果自己没有设置, 那么会继承父元素的font-size */
           /* 3.如果font-size中有写em单位, 可以理解成相对于父元素
-             	 但是更准确的理解依然是相对于自己的
+                但是更准确的理解依然是相对于自己的
           */
           font-size: 2em; /* 先继承父元素的font-size: 15px * 2em = 30px */
   
@@ -3790,8 +3790,8 @@ box-sizing用来设置盒子模型中宽高的行为
   @normalFontSize: 14px;
   
   .box {
-  	color: @mainColor;
-  	font-size: @normalFontSize;
+    color: @mainColor;
+    font-size: @normalFontSize;
   }
   ```
 
@@ -3806,8 +3806,8 @@ box-sizing用来设置盒子模型中宽高的行为
 
   ```less
   .box {
-  	color: 100px + 10%;
-  	background-color: #ff0000 + #00ff00;
+    color: 100px + 10%;
+    background-color: #ff0000 + #00ff00;
   }
   ```
 
@@ -3901,11 +3901,11 @@ box-sizing用来设置盒子模型中宽高的行为
   }
   
   .box {
-  	// @mainColor: #0f0;
+    // @mainColor: #0f0;
     .item {
-  		color: @mainColor;
-  		.box_mixin();
-    	// @mainColor: #00f;
+      color: @mainColor;
+      .box_mixin();
+      // @mainColor: #00f;
     }
   }
   ```

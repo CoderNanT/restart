@@ -483,8 +483,8 @@
   ```bash
   git push # 在 Git2.0 时 push 默认配置改成了simple
   # git push origin HEAD:main 方式一
-  # git push origin HEAD			方式二 会在远程仓库中创建一个 master 分支
-  # git checkout -b main			方式三 创建一个 main 分支和远程分支对应，这样就不用修改配置了
+  # git push origin HEAD      方式二 会在远程仓库中创建一个 master 分支
+  # git checkout -b main      方式三 创建一个 main 分支和远程分支对应，这样就不用修改配置了
   
   # matching - This used to be the default, but not since Git 2.0 (simple is the new default)
   # simple - pushes the current branch with the same name on the remote (推送远程仓库上 同名的 当前分支)

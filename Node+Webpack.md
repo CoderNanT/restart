@@ -1373,9 +1373,9 @@
   import "./component.js";
   
   // npm run build
-  // 	ERROR in ./src/css/style.css 1:0
-  // 	Module parse failed: Unexpected token (1:0) 
-  // 	You may need an appropriate loader to handle this file type, ....
+  //   ERROR in ./src/css/style.css 1:0
+  //   Module parse failed: Unexpected token (1:0) 
+  //   You may need an appropriate loader to handle this file type, ....
   ```
 
 
@@ -1680,7 +1680,7 @@
   
   // babel.config.js
   module.exports = {
-  	presets: ["@babel/preset-env"],
+    presets: ["@babel/preset-env"],
   };
   ```
 

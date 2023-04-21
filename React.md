@@ -181,18 +181,18 @@
   <div id="root"></div>
   
   <script type="text/babel">
-  	class App extends React.Component {
-  		constructor() {
-  			super();
+    class App extends React.Component {
+      constructor() {
+        super();
         this.state = { message: "Hello World" };
-  	}
-    	render() {
-    		return <h2>{this.state.message}</h2>;
-  		}
-  	}
+    }
+      render() {
+        return <h2>{this.state.message}</h2>;
+      }
+    }
   
-  	const root = ReactDOM.createRoot(document.querySelector("#root"));
-  	root.render(<App />);
+    const root = ReactDOM.createRoot(document.querySelector("#root"));
+    root.render(<App />);
   </script>
   ```
 
@@ -512,10 +512,10 @@
   
   /*
   this的四种绑定规则:
-  	1.默认绑定 独立执行 foo()
-  	2.隐式绑定 被一个对象执行 obj.foo() -> obj
-  	3.显式绑定: call/apply/bind foo.call("aaa") -> String("aaa")
-  	4.new绑定: new Foo() -> 创建一个新对象, 并且赋值给this
+    1.默认绑定 独立执行 foo()
+    2.隐式绑定 被一个对象执行 obj.foo() -> obj
+    3.显式绑定: call/apply/bind foo.call("aaa") -> String("aaa")
+    4.new绑定: new Foo() -> 创建一个新对象, 并且赋值给this
   */
   
   class App extends React.Component {
@@ -1286,7 +1286,7 @@
   
   // MainBanner传入的props的默认值
   MainBanner.defaultProps = {
-  	title: "默认标题"
+    title: "默认标题"
   }
   
   export default MainBanner
@@ -3301,7 +3301,7 @@
   - 答案就是使用**中间件（Middleware）**
   - Middleware可以帮助我们**在请求和响应之间嵌入一些操作的代码**，比如cookie解析、日志记录、文件压缩等操作
 
-​		
+​    
 
 ## 理解中间件
 
