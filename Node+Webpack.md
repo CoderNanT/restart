@@ -1,9 +1,5 @@
 # Node
 
-
-
-## Node是什么
-
 - 官方对Node.js的定义
   - Node.js是一个基于**V8引擎**的**JavaScript运行时环境**
 - 也就是说Node.js基于V8引擎来执行JavaScript的代码，但是不仅仅只有V8引擎
@@ -1104,9 +1100,1923 @@
 
 
 
+## 文件模块
+
+- fs是File System的缩写，表示文件系统
+- 对于任何一个为服务器端服务的语言或者框架通常都会有自己的文件系统
+  - 因为**服务器需要将各种数据、文件**等放置到不同的地方
+  - 比如**用户数据可能大多数是放到数据库中的**
+  - 比如**某些配置文件或者用户资源（图片、音视频）都是以文件的形式存在于操作系统上**的
+- Node也有自己的文件系统操作模块，就是fs
+  - **借助于Node帮我们封装的文件系统**，我们**可以在任何的操作系统（window、Mac OS、Linux）上面直接去操作文件**
+  - 这也是**Node可以开发服务器的一大原因**，也是**它可以成为前端自动化脚本等热门工具**的原因
+
+
+
+### API
+
+- Node文件系统的API非常的多
+  - https://nodejs.org/docs/latest-v16.x/api/fs.html
+  - 我们不可能，也没必要一个个去学习
+  - 这个更多的应该是作为一个API查询的手册，等用到的时候查询即可
+  - 学习阶段我们只需要学习最常用的即可
+- 但是这些API大多数都提供三种操作方式
+  - 方式一：同步操作文件：代码会被阻塞，不会继续执行
+  - 方式二：异步回调函数操作文件：代码不会被阻塞，需要传入回调函数，当获取到结果时，回调函数被执行
+  - 方式三：异步Promise操作文件：代码不会被阻塞，通过 fs.promises 调用方法操作，会返回一个Promise，可以通过then、catch进行处理
+
+
+
+### 获取一个文件的状态
+
+- 我们这里以获取一个文件的状态为例
+
+  ```js
+  const fs = require("fs");
+  
+  // 1.同步读取
+  const res1 = fs.readFileSync("./aaa.txt", { encoding: "utf8" });
+  console.log(res1);
+  console.log("后续的代码 1");
+  
+  // 2.异步读取: 回调函数
+  fs.readFile("./aaa.txt", { encoding: "utf8" }, (err, data) => {
+    console.log("读取文件结果:", data);
+  });
+  console.log("后续的代码 2");
+  
+  // 3.异步读取: Promise
+  fs.promises
+    .readFile("./aaa.txt", { encoding: "utf-8" })
+    .then((res) => console.log("获取到结果:", res))
+    .catch((err) => console.log("发生了错误:", err));
+  ```
+
+
+
+### 文件描述符
+
+- 文件描述符（File descriptors）是什么呢？
+
+  - 在常见的操作系统上，对于**每个进程，内核都维护着一张当前打开着的文件和资源的表格**
+  - 每个打开的文件都分配了一个**称为文件描述符的简单的数字标识符**
+  - 在系统层，**所有文件系统操作都使用这些文件描述符来标识和跟踪每个特定的文件**
+  - **Windows 系统使用了一个虽然不同但概念上类似的机制来跟踪资源**
+
+- 为了简化用户的工作，Node.js 抽象出操作系统之间的特定差异，并为所有打开的文件分配一个数字型的文件描述符
+
+- fs.open() 方法用于分配新的文件描述符
+
+  - 一旦被分配，则**文件描述符可用于从文件读取数据、向文件写入数据、或请求关于文件的信息**
+
+  ```js
+  const fs = require("fs");
+  
+  // 打开一个文件
+  fs.open("./bbb.txt", (err, fd) => {
+    if (err) {
+      console.log("打开文件错误:", err);
+      return;
+    }
+    // 1.获取文件描述符
+    console.log(fd);
+    // 2.读取到文件的信息
+    fs.fstat(fd, (err, stats) => {
+      if (err) return;
+      console.log(stats);
+      // 3.手动关闭文件
+      fs.close(fd);
+    });
+  });
+  ```
+
+
+
+### 文件的读写
+
+- 如果我们希望对文件的内容进行操作，这个时候可以使用文件的读写
+
+  - fs.readFile(path[, options], callback)：读取文件的内容
+  - fs.writeFile(file, data[, options], callback)：在文件中写入内容
+
+  ```js
+  const fs = require("fs");
+  
+  // 1.有一段内容(客户端传递过来)
+  const content = "hello world, my name is strive";
+  
+  // 2.文件的写入操作
+  fs.writeFile("./ccc.txt", content, { encoding: "utf8", flag: "a" }, (err) => {
+    if (err) {
+      console.log("文件写入错误:", err);
+    } else {
+      console.log("文件写入成功");
+    }
+  });
+  ```
+
+- 在上面的代码中，你会发现有一个对象类型，这个是写入时填写的option参数
+
+  - flag：写入的方式
+    - w 打开文件写入，默认值
+    - w+ 打开文件进行读写（可读可写），如果不存在则创建文件
+    - r 打开文件读取，读取时的默认值
+    - r+ 打开文件进行读写，如果不存在那么抛出异常
+    - a 打开要写入的文件，将流放在文件末尾。如果不存在则创建文件
+    - a+ 打开文件以进行读写（可读可写），将流放在文件末尾。如果不存在则创建文件
+    - flag的值有很多：https://nodejs.org/dist/latest-v14.x/docs/api/fs.html#fs_file_system_flags
+  - encoding：字符的编码
+    - 目前基本用的都是UTF-8编码
+    - 如果不填写encoding，返回的结果是Buffer
+    - 关于字符编码的文章：https://www.jianshu.com/p/899e749be47c
+
+
+
+### 文件夹操作
+
+- 新建一个文件夹
+
+  - 使用fs.mkdir()或fs.mkdirSync()创建一个新文件夹
+
+  ```js
+  const fs = require("fs");
+  
+  // 创建文件夹 directory
+  fs.mkdir("./ddd", (err) => console.log(err));
+  ```
+
+- 获取文件夹的内容
+
+  ```js
+  const fs = require("fs");
+  
+  // 读取文件夹
+  // 1.读取文件夹, 获取到文件夹中文件的字符串
+  fs.readdir("./infos", (err, files) => {
+    console.log(files);
+  });
+  
+  // 2.读取文件夹, 获取到文件夹中文件的信息
+  fs.readdir("./infos", { withFileTypes: true }, (err, files) => {
+    files.forEach((item) => {
+      if (item.isDirectory()) {
+        console.log("item是一个文件夹:", item.name);
+      } else {
+        console.log("item是一个文件:", item.name);
+      }
+    });
+  });
+  ```
+
+- 文件重命名
+
+  ```js
+  const fs = require("fs");
+  
+  // 1.对文件夹进行重命名
+  fs.rename("./infos", "./hhhh", (err) => {
+    console.log("重命名结果:", err);
+  });
+  
+  // 2.对文件重命名
+  fs.rename("./ccc.txt", "./ddd.txt", (err) => {
+    console.log("重命名结果:", err);
+  });
+  ```
+
+
+
+## 事件模块
+
+- Node中的核心API都是基于异步事件驱动的
+
+  - 在这个体系中，某些对象（发射器（Emitters））发出某一个事件
+  - 我们可以监听这个事件（监听器 Listeners），并且传入的回调函数，这个回调函数会在监听到事件时调用
+
+- 发出事件和监听事件都是通过EventEmitter类来完成的，它们都属于events对象
+
+  - emitter.on(eventName, listener)：监听事件，也可以使用addListener
+  - emitter.off(eventName, listener)：移除事件监听，也可以使用removeListener
+  - emitter.emit(eventName[, ...args])：发出事件，可以携带一些参数
+
+  ```js
+  // events 模块中的事件总线
+  const EventEmitter = require("events");
+  
+  // 创建 EventEmitter 的实例
+  const emitter = new EventEmitter();
+  
+  // 监听事件
+  function handleChange(name, age) {
+    console.log("监听change的事件:", name, age);
+  }
+  emitter.on("change", handleChange);
+  
+  // 发射事件
+  setTimeout(() => {
+    emitter.emit("change", "strive", 18);
+    emitter.off("change", handleChange);
+  }, 1000);
+  
+  setTimeout(() => {
+    emitter.emit("change");
+    console.log("-------");
+  }, 2000);
+  ```
+
+
+
+### 常见的方法
+
+- EventEmitter的实例有一些属性，可以记录一些信息
+
+  - emitter.eventNames()：返回当前 EventEmitter对象注册的事件字符串数组
+  - emitter.getMaxListeners()：返回当前 EventEmitter对象的最大监听器数量，可以通过setMaxListeners()来修改，默认是10
+  - emitter.listenerCount(事件名称)：返回当前 EventEmitter对象某一个事件名称，监听器的个数
+  - emitter.listeners(事件名称)：返回当前 EventEmitter对象某个事件监听器上所有的监听器数组
+
+  ```js
+  const EventEmitter = require("events");
+  
+  const ee = new EventEmitter();
+  
+  ee.on("aaa", () => {});
+  ee.on("aaa", () => {});
+  ee.on("aaa", () => {});
+  
+  ee.on("bbb", () => {});
+  ee.on("bbb", () => {});
+  
+  // 1.获取所有监听事件的名称
+  console.log(ee.eventNames());
+  // 2.获取监听最大的监听个数
+  console.log(ee.getMaxListeners());
+  // 3.获取某一个事件名称对应的监听器个数
+  console.log(ee.listenerCount("aaa"));
+  // 4.获取某一个事件名称对应的监听器函数(数组)
+  console.log(ee.listeners("aaa"));
+  ```
+
+- EventEmitter的实例方法补充
+
+  - emitter.once(eventName, listener)：事件监听一次
+  - emitter.prependListener()：将监听事件添加到最前面
+  - emitter.prependOnceListener()：将监听事件添加到最前面，但是只监听一次
+  - emitter.removeAllListeners([eventName])：移除所有的监听器
+
+  ```js
+  const EventEmitter = require("events");
+  
+  const ee = new EventEmitter();
+  
+  // 1.once: 事件监听只监听一次(第一次发射事件的时候进行监听)
+  ee.once("change", () => {
+    console.log("on监听change1");
+  });
+  
+  // 2.prependListener: 将事件监听添加到最前面
+  ee.prependListener("change", () => {
+    console.log("on监听change2");
+  });
+  
+  ee.emit("change");
+  
+  // 3.移除所有的事件监听
+  // 不传递参数的情况下, 移除所有事件名称的所有事件监听
+  // 在传递参数的情况下, 只会移除传递的事件名称的事件监听
+  ee.removeAllListeners("change");
+  ```
+
+
+
+## Buffer
+
+### 数据的二进制
+
+- 计算机中所有的内容：文字、数字、图片、音频、视频最终都会使用二进制来表示
+- JavaScript可以直接去处理非常直观的数据：比如字符串，我们通常展示给用户的也是这些内容
+- 不对啊，JavaScript不是也可以处理图片吗？
+  - 事实上在**网页端，图片我们一直是交给浏览器来处理的**
+  - **JavaScript或者HTML，只是负责告诉浏览器一个图片的地址**
+  - 浏览器**负责获取这个图片**，并且**最终将这个图片渲染出来**
+- 但是对于服务器来说是不一样的
+  - 服务器要处理的**本地文件类型相对较多**
+  - 比如**某一个保存文本的文件并不是使用 utf-8进行编码**的，而是**用 GBK**，那么**我们必须读取到他们的二进制数据，再通过GKB转换成对应的文字**
+  - 比如**我们需要读取的是一张图片数据（二进制）**，再通过某些手段**对图片数据进行二次的处理**（裁剪、格式转换、旋转、添加滤镜），Node中**有一个Sharp的库**，就是**读取图片或者传入图片的Buffer对其再进行处理**
+  - 比如**在Node中通过TCP建立长连接，TCP传输的是字节流**，我们**需要将数据转成字节再进行传入**，并且**需要知道传输字节的大小**（客户端需要根据大小来判断读取多少内容）
+
+
+
+### Buffer和二进制
+
+- 我们会发现，对于前端开发来说，通常**很少会和二进制直接打交道**，但是对于服务器端为了做很多的功能，我们**必须直接去操作其二进制的数据**
+- 所以Node为了可以方便开发者完成更多功能，提供给了我们一个类Buffer，并且它是全局的
+- 我们前面说过，Buffer中存储的是二进制数据，那么到底是如何存储呢？
+  - 我们可以将Buffer看成是一个存储二进制的数组
+  - 这个数组中的**每一项**，可以**保存8位二进制**： 0000 0000
+- 为什么是8位呢？
+  - 在计算机中，**很少的情况我们会直接操作一位二进制**，因为**一位二进制存储的数据是非常有限的**
+  - 所以通常会**将8位合在一起作为一个单元**，这个单元称之为**一个字节（byte）**
+  - **也就是说 1byte = 8bit**，1kb=1024byte，1M=1024kb
+  - 比如很多编程语言中的**int类型是4个字节，long类型时8个字节**
+  - 比如**TCP传输的是字节流**，在**写入和读取时都需要说明字节的个数**
+  - 比如**RGB的值分别都是255**，所以**本质上在计算机中都是用一个字节存储的**
+
+
+
+### Buffer和字符串
+
+- Buffer相当于是一个字节的数组，数组中的每一项对应一个字节的大小
+
+  ```js
+  const buffer1 = new Buffer("hello"); // 不推荐
+  console.log(buffer1);
+  ```
+
+- 如果我们希望将一个字符串放入到Buffer中，是怎么样的过程呢？
+
+  ```js
+  // 字符串--ascii编码--> 16进制--存储--> Buffer
+  ```
+
+- 它是怎么样的过程呢？
+
+  ```js
+  const buffer2 = Buffer.from("hello");
+  console.log(buffer2);
+  ```
+
+- 如果是中文呢？
+
+  - 默认编码：utf-8
+
+  ```js
+  const buffer3 = Buffer.from("你好啊, hhh");
+  console.log(buffer3);
+  console.log(buffer3.toString());
+  ```
+
+- 如果编码和解码不同
+
+  ```js
+  const buffer4 = Buffer.from("哈哈哈", "utf16le");
+  console.log(buffer4);
+  // 解码操作
+  console.log(buffer4.toString("utf16le"));
+  ```
+
+
+
+### Buffer.alloc
+
+- 我们会发现创建了一个8位长度的Buffer，里面所有的数据默认为00
+
+  ```js
+  // 1.创建一个bufferfer对象
+  // 8个字节大小的bufferfer内存空间
+  const bufferfer = bufferfer.alloc(8);
+  console.log(buffer)
+  
+  // 2.手动对每个字节进行访问
+  console.log(buffer[0])
+  console.log(buffer[1])
+  
+  // 3.手动对每个字节进行操作
+  buffer[0] = 100;
+  buffer[1] = 0x66;
+  console.log(buffer);
+  console.log(buffer.toString());
+  
+  buffer[2] = "m".charCodeAt();
+  console.log(buffer);
+  ```
+
+
+
+### Buffer和文件读取
+
+- 文本文件的读取
+
+  ```js
+  const fs = require('fs')
+  fs.readFile("./aaa.txt", { encoding: "utf-8" }, (err, data) => {
+    console.log(data);
+  });
+  ```
+
+- 图片文件的读取
+
+  ```js
+  const fs = require('fs')
+  fs.readFile("./logo.png", (err, data) => {
+    console.log(data);
+  });
+  ```
+
+
+
+## Stream
+
+- 什么是Stream（小溪、小河，在编程中通常翻译为流）呢？
+  - 我们的第一反应应该是**流水，源源不断的流动**
+  - 程序中的流也是**类似的含义**，我们可以想象**当我们从一个文件中读取数据时，文件的二进制（字节）数据会源源不断的被读取到我们程序中**
+  - **而这个一连串的字节，就是我们程序中的流**
+- 所以，我们可以这样理解流
+  - **流是连续字节的一种表现形式和抽象概念**
+  - 流应该是**可读的**，也是**可写的**
+- 在之前学习文件的读写时，我们可以直接通过 readFile或者 writeFile方式读写文件，为什么还需要流呢？
+  - 直接**读写文件的方式，虽然简单**，但是**无法控制一些细节的操**作
+  - 比如**从什么位置开始读、读到什么位置、一次性读取多少个字节**
+  - 读到**某个位置**后，**暂停读取，某个时刻恢复继续读取**等等
+  - 或者**这个文件非常大**，比如**一个视频文件，一次性全部读取并不合适**
+
+
+
+### 文件读写的流
+
+- 事实上Node中很多对象是基于流实现的
+  - **http模块**的**Request**和**Response**对象
+- 官方文档：另外所有的流都是EventEmitter的实例
+- 那么在Node中都有哪些流呢？
+- Node.js中有四种基本流类型
+  - Writable：可以**向其写入数据的流**（例如 fs.createWriteStream()）
+  - Readable：可以**从中读取数据的流**（例如 fs.createReadStream()）
+  - Duplex：同时为Readable和Writable（例如 net.Socket）
+  - Transform：Duplex可以在**写入和读取数据时修改或转换数据的流**（例如zlib.createDeflate()）
+- 这里我们通过fs的操作，讲解一下Writable、Readable，另外两个大家可以自行学习一下
+
+
+
+### Readable
+
+- 之前我们读取一个文件的信息
+
+  ```js
+  const fs = require('fs')
+  // 一次性读取
+  // 缺点一: 没有办法精准控制从哪里读取, 读取什么位置
+  // 缺点二: 读取到某一个位置的, 暂停读取, 恢复读取
+  // 缺点三: 文件非常大的时候, 多次读取
+  fs.readFile("./aaa.txt", (err, data) => {
+    console.log(data);
+  });
+  ```
+
+- 这种方式是一次性将一个文件中所有的内容都读取到程序（内存）中，但是这种读取方式就会出现我们之前提到的很多问题
+
+  - **文件过大、读取的位置、结束的位置、一次读取的大小**
+
+- 这个时候，我们可以使用 createReadStream，我们来看几个参数，更多参数可以参考官网
+
+  - start：文件读取开始的位置
+  - end：文件读取结束的位置
+  - highWaterMark：一次性读取字节的长度，默认是64kb
+
+  ```js
+  const fs = require('fs')
+  // 通过流读取文件, 创建一个可读流
+  // start: 从什么位置开始读取
+  // end: 读取到什么位置后结束(包括end位置字节)
+  const readStream = fs.createReadStream("./aaa.txt", {start: 6, end: 10, highWaterMark: 3});
+  
+  // 监听读取到的数据
+  readStream.on("data", (data) => {
+    console.log(data.toString());
+  
+    readStream.pause();
+  
+    setTimeout(() => {
+      readStream.resume();
+    }, 2000);
+  });
+  
+  // 补充其他的事件监听
+  readStream.on("open", (fd) => {
+    console.log("通过流将文件打开", fd);
+  });
+  
+  readStream.on("end", () => {
+    console.log("已经读取到end位置");
+  });
+  
+  readStream.on("close", () => {
+    console.log("文件读取结束, 并且被关闭");
+  });
+  ```
+
+
+
+### Writable
+
+- 之前我们写入一个文件的方式是这样的
+
+  ```js
+  const fs = require('fs')
+  // 一次性写入内容
+  fs.writeFile("./bbb.txt", "你好啊", (err) => {
+    console.log("写入文件结果:", err);
+  });
+  ```
+
+- 这种方式相当于一次性将所有的内容写入到文件中，但是这种方式也有很多问题
+
+  - 比如我们希望一点点写入内容，精确每次写入的位置等
+
+- 这个时候，我们可以使用 createWriteStream，我们来看几个参数，更多参数可以参考官网
+
+  - flags：默认是w，如果我们希望是追加写入，可以使用 a 或者 a+
+  - start：写入的位置
+
+  ```js
+  const fs = require('fs')
+  // 创建一个写入流
+  const writeStream = fs.createWriteStream("./ccc.txt", { 
+    // mac 上面是没有问题
+    // flags: 'a+',
+    flags: 'r+',
+    start: 5 // window 上面是需要使用 r+
+  });
+  
+  writeStream.on("open", (fd) => {
+    console.log("文件被打开", fd);
+  });
+  
+  writeStream.write("******");
+  writeStream.write("------");
+  
+  writeStream.write("bbbb", (err) => {
+    console.log("写入完成:", err);
+  });
+  
+  writeStream.on("finish", () => {
+    console.log("写入完成了");
+  });
+  
+  writeStream.on("close", () => {
+    console.log("文件被关闭");
+  });
+  
+  // 3.写入完成时, 需要手动去掉用close方法
+  // writeStream.close()
+  
+  // 4.end方法
+  // 操作一: 将最后的内容写入到文件中, 并且关闭文件
+  // 操作二: 关闭文件
+  writeStream.end("哈哈哈哈");
+  ```
+
+
+
+### pipe
+
+- 正常情况下，我们可以将读取到的 输入流，手动的放到 输出流中进行写入
+
+  ```js
+  const fs = require("fs");
+  
+  // 1.方式一: 一次性读取和写入文件
+  fs.readFile("./foo.txt", (err, data) => {
+    console.log(data);
+    fs.writeFile("./foo_copy_1.txt", data, (err) => {
+      console.log("写入文件完成", err);
+    });
+  });
+  
+  // 2.方式二: 创建可读流和可写流
+  const readStream1 = fs.createReadStream("./foo.txt");
+  const writeStream1 = fs.createWriteStream("./foo_copy_2.txt");
+  
+  readStream1.on("data", (data) => writeStream1.write(data));
+  readStream1.on("end", () => [writeStream1.close()]);
+  
+  // 3.在可读流和可写流之间建立一个管道
+  const readStream2 = fs.createReadStream("./foo.txt");
+  const writeStream2 = fs.createWriteStream("./foo_copy_3.txt");
+  
+  readStream2.pipe(writeStream2);
+  ```
+
+
+
+## Web服务器
+
+- 什么是Web服务器？
+  - 当应用程序（客户端）需要某一个资源时，可以向一台服务器，通过http请求获取到这个资源
+  - 提供资源的这个服务器，就是一个Web服务器
+- 目前有很多开源的Web服务器：Nginx、Apache（静态）、Apache Tomcat（静态、动态）、Node.js
+
+
+
+### http模块
+
+- 在Node中，提供web服务器的资源返回给浏览器，主要是通过http模块
+
+- 我们先简单对它做一个使用
+
+  ```js
+  const http = require("http");
+  
+  // 创建一个http对应的服务器
+  const server = http.createServer((request, response) => {
+    // request  对象中包含本次客户端请求的所有信息
+    // response 对象用于给客户端返回结果的
+    response.end("Hello World");
+  });
+  
+  // 开启对应的服务器, 并且告知需要监听的端口
+  // 监听端口时, 监听 1024以上的端口, 65535以下的端口
+  // 1025 ~ 65535之间的端口
+  // 2个字节 => 256*256 => 65536 => 0 ~ 65535
+  server.listen(8000, () => {
+    console.log("服务器已经开启成功了");
+  });
+  ```
+
+
+
+### 创建服务器
+
+- 创建服务器对象，我们是通过 createServer 来完成的
+
+  - http.createServer会返回**服务器的对象**
+  - 底层其实使用直接 new Server 对象
+
+  ```js
+  function createServer(opts, requestListener) {
+    return new Server(opts, requestListener);
+  }
+  ```
+
+- 那么，当然，我们也可以自己来创建这个对象
+
+- 上面我们已经看到，创建Server时会传入一个回调函数，这个回调函数在被调用时会传入两个参数
+
+  ```js
+  const server = new http.Server((req, res) => {
+    res.end("Hello World");
+  });
+  
+  server.listen(3000, () => {
+    console.log("服务器已经开启成功了");
+  });
+  ```
+
+  - req：**request请求对象**，包含请求相关的信息
+  - res：**response响应对象**，包含我们要发送给客户端的信息
+
+
+
+### 监听主机和端口号
+
+- Server通过**listen方法来开启服务器**，并且**在某一个主机和端口上监听网络请求**
+  - 也就是当我们**通过 ip:port的方式**发送到**我们监听的Web服务器上**时
+  - 我们就可以**对其进行相关的处理**
+- listen函数有三个参数
+- 端口port：可以不传, 系统会默认分配端, 后续项目中我们会写入到环境变量中
+- 主机host：通常可以传入localhost、ip地址127.0.0.1、或者ip地址0.0.0.0，默认是0.0.0.0
+  - localhost：本质上是一个域名，通常情况下会被解析成127.0.0.1
+  - 127.0.0.1：回环地址（Loop Back Address），表达的意思其实是我们主机自己发出去的包，直接被自己接收
+    - 正常的数据库包经常 应用层 - 传输层 - 网络层 - 数据链路层 - 物理层 
+    - 而回环地址，是在网络层直接就被获取到了，是不会经常数据链路层和物理层的
+    - 比如我们监听 127.0.0.1时，在同一个网段下的主机中，通过ip地址是不能访问的
+  - 0.0.0.0
+    - 监听IPV4上所有的地址，再根据端口找到不同的应用程序
+    - 比如我们监听 0.0.0.0时，在同一个网段下的主机中，通过ip地址是可以访问的
+- 回调函数：服务器启动成功时的回调函数
+
+
+
+### request
+
+- 在向服务器发送请求时，我们会携带很多信息，比如
+
+  - 本次**请求的URL**，服务器需要根据不同的URL进行不同的处理
+  - 本次**请求的请求方式**，比如**GET、POST请求传入的参数和处理的方式**是不同的
+  - 本次**请求的headers中也会携带一些信息**，比如**客户端信息、接受数据的格式、支持的编码格式**等
+  - 等等...
+
+- 这些信息，Node会帮助我们封装到一个**request的对象**中，我们可以直接来处理这个request对象
+
+  ```js
+  const http = require("http");
+  
+  const server = http.createServer((req, res) => {
+    console.log(req.url);
+    console.log(req.method);
+    console.log(req.headers);
+  
+    res.end("hello world");
+  });
+  
+  server.listen(8000, () => {
+    console.log("服务器开启成功");
+  });
+  ```
+
+
+
+### 返回响应结果
+
+- 如果我们希望给客户端响应的结果数据，可以通过两种方式
+
+  - Write方法：这种方式是直接写出数据，但是并没有关闭流
+  - end方法：这种方式是写出最后的数据，并且写出后会关闭流
+
+  ```js
+  const http = require('http')
+  
+  const server = http.createServer((req, res) => {
+    // request 对象本质是上一个 readable 可读流
+    res.write("Hello World")
+    res.write("哈哈哈哈")
+  
+    res.end("本次写出已经结束")
+  })
+  
+  
+  server.listen(8000, () => {
+    console.log('服务器开启成功')
+  })
+  ```
+
+- 如果我们没有调用 end，客户端将会一直等待结果
+
+  - 所以客户端在发送网络请求时，都会设置超时时间
+
+
+
+### 返回状态码
+
+- Http状态码（Http Status Code）是用来表示Http响应状态的数字代码
+
+  - Http状态码非常多，可以根据不同的情况，给客户端返回不同的状态码
+  - MDN响应码解析地址：https://developer.mozilla.org/zh-CN/docs/web/http/status
+
+  ```js
+  const http = require("http");
+  
+  const server = http.createServer((req, res) => {
+    // 响应状态码
+    // 1.方式一: statusCode
+    // res.statusCode = 403
+  
+    // 2.方式二: setHead 响应头
+    res.writeHead(401);
+  
+    res.end("hello world");
+  });
+  
+  server.listen(8000, () => {
+    console.log("服务器开启成功");
+  });
+  ```
+
+
+
+### 响应头文件
+
+- 返回头部信息，主要有两种方式
+
+  - res.setHeader：一次写入一个头部信息
+  - res.writeHead：同时写入header和status
+
+  ```js
+  const http = require("http");
+  
+  const server = http.createServer((req, res) => {
+    // 设置header信息: 数据的类型以及数据的编码格式
+    // 1.单独设置某一个header
+    // res.setHeader('Content-Type', 'text/plain;charset=utf8;')
+  
+    // 2.和http status code一起设置
+    res.writeHead(200, { "Content-Type": "application/json;charset=utf8;" });
+  
+    const list = [{ name: "strive", age: 18 }];
+    res.end(JSON.stringify(list));
+  });
+  
+  server.listen(8000, () => {
+    console.log("服务器开启成功");
+  });
+  ```
+
+- Header设置 Content-Type 有什么作用呢？
+
+  - 默认客户端接收到的是字符串，客户端会按照自己默认的方式进行处理
+
+
+
+### 文件上传 – 错误示范
+
+- 如果是一个很大的文件需要上传到服务器端，服务器端进行保存应该如何操作呢？
+
+  ```js
+  const http = require("http");
+  const fs = require("fs");
+  
+  const server = http.createServer((req, res) => {
+    const writeStream = fs.createWriteStream("./foo.png", { flags: "a+" });
+  
+    const fileSize = req.headers["content-length"];
+    let currentSize = 0;
+  
+    // 客户端传递的数据是表单数据(请求体)
+    req.on("data", (data) => {
+      currentSize += data.length;
+      console.log(data);
+      writeStream.write(data); // 没有对传递过来的数据进行处理
+  
+      console.log(`文件上传进度: ${(currentSize / fileSize) * 100}%`);
+    });
+  
+    req.on("end", () => res.end("文件上传成功"));
+  });
+  
+  server.listen(8000, () => console.log("服务器开启成功"));
+  ```
+
+
+
+### 文件上传 – 正确做法
+
+- 对传递过来的数据进行处理，拿到图片对应的数据，再进行存储
+
+  ```js
+  const http = require("http");
+  const fs = require("fs");
+  
+  const server = http.createServer((req, res) => {
+    req.setEncoding("binary");
+  
+    const boundary = req.headers["content-type"].split("; ")[1].replace("boundary=", "");
+    console.log(boundary);
+  
+    // 客户端传递的数据是表单数据(请求体)
+    let formData = "";
+    req.on("data", (data) => {
+      formData += data;
+    });
+  
+    req.on("end", () => {
+      console.log(formData);
+      // 1.截图从 image/jpeg 位置开始后面所有的数据
+      const imgType = "image/jpeg";
+      const imageTypePosition = formData.indexOf(imgType) + imgType.length;
+      let imageData = formData.substring(imageTypePosition);
+  
+      // 2.imageData 开始位置会有两个空格
+      imageData = imageData.replace(/^\s\s*/, "");
+  
+      // 3.替换最后的 boundary
+      imageData = imageData.substring(0, imageData.indexOf(`--${boundary}--`));
+  
+      // 4.将 imageData 的数据存储到文件中
+      fs.writeFile("./bar.png", imageData, "binary", () => {
+        res.end("文件上传成功");
+      });
+    });
+  });
+  
+  server.listen(8000, () => console.log("服务器开启成功"));
+  ```
+
+  ```html
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  
+  <input type="file" />
+  <button>上传</button>
+  
+  <script>
+    const btnEl = document.querySelector("button");
+    btnEl.onclick = function () {
+      // 1.创建表单对象
+      const formData = new FormData();
+  
+      // 2.将选中的图片文件放入表单
+      const inputEl = document.querySelector("input");
+      formData.set("photo", inputEl.files[0]);
+  
+      // 3.发送post请求, 将表单数据携带到服务器(axios)
+      axios({
+        method: "post",
+        url: "http://localhost:8000",
+        data: formData,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    };
+  </script>
+  ```
+
+
+
+## express
+
+- 前面我们已经学习了使用http内置模块来搭建Web服务器，为什么还要使用框架？
+  - 原生http在进行很多处理时，会较为复杂
+  - 有URL判断、Method判断、参数处理、逻辑代码处理等，都需要我们自己来处理和封装
+  - 并且所有的内容都放在一起，会非常的混乱
+- 目前在Node中比较流行的Web服务器框架是express、koa
+- express早于koa出现，并且在Node社区中迅速流行起来
+  - 我们可以基于express快速、方便的开发自己的Web服务器
+  - 并且可以通过一些实用工具和中间件来扩展自己功能
+- **Express整个框架的核心就是中间件，理解了中间件其他一切都非常简单！**
+
+
+
+### 安装方式
+
+- express的使用过程有两种方式
+
+  - 方式一：通过express提供的脚手架，直接创建一个应用的骨架
+
+  - 方式二：从零搭建自己的express应用结构
+
+- 方式一：安装express-generator
+
+  ```sh
+  # 安装脚手架
+  npm install -g express-generator
+  # 创建项目
+  express express-demo
+  # 安装依赖
+  npm install
+  # 启动项目
+  node bin/www
+  ```
+
+- 方式二：从零搭建自己的express应用结构
+
+  ```sh
+  npm init -y
+  ```
+
+
+
+### 基本使用
+
+- 我们来创建第一个express项目
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  app.post("/login", (req, res) => {
+    res.end("登录");
+  });
+  
+  app.get("/home", (req, res) => {
+    res.end("首页");
+  });
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+  - 我们会发现，之后的开发过程中，可以方便的将请求进行分离
+  - 无论是不同的URL，还是get、post等请求方式
+  - 这样的方式非常方便我们已经进行维护、扩展
+  - 当然，这只是初体验，接下来我们来探索更多的用法
+
+- 请求的路径中如果有一些参数，可以这样表达
+
+  - /users/:userId
+  - 在request对象中药获取可以通过 req.params.userId
+
+- 返回数据，我们可以方便的使用json
+
+  - res.json(数据)方式
+  - 可以支持其他的方式，可以自行查看文档
+  - https://www.expressjs.com.cn/guide/routing.html
+
+
+
+
+### 认识中间件
+
+- Express是一个路由和中间件的Web框架，它本身的功能非常少
+  - Express应用程序本质上是一系列中间件函数的调用
+- **中间件是什么呢？**
+  
+  - 中间件的本质是传递给express的一个回调函数
+  - 这个回调函数接受三个参数
+    - 请求对象（request对象）
+    - 响应对象（response对象）
+    - next函数（在express中定义的用于执行下一个中间件的函数）
+  
+- **中间件中可以执行哪些任务呢？**
+  
+  - 执行任何代码
+  - 更改请求（request）和响应（response）对象
+  - 结束请求-响应周期（返回数据）
+  - 调用栈中的下一个中间件
+- 如果当前中间件功能没有结束请求-响应周期，则必须调用next()将控制权传递给下一个中间件功能，否则，请求将被挂起
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  // 给 express 创建的 app 传入一个回调函数, 传入的这个回调函数就称之为是中间件(middleware)
+  // app.post("/login", 回调函数 === 中间件)
+  app.post("/login", (req, res, next) => {
+    // 1.中间件中可以执行任意代码
+    console.log("first middleware exec");
+  
+    // 2.在中间件中修改 req/res 对象
+    req.name = "哈哈哈";
+  
+    // 3.可以在中间件中结束响应周期
+    // res.json({ message: "登录成功, 欢迎回来", code: 0 })
+  
+    // 4.执行下一个中间件
+    next();
+  });
+  
+  app.use((req, res, next) => console.log("second middleware exec"));
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+
+
+### 应用中间件
+
+- 那么，如何将一个中间件应用到我们的应用程序中呢？
+
+  - express主要提供了两种方式
+    - app.use|router.use
+    - app.use|router.methods
+  - 可以是 app，也可以是 router
+  - methods指的是常用的请求方式，app.get或app.post等
+
+- 我们先来学习use的用法，因为methods的方式本质是use的特殊情况
+
+  - 案例一：最普通的中间件
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  // 通过 use 方法注册的中间件是最普通的/简单的中间件
+  // 通过 use 注册的中间件, 无论是什么请求方式都可以匹配上
+  // get: /login
+  // post: /login
+  // patch: /aaa
+  app.use((req, res, next) => {
+    console.log("normal middleware 1");
+    next();
+  });
+  
+  app.use((req, res, next) => {
+    console.log("normal middleware 2");
+  });
+  
+  // 总结: 当 express 接收到客户端发送的网络请求时, 在所有中间中开始进行匹配
+  // 当匹配到第一个符合要求的中间件时, 那么就会执行这个中间件
+  // 后续的中间件是否会执行呢? 取决于上一个中间件有没有执行 next
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+  - 案例二：path匹配中间件
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  // 注册路径匹配的中间件
+  // 路径匹配的中间件是不会对请求方式(method)进行限制
+  app.use("/home", (req, res, next) => {
+    console.log("match /home middleware");
+    res.end("home data");
+  });
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+  - 案例三：path和method匹配中间件
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  // 注册中间件: 对path/method都有限制
+  app.get("/home", (req, res, next) => {
+    console.log("match /home get method middleware");
+    res.end("home data");
+  });
+  
+  app.post("/users", (req, res, next) => {
+    console.log("match /users post method middleware");
+    res.end("create user success");
+  });
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+  - 案例四：注册多个中间件
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  // app.get(路径, 中间件1, 中间件2, 中间件3)
+  app.get(
+    "/home",
+    (req, res, next) => {
+      console.log("match /home get middleware 1");
+      next();
+    },
+    (req, res, next) => {
+      console.log("match /home get middleware 2");
+      next();
+    },
+    (req, res, next) => {
+      console.log("match /home get middleware 3");
+      next();
+    },
+    (req, res, next) => {
+      console.log("match /home get middleware 4");
+    }
+  );
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+
+
+### body
+
+- 并非所有的中间件都需要我们从零去编写
+
+  - express有内置一些帮助我们完成对request解析的中间件
+  - registry仓库中也有很多可以辅助我们开发的中间件
+
+- 在客户端发送post请求时，会将数据放到body中
+
+  - 客户端可以通过json的方式传递
+  - 也可以通过form表单的方式传递
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  // app.use((req, res, next) => {
+  //   if (req.headers['content-type'] === 'application/json') {
+  //     req.on('data', (data) => {
+  //       const jsonInfo = JSON.parse(data.toString())
+  //       req.body = jsonInfo
+  //     })
+  
+  //     req.on('end', () => {
+  //       next()
+  //     })
+  //   } else {
+  //     next()
+  //   }
+  // })
+  
+  // 直接使用 express 提供给我们的中间件
+  app.use(express.json()) // 解析客户端传递过来的 json
+  // 解析传递过来 urlencoded 的时候, 默认使用的 node 内置 querystring 模块
+  // { extended: true }: 不再使用内置的 querystring, 而是使用qs第三方库
+  app.use(express.urlencoded({ extended: true })) // 解析客户端传递过来的 urlencoded
+  
+  app.post("/login", (req, res, next) => {
+    console.log(req.body);
+  });
+  
+  app.post("/register", (req, res, next) => {
+    console.log(req.body);
+  });
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+
+
+### 上传文件中间件
+
+- 上传文件，我们可以使用express官网开发的第三方库：multer
+
+  - npm install multer
+
+  ```js
+  const express = require("express");
+  const multer = require("multer");
+  
+  const app = express();
+  
+  // 应用一个 express 编写第三方的中间件
+  const upload = multer({
+    // dest: "./uploads",
+    storage: multer.diskStorage({
+      destination(req, file, callback) {
+        callback(null, "./uploads");
+      },
+      filename(req, file, callback) {
+        callback(null, Date.now() + "_" + file.originalname);
+      },
+    }),
+  });
+  
+  // 上传单文件: singer方法
+  app.post("/avatar", upload.single("avatar"), (req, res, next) => {
+    console.log(req.file);
+    res.end("文件上传成功");
+  });
+  
+  // 上传多文件: array方法
+  app.post("/photos", upload.array("photos"), (req, res, next) => {
+    console.log(req.files);
+    res.end("上传多张照片成功");
+  });
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+
+
+### multer解析form-data
+
+- 如果我们希望借助于multer帮助我们解析一些form-data中的普通数据，那么我们可以使用any
+
+  ```js
+  const express = require("express");
+  const multer = require("multer");
+  
+  const app = express();
+  
+  // express内置的插件
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  
+  // 编写中间件
+  const formdata = multer();
+  
+  app.post("/login", formdata.any(), (req, res, next) => {
+    console.log(req.body);
+    res.end("登录成功, 欢迎回来");
+  });
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+
+
+### 客户端发送请求的方式
+
+- 客户端传递到服务器参数的方法常见的是5种
+
+  - 方式一：通过get请求中的URL的query
+  - 方式二：通过get请求中的URL的params
+  - 方式三：通过post请求中的body的json格式（中间件中已经使用过）
+  - 方式四：通过post请求中的body的x-www-form-urlencoded格式（中间件使用过）
+  - 方式五：通过post请求中的form-data格式（中间件中使用过）
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  // 1.解析 queryString /info?name='strive'&age=18
+  app.get("/info", (req, res, next) => {
+    console.log(req.query);
+  
+    res.end("data list");
+  });
+  
+  // 2.解析 params /users/123456
+  app.get("/users/:id", (req, res, next) => {
+    res.end(`获取到${req.params.id}的数据`);
+  });
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+
+
+### 响应数据
+
+- end()
+  - 类似于http中的response.end方法，用法是一致的
+- json()
+  - json方法中可以传入很多的类型：object、array、string、boolean、number、null等，它们会被转换成json格式返回
+- status()
+  - 用于设置状态码
+  - 注意：这里是一个函数，而不是属性赋值
+- 更多响应的方式：https://www.expressjs.com.cn/4x/api.html#res
+
+
+
+### 路由
+
+- 如果我们将所有的代码逻辑都写在app中，那么app会变得越来越复杂
+
+  - 一方面完整的Web服务器包含非常多的处理逻辑
+  - 另一方面有些处理逻辑其实是一个整体，我们应该将它们放在一起：比如对users相关的处理
+    - 获取用户列表
+    - 获取某一个用户信息
+    - 创建一个新的用户
+    - 删除一个用户
+    - 更新一个用户
+
+- 我们可以使用 express.Router来创建一个路由处理程序
+
+  - 一个Router实例**拥有完整的中间件和路由系统**
+  - 因此，它也被称为 **迷你应用程序（mini-app）**
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  // 用户的接口
+  // 1.将用户的接口直接定义在app中
+  // app.get('/users', (req, res, next) => {})
+  // app.get('/users/:id', (req, res, next) => {})
+  // app.post('/users', (req, res, next) => {})
+  // app.delete('/users/:id', (req, res, next) => {})
+  // app.patch('/users/:id', (req, res, next) => {})
+  
+  // 2.将用户的接口定义在单独的路由对象中
+  const userRouter = express.Router();
+  userRouter.get("/", (req, res, next) => res.json("用户列表数据"));
+  userRouter.get("/:id", (req, res, next) => res.json("某一个用户的数据:" + req.params.id));
+  userRouter.post("/", (req, res, next) => res.json("创建用户成功"));
+  userRouter.delete("/:id", (req, res, next) => res.json("删除某一个用户的数据:" + req.params.id));
+  userRouter.patch("/:id", (req, res, next) => res.json("修改某一个用户的数据:" + req.params.id));
+  
+  // 让路由生效
+  app.use("/users", userRouter);
+  
+  app.listen(9000, () => console.log("express服务器启动成功"));
+  ```
+
+
+
+### 静态资源服务器
+
+- 部署静态资源我们可以选择很多方式
+
+  - Node也可以作为静态资源服务器，并且express给我们提供了方便部署静态资源的方法
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  app.use(express.static("./uploads"));
+  app.use(express.static("./build"));
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+
+
+### 服务端的错误处理
+
+- express中处理错误的方式
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  app.use(express.json());
+  
+  app.post("/login", (req, res, next) => {
+    const { username, password } = req.body;
+  
+    if (!username || !password) {
+      next(-1001);
+    } else if (username !== "strive" || password !== "123456") {
+      next(-1002);
+    } else {
+      res.json({ code: 0, message: "登录成功, 欢迎回来" });
+    }
+  });
+  
+  // 错误处理的中间件
+  app.use((errCode, req, res, next) => {
+    const code = errCode;
+    let message = "未知的错误信息";
+  
+    switch (code) {
+      case -1001:
+        message = "没有输入用户名和密码";
+        break;
+      case -1002:
+        message = "输入用户名或密码错误";
+        break;
+    }
+    res.json({ code, message });
+  });
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+
+
+## koa
+
+- 前面我们已经学习了express，另外一个非常流行的Node Web服务器框架就是Koa
+- Koa官方的介绍
+  - koa：next generation web framework for node.js
+  - koa：node.js的下一代web框架
+- 事实上，koa是express同一个团队开发的一个新的Web框架
+  - 目前团队的**核心开发者TJ的主要精力也在维护Koa**，express已经交给团队维护了
+  - Koa旨在为Web应用程序和API提供**更小、更丰富和更强大的能力**
+  - 相对于**express具有更强的异步处理能力**
+  - Koa的**核心代码只有1600+行**，是一个**更加轻量级的框架**
+  - 我们**可以根据需要安装和使用中间件**
+- 事实上学习了express之后，学习koa的过程是很简单的
+
+
+
+### 初体验
+
+- 我们来体验一下koa的Web服务器
+
+  ```js
+  const Koa = require("koa");
+  
+  const app = new Koa();
+  
+  app.use((ctx, next) => {
+    // 1.请求对象
+    console.log(ctx.request); // 请求对象: Koa封装的请求对象
+    console.log(ctx.req); // 请求对象: Node封装的请求对象
+  
+    // 2.响应对象
+    console.log(ctx.response); // 响应对象: Koa封装的响应对象
+    console.log(ctx.res); // 响应对象: Node封装的响应对象
+  
+    // 3.其他属性
+    console.log(ctx.query);
+    console.log(ctx.params);
+  
+    next();
+  });
+  
+  app.use((ctx, next) => {
+    console.log("second middleware");
+  });
+  
+  app.listen(6000, () => {
+    console.log("koa服务器启动成功");
+  });
+  ```
+
+- koa也是通过注册中间件来完成请求操作的
+
+- koa注册的中间件提供了两个参数
+
+- ctx：上下文（Context）对象
+
+  - koa并没有像express一样，将req和res分开，而是将它们作为ctx的属性
+  - ctx代表一次请求的上下文对象
+  - ctx.request：获取请求对象
+  - ctx.response：获取响应对象
+
+- next：本质上是一个dispatch，类似于之前的next
+
+
+
+### 中间件
+
+- koa通过创建的app对象，注册中间件只能通过use方法
+  - **Koa并没有提供methods的方式来注册中间件**
+  - **也没有提供path中间件来匹配路径**
+- 但是真实开发中我们如何将路径和method分离呢？
+  - 方式一：根据**request自己来判断**
+  - 方式二：使用**第三方路由中间件**
+
+
+
+### 路由
+
+- koa官方并没有给我们提供路由的库，我们可以选择第三方库：@koa/router
+
+  ```sh
+  npm install @koa/router
+  ```
+
+- 在app中将router.routes()注册为中间件
+
+- 注意：allowedMethods用于判断某一个method是否支持
+
+  - 如果我们请求 get，那么是正常的请求，因为我们有实现 get
+  - 如果我们请求 put、delete、patch，那么就自动报错：Method Not Allowed，状态码：405
+  - 如果我们请求 link、copy、lock，那么久自动报错：Not Implemented，状态码：501
+
+  ```js
+  const Koa = require("koa");
+  const KoaRouter = require("@koa/router");
+  
+  const app = new Koa();
+  
+  // 1.创建路由对象
+  const userRouter = new KoaRouter({ prefix: "/users" });
+  
+  // 2.在路由中注册中间件: path/method
+  userRouter.get("/", (ctx, next) => (ctx.body = "users list data"));
+  userRouter.get("/:id", (ctx, next) => (ctx.body = "获取某一个用户" + ctx.params.id));
+  userRouter.post("/", (ctx, next) => (ctx.body = "创建用户成功"));
+  userRouter.delete("/:id", (ctx, next) => (ctx.body = "删除某一个用户" + ctx.params.id));
+  userRouter.patch("/:id", (ctx, next) => (ctx.body = "修改某一个用户" + ctx.params.id));
+  
+  // 3.让路由中的中间件生效
+  app.use(userRouter.routes());
+  app.use(userRouter.allowedMethods());
+  
+  app.listen(6000, () => {
+    console.log("koa服务器启动成功");
+  });
+  ```
+
+
+
+### 参数解析
+
+- params、query、json、urlencoded、form-data
+
+  ```js
+  const Koa = require("koa");
+  const KoaRouter = require("@koa/router");
+  const multer = require("@koa/multer"); // npm install koa-multer
+  const bodyParser = require("koa-bodyparser"); // npm install koa-bodyparser
+  
+  const app = new Koa();
+  
+  // 使用第三方中间件解析body数据
+  app.use(bodyParser());
+  const formParser = multer();
+  
+  const userRouter = new KoaRouter({ prefix: "/users" });
+  
+  /*
+   * 1.get:  params方式, 例子: /:id
+   * 2.get:  query方式,  例子: ?name=strive&age=18
+   * 3.post: json方式,   例子: {"name": "strive", "age": 18}
+   * 4.post: x-www-form-urlencoded
+   * 5.post: form-data
+   */
+  
+  // 1.params
+  userRouter.get("/:id", (ctx, next) => {
+    ctx.body = "params " + ctx.params.id;
+  });
+  
+  // 2.query
+  userRouter.get("/", (ctx, next) => {
+    ctx.body = "query " + JSON.stringify(ctx.query);
+  });
+  
+  // 3.json(使用最多)
+  userRouter.post("/json", (ctx, next) => {
+    // 注意事项: 不能从 ctx.body 中获取数据
+    console.log(ctx.request.body, ctx.req.body);
+  
+    // ctx.body 用于向客户端返回数据
+    ctx.body = "json " + ctx.request.body;
+  });
+  
+  // 4.urlencoded
+  userRouter.post("/urlencoded", (ctx, next) => {
+    ctx.body = "urlencoded " + ctx.request.body;
+  });
+  
+  app.use(userRouter.routes());
+  app.use(userRouter.allowedMethods());
+  
+  // 5.form-data
+  userRouter.post("/formdata", formParser.any(), (ctx, next) => {
+    ctx.body = "form-data " + ctx.request.body;
+  });
+  
+  app.listen(6000, () => {
+    console.log("koa服务器启动成功");
+  });
+  ```
+
+
+
+### 上传文件中间件
+
+- 上传文件，我们可以使用koa官网开发的第三方库：koa-multer
+
+  - npm install koa-multer
+
+  ```js
+  const Koa = require("koa");
+  const KoaRouter = require("@koa/router");
+  const multer = require("@koa/multer");
+  
+  const app = new Koa();
+  
+  // const upload = multer({
+  //   dest: './uploads'
+  // })
+  
+  const upload = multer({
+    storage: multer.diskStorage({
+      destination(req, file, callback) {
+        callback(null, "./uploads");
+      },
+      filename(req, file, callback) {
+        callback(null, Date.now() + "_" + file.originalname);
+      },
+    }),
+  });
+  
+  const uploadRouter = new KoaRouter({ prefix: "/upload" });
+  
+  // 上传单文件: singer方法
+  uploadRouter.post("/avatar", upload.single("avatar"), (ctx, next) => {
+    console.log(ctx.request.file);
+    ctx.body = "文件上传成功";
+  });
+  
+  // 上传多文件: array方法
+  uploadRouter.post("/photos", upload.array("photos"), (ctx, next) => {
+    console.log(ctx.request.files);
+    ctx.body = "文件上传成功";
+  });
+  
+  app.use(uploadRouter.routes());
+  app.use(uploadRouter.allowedMethods());
+  
+  app.listen(6000, () => {
+    console.log("koa服务器启动成功");
+  });
+  ```
+
+
+
+### 响应数据
+
+- 输出结果：body将响应主体设置为以下之一
+
+  - string ：字符串数据
+  - Buffer ：Buffer数据
+  - Stream ：流数据
+  - Object || Array：对象或者数组
+  - null ：不输出任何内容
+  - 如果response.status尚未设置，Koa会自动将状态设置为200或204
+
+- 请求状态：status
+
+  ```js
+  const fs = require("fs");
+  const Koa = require("koa");
+  const KoaRouter = require("@koa/router");
+  
+  const app = new Koa();
+  
+  const userRouter = new KoaRouter({ prefix: "/users" });
+  
+  userRouter.get("/", (ctx, next) => {
+    // 1.body 的类型是 string
+    // ctx.body = 'user list data'
+  
+    // 2.body 的类型是 Buffer
+    // ctx.body = Buffer.from('你好啊, 李银河')
+  
+    // 3.body 的类型是 Stream
+    // const readStream = fs.createReadStream('./uploads/1668331072032_smile.png')
+    // ctx.type = 'image/jpeg'
+    // ctx.body = readStream
+  
+    // 4.body 的类型是 数据 (array/object) => 使用最多
+    ctx.status = 201;
+    ctx.body = {
+      code: 0,
+      data: [
+        { id: 111, name: "iphone", price: 100 },
+        { id: 112, name: "xiaomi", price: 990 },
+      ],
+    };
+  
+    // 5.body 的类型是 null, 自动设置http status code为204
+    // ctx.body = null
+  });
+  
+  app.use(userRouter.routes());
+  app.use(userRouter.allowedMethods());
+  
+  app.listen(6000, () => {
+    console.log("koa服务器启动成功");
+  });
+  ```
+
+
+
+### 静态资源服务器
+
+- koa并没有内置部署相关的功能，所以我们需要使用第三方库
+
+  ```sh
+  npm install koa-static
+  ```
+
+- 部署的过程类似于express
+
+  ```js
+  const Koa = require("koa");
+  const static = require("koa-static");
+  
+  const app = new Koa();
+  
+  app.use(static("./uploads"));
+  app.use(static("./build"));
+  
+  app.listen(8000, () => {
+    console.log("koa服务器启动成功");
+  });
+  ```
+
+
+
+### 服务端的错误处理
+
+- koa中处理错误的方式
+
+  ```js
+  const Koa = require("koa");
+  const KoaRouter = require("@koa/router");
+  
+  const app = new Koa();
+  
+  const userRouter = new KoaRouter({ prefix: "/users" });
+  
+  userRouter.get("/", (ctx, next) => {
+    const isAuth = false;
+    if (isAuth) {
+      ctx.body = "user list data";
+    } else {
+      // ctx.body = {code: -1003, message: '未授权的token, 请检测你的token'}
+      // EventEmitter
+      ctx.app.emit("error", -1003, ctx);
+    }
+  });
+  
+  app.use(userRouter.routes());
+  app.use(userRouter.allowedMethods());
+  
+  // 独立的文件: error-handle.js
+  app.on("error", (code, ctx) => {
+    const errCode = code;
+    let message = "";
+  
+    switch (errCode) {
+      case -1001:
+        message = "账号或者密码错误";
+        break;
+      case -1002:
+        message = "请求参数不正确";
+        break;
+      case -1003:
+        message = "未授权, 请检查你的token信息";
+        break;
+    }
+  
+    ctx.body = { code: errCode, message };
+  });
+  
+  app.listen(6000, () => {
+    console.log("koa服务器启动成功");
+  });
+  ```
+
+
+
+## express和koa的区别
+
+- 在学习了两个框架之后，我们应该已经可以发现koa和express的区别
+
+- **从架构设计上来说**
+
+  - express是完整和强大的，其中帮助我们内置了非常多好用的功能
+  - koa是简洁和自由的，它只包含最核心的功能，并不会对我们使用其他中间件进行任何的限制
+  - 甚至是在app中连最基本的get、post都没有给我们提供
+  - 我们需要通过自己或者路由来判断请求方式或者其他功能
+
+- 因为express和koa框架他们的核心其实都是中间件
+
+  - 它们的中间件的执行机制是不同的，特别是针对某个中间件中包含**异步操作**时
+  - 所以，接下来，我们再来研究一下express和koa中间件的执行顺序问题
+
+  ```js
+  const express = require("express");
+  const axios = require("axios");
+  
+  const app = express();
+  
+  app.use(async (req, res, next) => {
+    console.log("express middleware 1");
+    req.msg = "aaa";
+    await next();
+    // 返回值结果
+    // res.json(req.msg)
+  });
+  
+  app.use(async (req, res, next) => {
+    console.log("express middleware 2");
+    req.msg += "bbb";
+    await next();
+  });
+  
+  // 执行异步代码
+  app.use(async (req, res, next) => {
+    console.log("express middleware 3");
+    const resData = await axios.get("http://123.207.32.32:8000/home/multidata");
+    req.msg += resData.data.data.banner.list[0].title;
+  
+    // 只能在这里返回结果
+    res.json(req.msg);
+  });
+  
+  app.listen(9000, () => {
+    console.log("express服务器启动成功");
+  });
+  ```
+
+  ```js
+  const Koa = require("koa");
+  const axios = require("axios");
+  
+  const app = new Koa();
+  
+  app.use(async (ctx, next) => {
+    console.log("koa middleware 1");
+    ctx.msg = "aaa";
+    await next();
+    // 返回结果
+    ctx.body = ctx.msg;
+  });
+  
+  app.use(async (ctx, next) => {
+    console.log("koa middleware 2");
+    ctx.msg += "bbb";
+    // 如果执行的下一个中间件是一个异步函数, 那么next默认不会等到中间件的结果, 就会执行下一步操作
+    // 如果我们希望等待下一个异步函数的执行结果, 那么需要在next函数前面加await
+    await next();
+    console.log("----");
+  });
+  
+  app.use(async (ctx, next) => {
+    console.log("koa middleware 3");
+    const resData = await axios.get("http://123.207.32.32:8000/home/multidata");
+    ctx.msg += resData.data.data.banner.list[0].title;
+  });
+  
+  app.listen(6000, () => {
+    console.log("koa服务器启动成功");
+  });
+  ```
+
+
+
+## koa洋葱模型
+
+- 什么是koa洋葱模型？
+  - Koa洋葱模型是一种中间件架构模式，基于此可以构建更加可维护和可扩展的Web应用程序
+  - 在Koa中，每个请求由一个或多个中间件处理，每个中间件都是一个函数，它可以读取和修改请求和响应对象，并且可以调用下一个中间件来处理请求和响应。 Koa的中间件按照一定的顺序被串联在一起，称为洋葱模型
+  - 请求经过中间件层的处理，最终从最下层中间件处理完毕，然后从最上层中间件返回响应
+
+
+
 # webpack
-
-
 
 ## 路径模块
 
@@ -1706,7 +3616,7 @@
     - 在 resolve.modules中指定的所有目录检索模块。
       - 默认值是 ['node_modules']，所以默认会从node_modules中查找文件
     - 我们可以通过设置别名的方式来替换初识模块路径
-    
+
 - 如果是一个文件
   - 如果文件具有扩展名，则直接打包文件
   - 否则，将使用 resolve.extensions 选项作为文件扩展名解析
