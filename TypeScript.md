@@ -2645,3 +2645,33 @@
   - tsconfig.json本身包括的选项非常非常多，我们不需要每一个都记住
   - 可以查看文档对于每个选项的解释：https://www.typescriptlang.org/tsconfig
   - 当我们开发项目的时候，选择TypeScript模板时，tsconfig文件默认都会帮助我们配置好的
+  
+  ```json
+  // tsc xxx.ts -w 自动监视文件变化进行重新编译（但是仅针对于当前文件）
+  // 创建一个 tsconfig.json 文件, 然后终端输入 tsc -w  那么会自动监视所有文件变化并编译所有ts文件
+  {
+    // 指定哪些ts文件需要被编译
+    // 根目录下的src下的任意目录里的任意ts文件, 一个*表示任意文件, 两个*表示任意目录
+    "include": ["./src/**/*"],
+    // 指定哪些ts文件不需要被编译
+    "exclude": ["./src/hellow/**/*"],
+    "compilerOpctions": {
+      "target": "ES5", // 用来指定ts被编译的ES版本
+      "module": "es2015", // 指定要使用的模块化规范
+      "lib": [], // 用来指定项目中要使用的库
+      "outDir": "./dist", // 用来指定编译后的文件所在目录
+      "outFile": "./dist/app.js", // 将代码合并为一个文件
+      "allowsJs": true, // 是否对js文件进行编译
+      "checkJs": true, // 是否检查js代码是否符合规范
+      "removeComments": true, // 编译后是否移除注释
+      "noEmit": true, // 不生成编译后的文件
+      "noEmitOnError": true, // 当有错误时不生成编译后的文件
+      "alwaysStrict": true, // 用来设置编译后的文件是否使用严格模式
+      "noImplicitAny": true, // 不允许出现隐式的any类型
+      "noImplicitThis": false, // 不允许不明确类型的this
+      "strictNullChecks": false, // 严格的检查空值
+      "strict": true // 所有严格的总开关
+    }
+  }
+  ```
+
