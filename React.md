@@ -3877,7 +3877,7 @@
 - 这个过程非常简单
 
   - 开发一个Not Found页面
-  - 配置对应的Route，并且设置**path为***即可
+  - 配置对应的Route，并且设置<b>path为*</b>即可
 
   ```jsx
   // app.jsx
