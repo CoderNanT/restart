@@ -81,11 +81,11 @@
 
 # 不同浏览器的内核
 
-- 常见的浏览器内核有：
-  - **Trident** （ 三叉戟）：IE、360安全浏览器、搜狗高速浏览器、百度浏览器、UC浏览器
-  - **Gecko**（ 壁虎） ：Mozilla Firefox
+- 常见的浏览器内核有
+  - **Trident**（三叉戟）：IE、360安全浏览器、搜狗高速浏览器、百度浏览器、UC浏览器
+  - **Gecko**（壁虎）：Mozilla、Firefox
   - **Presto**（急板乐曲）-> **Blink** （眨眼）：Opera
-  - **Webkit** ：Safari、360极速浏览器、搜狗高速浏览器、移动端浏览器（Android、iOS）
-  - **Webkit** -> **Blink** ：Google Chrome
+  - **Webkit** -> Safari、360极速浏览器、搜狗高速浏览器、移动端浏览器（Android、iOS）
+  - **Webkit** -> **Blink**：Chrome、Edge
 - 不同的浏览器内核有**不同的解析、渲染规则**，所以同一网页在不同内核的浏览器中的渲染效果也可能不同
 
