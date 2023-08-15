@@ -857,7 +857,7 @@
         .box + div {
           color: red;
         }
-  			/* .box 后面的所有 div 元素都加粗了 */
+        /* .box 后面的所有 div 元素都加粗了 */
         .box ~ div {
           font-size: 30px;
         }
@@ -3376,8 +3376,7 @@ box-sizing 用来设置盒子模型中宽高的计算方式
 
   - 解决浮动高度塌陷问题
     - 在对子元素设置浮动后，父元素会发生高度塌陷，也就是父元素的高度变为0。解决这个问题，只需要把父元素变成一个BFC。常用的办法是给父元素设置 overflow:hidden
-
-
+  
   ```html
   <!DOCTYPE html>
   <html lang="zh">
